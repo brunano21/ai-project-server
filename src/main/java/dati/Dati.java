@@ -1208,7 +1208,7 @@ public class Dati {
 		Set<Inserzione> inserzioni = new HashSet<Inserzione>();
 		Set<ListaDesideriProdotti> listaDesideriProdotti = new HashSet<ListaDesideriProdotti>();
 		Set<ListaSpesaProdotti> listaSpesaProdotti = new HashSet<ListaSpesaProdotti>();
-		System.out.println(prodotto);
+		System.out.println("******"+prodotto);
 		if(prodotto!=null){
 			try{
 				tx=session.beginTransaction();
@@ -1618,13 +1618,13 @@ public class Dati {
 	}
 
 	/**Eliminazione di un Supermercato
-	 * @param idSuperMercato
+	 * @param nomeSuperMercato
 	 */
-	public void eliminaSupermercato(int idSuperMercato){
+	public void eliminaSupermercato(String nomeSuperMercato){
 
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
-		Supermercato superMercatoVecchio = mappaSupermercati.get(idSuperMercato);		
+		Supermercato superMercatoVecchio = mappaSupermercati.get(nomeSuperMercato);		
 
 		if(superMercatoVecchio==null)
 			throw new RuntimeException("elemento non trovato");

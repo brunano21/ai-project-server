@@ -268,10 +268,10 @@ public class InserzioneController {
 				dati.eliminaInserzione(idInsererzione);
 			}
 			if(inserimentoProdotto){
-				dati.eliminaProdotto(idProdotto);
+				dati.eliminaProdotto(inserzioneForm.getCodiceBarre());
 			}
 			if(inserimentoSupermercato){
-				dati.eliminaSupermercato(idSupermercato);
+				dati.eliminaSupermercato(inserzioneForm.getSupermercato());
 			}
 			e.printStackTrace();
 			
