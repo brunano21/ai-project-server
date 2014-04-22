@@ -1,4 +1,7 @@
+<%@page import="hibernate.ArgomentiInserzione"%>
 <%@page import="dati.InserzioneForm"%>
+<%@page import="dati.Dati"%>
+<%@page import="java.util.Set"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -9,6 +12,7 @@
 </head>
 <body>
 <% InserzioneForm inserzione = (InserzioneForm)request.getAttribute("inserzione"); %>
+<% String idInserzione = (String)request.getAttribute("idInserzione"); %>
 <table>
 	<tr>
 		<td>Descrizione Prodotto</td>
@@ -31,6 +35,15 @@
 		<td>Immagine</td>
 		<td><img alt="" src="<%= inserzione.getFoto() %>"></td>
 	</tr>
+	<% 
+        Dati dati = (Dati)request.getAttribute("dati");
+		for(ArgomentiInserzione ai : (Set<ArgomentiInserzione>) dati.getInserzioni().get(Integer.parseInt(idInserzione)).getArgomentiInserziones()){
+	%>	
+	<tr>
+		<td>Argomento Inserzione</td>
+		<td><%=ai.getArgomenti().getArgomento()+" = "+ai.getArgVal()  %></td>
+	</tr>
+   <%   }  %>
 	
 </table>
 

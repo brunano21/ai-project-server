@@ -1,11 +1,13 @@
-<%@page import="hibernate.Prodotto"%>
+<%@page import="hibernate.Inserzione"%>
 <%@page import="hibernate.Profilo"%>
 <%@page import="hibernate.Utente"%>
 <%@page import="hibernate.Argomenti"%>
+<%@page import="hibernate.ArgomentiInserzione"%>
 <%@page import="org.springframework.web.servlet.support.RequestContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="dati.Dati" %>
 <%@page import="java.util.Map" %>
+<%@page import="java.util.Set" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
@@ -27,12 +29,20 @@
 		<div id="utenti">
 	        <h1>Hello World!</h1>
 	        <p>This is the homepage!</p>
-	        <% for(Map.Entry<Long,Prodotto> u : dati.getProdotti().entrySet()){ %>
-	        <%= u.getValue().getCodiceBarre() %><br>
-	        <%= u.getValue().getDescrizione()%><br>
-	        <%= u.getValue().getIdProdotto() %><br>
-	        <%= u.getValue().getSottocategoria() %><br>
-	        
+	        <% for(Map.Entry<Integer,Inserzione> u : dati.getInserzioni().entrySet()){ %>
+	        <%= u.getValue().getDescrizione() %><br>
+	        <%= u.getValue().getProdotto().getDescrizione()%><br>
+	        <%= u.getValue().getPrezzo() %><br>
+	        <%= u.getValue().getSupermercato().getNome()%><br>
+	        <% 
+        	
+			for(ArgomentiInserzione ai : (Set<ArgomentiInserzione>)u.getValue().getArgomentiInserziones()){
+			%>	
+			<tr>
+				<td>Argomento Inserzione</td>
+				<td><%=ai.getArgomenti().getArgomento()+" = "+ai.getArgVal()  %></td>
+			</tr>
+		   <%   }  %>
 	        <br>
 	        <%} %>
 	        

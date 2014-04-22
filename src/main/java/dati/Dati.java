@@ -402,7 +402,7 @@ public class Dati {
 				valore = itValori.next();
 				ArgomentiInserzioneId id = new ArgomentiInserzioneId(idInserzione, a.getArgomento());
 				ArgomentiInserzione ai = new ArgomentiInserzione(id, inserzione, a,new Float(valore));
-				session.save(a);
+				session.save(ai);
 				mappaArgomentiInserzione.put(id.hashCode(), ai);
 				mappaArgomenti.get(ai.getArgomenti().getArgomento()).getArgomentiInserziones().add(a);
 				argomentiInserzioneSalvati.add(ai);

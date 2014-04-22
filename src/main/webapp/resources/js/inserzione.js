@@ -78,7 +78,6 @@ function initialize(){
 				
 				$.each($("form").serializeArray(),function(index,value){				
 					form.append(value.name,value.value);
-					alert("name = "+value.name+", value = "+value.value);
 				});
 				form.append("lat",results[0].geometry.location.lat());
 				form.append("lng",results[0].geometry.location.lng());

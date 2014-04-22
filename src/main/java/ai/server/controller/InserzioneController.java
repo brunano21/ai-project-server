@@ -69,7 +69,7 @@ public class InserzioneController {
 	}
 	
 	@RequestMapping(value="/inserzione")
-	public String showForm(Map model){
+	public String showForm(Map<String, Object> model){
 		
 		InserzioneForm inserzioneForm = new InserzioneForm();
 		inserzioneForm.setDataInizio("dd/MM/yyyy");
@@ -170,7 +170,7 @@ public class InserzioneController {
 				System.out.println(result.getAllErrors().get(0).toString());
 			inserzioneValidator.validate(inserzioneForm, result,principal);
 			if(result.hasErrors()){
-				Map model = new HashMap<String, Object>();		
+				Map<String, Object> model = new HashMap<String, Object>();		
 				if(inserzioneForm.getFile() != null)
 					inserzioneForm.setFile(null);
 				inserzioneForm.setSupermercato(inserzioneForm.getSupermercato().split(" - ")[0]);
@@ -275,7 +275,7 @@ public class InserzioneController {
 			}
 			e.printStackTrace();
 			
-			Map model = new HashMap<String, Object>();				
+			Map<String, Object> model = new HashMap<String, Object>();				
 			model.put("inserzioneForm", inserzioneForm);				
 			Set<String> categorie = new HashSet<String>();
 			
@@ -293,8 +293,11 @@ public class InserzioneController {
 			model.put("error","errore nell'immissione del form");
 			return new ModelAndView("inserzione",model);
 		}
-		
-		return new ModelAndView("inserzionesuccess","inserzione",inserzioneForm);
+		Map<String,Object> model = new HashMap<String, Object>();
+		model.put("inserzione", inserzioneForm);
+		model.put("isInsezione", new Integer(idInsererzione));
+		model.put("dati",dati);
+		return new ModelAndView("inserzionesuccess",model);
 	}
 	
 	
