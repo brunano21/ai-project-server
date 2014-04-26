@@ -71,14 +71,14 @@
 	<td><div id="aggiungiArgomento">+</div></td>
 	</tr>
 	<tr>
-	<td><form:select path="argomento[0]" items="${argomenti}"></form:select>
+	<td><form:select path="argomento[0]" items="${argomenti}" cssClass="argomenti"></form:select>
 	</td>
 	</tr>
 	<tr>
 	<td><font color="red"><form:errors path="arg_corpo[0]"></form:errors></font></td>
 	</tr>
 	<tr id="dettaglio">
-	<td><form:input path="arg_corpo[0]"/></td>
+	<td><form:input path="arg_corpo[0]" cssClass="argomenti"/></td>
 	</tr>
 	<tr>	
 	<td>Data Acquisizione<font color="red"><form:errors path="dataInizio"></form:errors></font>

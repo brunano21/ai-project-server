@@ -12,7 +12,8 @@
 </head>
 <body>
 <% InserzioneForm inserzione = (InserzioneForm)request.getAttribute("inserzione"); %>
-<% String idInserzione = (String)request.getAttribute("idInserzione"); %>
+<% Integer idInserzione = (Integer)request.getAttribute("idInserzione"); 
+%>
 <table>
 	<tr>
 		<td>Descrizione Prodotto</td>
@@ -37,7 +38,7 @@
 	</tr>
 	<% 
         Dati dati = (Dati)request.getAttribute("dati");
-		for(ArgomentiInserzione ai : (Set<ArgomentiInserzione>) dati.getInserzioni().get(Integer.parseInt(idInserzione)).getArgomentiInserziones()){
+		for(ArgomentiInserzione ai : (Set<ArgomentiInserzione>) dati.getInserzioni().get(idInserzione).getArgomentiInserziones()){
 	%>	
 	<tr>
 		<td>Argomento Inserzione</td>

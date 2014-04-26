@@ -275,7 +275,8 @@ public class InserzioneController {
 			}
 			e.printStackTrace();
 			
-			Map<String, Object> model = new HashMap<String, Object>();				
+			Map<String, Object> model = new HashMap<String, Object>();		
+			inserzioneForm.setSupermercato(inserzioneForm.getSupermercato().split(" - ")[0]);
 			model.put("inserzioneForm", inserzioneForm);				
 			Set<String> categorie = new HashSet<String>();
 			
@@ -295,7 +296,7 @@ public class InserzioneController {
 		}
 		Map<String,Object> model = new HashMap<String, Object>();
 		model.put("inserzione", inserzioneForm);
-		model.put("isInsezione", new Integer(idInsererzione));
+		model.put("idInserzione", new Integer(idInsererzione));
 		model.put("dati",dati);
 		return new ModelAndView("inserzionesuccess",model);
 	}

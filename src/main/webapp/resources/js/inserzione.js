@@ -17,6 +17,7 @@ var typingTimer;
 var descrizioneTimer;
 var results;
 var numArgomenti = 1;
+var output = "";
 
 
 function getSottocategorie(){
@@ -44,74 +45,113 @@ function getSottocategorie(){
 
 getSottocategorie();
 
-$("#aggiungiArgomento").click(function(){
-	$("#dettaglio").after(
-	'<tr>'+
-	'<td>Dettaglio<font color="red"></font>'+
-	'</td>'+
-	'</tr>'+
-	'<tr>'+
-	'<td><select id="argomento'+numArgomenti+'" name="argomento['+numArgomenti+']"><option value="prezzo/l">prezzo/l</option><option value="litri">litri</option><option value="kilogrammi">kilogrammi</option><option value="grammi">grammi</option><option value="prezzo/kg">prezzo/kg</option><option value="prezzo/g">prezzo/g</option></select>'+
-	'</td>'+
-	'</tr>'+
-	'<tr>'+
-	'<td><font color="red"></font></td>'+
-	'</tr>'+
-	'<tr  id="dettaglio">'+
-	'<td><input id="arg_corpo'+numArgomenti+'" name="arg_corpo['+numArgomenti+']" type="text" value=""/></td>'+
-	'</tr>');
-	numArgomenti++;
-});
 
 function initialize(){
 	
-	//overide del sumbit
-	$('#insertionForm').submit(function(event){
-		if(risposta=="No"){
-			$('#preview').attr("src","");
-		}
-		$('#supermercato').val($('#supermercato').val()+" - "+$('#indirizzo').val());
-		var geocoder = new google.maps.Geocoder();
-		geocoder.geocode({'address':$("#indirizzo").val()},function(results,status){
-			if(status == google.maps.GeocoderStatus.OK){			
-				var form = new FormData();
-				
-				$.each($("form").serializeArray(),function(index,value){				
-					form.append(value.name,value.value);
-				});
-				form.append("lat",results[0].geometry.location.lat());
-				form.append("lng",results[0].geometry.location.lng());
-				form.append("foto",$('#preview').attr("src"));
-				if($("#file")[0].files[0] != undefined)
-					form.append("file",$("#file")[0].files[0]);
-				$.ajax({
-					type:'POST',
-					url:window.location.pathname,
-				//	cache:false,
-					dataType: 'text',
-					contentType:false,
-					processData:false,
-					data: form,
-					success:function(response){	
-						document.documentElement.innerHTML = response;
-						risposta = "No";
-						i = 0;
-						codici_prodotti= [];
-						prodotto_selected="";
-						infowindow = new google.maps.InfoWindow();
-						geocoder = new google.maps.Geocoder();
-						supermercati_markers = [];
-						doneTypingInterval = 5000;
-						descrizioneInterval= 5000;
-						markers = [];
-						initialize();
-						getSottocategorie();
+	$("#aggiungiArgomento").click(function(){
+		var vuoto = false;
+		$("input.argomenti").each(function(){
+			if($(this).val() == "")
+				vuoto = true;
+		});		
+		if(!vuoto){
+			output = "";
+			var argomentiSelezionati = [];
+			$(".argomenti option:selected").each(function(){			
+				argomentiSelezionati.push($(this).val());			
+			});
+			$("select.argomenti").prop('disabled',true);
+			$("input.argomenti").prop('disabled',true);
+			if(numArgomenti < 4){
+				$(".argomenti option").each(function(){
+					if($.inArray($(this).val(),argomentiSelezionati) == -1){
+						output +='<option value="'+$(this).val()+'">'+$(this).val()+'</option>';
+						argomentiSelezionati.push($(this).val());
 					}
 				});
-			}else{
-				alert("errore nel submit");
+				$("#dettaglio").after(
+				'<tr>'+
+				'<td>Dettaglio '+numArgomenti+'<font color="red"></font>'+
+				'</td>'+
+				'</tr>'+
+				'<tr>'+
+				'<td><select id="argomento'+numArgomenti+'" name="argomento['+numArgomenti+']" class="argomenti">'+
+				output+
+				'</select>'+
+				'</td>'+
+				'</tr>'+
+				'<tr>'+
+				'<td><font color="red"></font></td>'+
+				'</tr>'+
+				'<tr  id="dettaglio">'+
+				'<td><input id="arg_corpo'+numArgomenti+'" name="arg_corpo['+numArgomenti+']" type="text" value="" class="argomenti"/></td>'+
+				'</tr>').attr("id","");
+				numArgomenti++;
 			}
-		});
+		}else{
+			alert("impossibile aggiungere dettaglio, il campo del dettaglio precedente e' vuoto");
+		}
+	});
+
+	
+	//overide del sumbit
+	$('#insertionForm').submit(function(event){
+		var vuoto = false;
+		$("input.argomenti").each(function(){
+			if($(this).val() == "")
+				vuoto = true;
+		});		
+		if(!vuoto){
+			if(risposta=="No"){
+				$('#preview').attr("src","");
+			}
+			$("select.argomenti").prop('disabled',false);
+			$("input.argomenti").prop('disabled',false);
+			$('#supermercato').val($('#supermercato').val()+" - "+$('#indirizzo').val());
+			var geocoder = new google.maps.Geocoder();
+			geocoder.geocode({'address':$("#indirizzo").val()},function(results,status){
+				if(status == google.maps.GeocoderStatus.OK){			
+					var form = new FormData();
+					
+					$.each($("form").serializeArray(),function(index,value){				
+						form.append(value.name,value.value);
+					});
+					form.append("lat",results[0].geometry.location.lat());
+					form.append("lng",results[0].geometry.location.lng());
+					form.append("foto",$('#preview').attr("src"));
+					if($("#file")[0].files[0] != undefined)
+						form.append("file",$("#file")[0].files[0]);
+					$.ajax({
+						type:'POST',
+						url:window.location.pathname,
+					//	cache:false,
+						dataType: 'text',
+						contentType:false,
+						processData:false,
+						data: form,
+						success:function(response){	
+							document.documentElement.innerHTML = response;
+							risposta = "No";
+							i = 0;
+							codici_prodotti= [];
+							prodotto_selected="";
+							infowindow = new google.maps.InfoWindow();
+							geocoder = new google.maps.Geocoder();
+							supermercati_markers = [];
+							doneTypingInterval = 5000;
+							descrizioneInterval= 5000;
+							markers = [];
+							initialize();
+							getSottocategorie();
+						}
+					});
+				}else{
+					alert("errore nel submit");
+				}
+			});
+		}else{
+			alert("impossibile aggiungere dettaglio, il campo del dettaglio precedente e' vuoto");
+		}
 		event.preventDefault();
 	});
 
@@ -173,6 +213,7 @@ function initialize(){
 			var strs = selected.split(/\s-\s/);
 			$('#supermercato').val(strs[0]);
 			$('#indirizzo').val(strs[1]);
+			$('#indirizzo').trigger("keyup");
 			event.preventDefault();
 		}
 	});
