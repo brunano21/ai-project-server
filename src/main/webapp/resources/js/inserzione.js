@@ -18,7 +18,7 @@ var descrizioneTimer;
 var results;
 var numArgomenti = 1;
 var output = "";
-
+var numeriDettagli = [];
 
 function getSottocategorie(){
 	var selected=$('#categorie option:selected').text();
@@ -48,8 +48,15 @@ getSottocategorie();
 
 function initialize(){
 	
+
+	for(var i = 3;i > 0;i--){
+		numeriDettagli.push(i);
+	}
+	
 	$("#aggiungiArgomento").click(function(){
 		var vuoto = false;
+
+		var numeroDettaglio = numeriDettagli.pop();
 		$("input.argomenti").each(function(){
 			if($(this).val() == "")
 				vuoto = true;
@@ -63,6 +70,7 @@ function initialize(){
 			$("select.argomenti").prop('disabled',true);
 			$("input.argomenti").prop('disabled',true);
 			if(numArgomenti < 4){
+				numArgomenti++;
 				$(".argomenti option").each(function(){
 					if($.inArray($(this).val(),argomentiSelezionati) == -1){
 						output +='<option value="'+$(this).val()+'">'+$(this).val()+'</option>';
@@ -71,22 +79,38 @@ function initialize(){
 				});
 				$("#dettaglio").after(
 				'<tr>'+
-				'<td>Dettaglio '+numArgomenti+'<font color="red"></font>'+
+				'<td>Dettaglio '+numeroDettaglio+'<font color="red"></font>'+
 				'</td>'+
 				'</tr>'+
 				'<tr>'+
-				'<td><select id="argomento'+numArgomenti+'" name="argomento['+numArgomenti+']" class="argomenti">'+
+				'<td><select id="argomento'+numeroDettaglio+'" name="argomento['+numeroDettaglio+']" class="argomenti">'+
 				output+
 				'</select>'+
 				'</td>'+
+				'<td><div class="eliminaArgomento">-</div></td>'+
 				'</tr>'+
 				'<tr>'+
 				'<td><font color="red"></font></td>'+
 				'</tr>'+
 				'<tr  id="dettaglio">'+
-				'<td><input id="arg_corpo'+numArgomenti+'" name="arg_corpo['+numArgomenti+']" type="text" value="" class="argomenti"/></td>'+
+				'<td><input id="arg_corpo'+numeroDettaglio+'" name="arg_corpo['+numeroDettaglio+']" type="text" value="" class="argomenti"/></td>'+
 				'</tr>').attr("id","");
-				numArgomenti++;
+				$(".eliminaArgomento").last().click(function(){
+					var elements = [];
+					var numero = $(this).parent().prev().children().first().attr("id")[9];
+					numeriDettagli.push(numero);
+					elements.push($(this).parent().parent());
+					elements.push($(this).parent().parent().prev());
+					elements.push($(this).parent().parent().next());
+					elements.push($(this).parent().parent().next().next());					
+					$.each(elements,function(index,value){				
+						value.remove();
+					});
+					$("input.argomenti").last().parent().parent().attr("id","dettaglio");
+					numArgomenti--;
+				});
+			}else{
+				alert("numero massimo argomenti raggiunto");
 			}
 		}else{
 			alert("impossibile aggiungere dettaglio, il campo del dettaglio precedente e' vuoto");
@@ -150,7 +174,7 @@ function initialize(){
 				}
 			});
 		}else{
-			alert("impossibile aggiungere dettaglio, il campo del dettaglio precedente e' vuoto");
+			alert("impossibile avviare il submit, il campo del dettaglio precedente e' vuoto");
 		}
 		event.preventDefault();
 	});
