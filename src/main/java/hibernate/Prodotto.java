@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated 17-apr-2014 0.21.19 by Hibernate Tools 3.4.0.CR1
+// Generated 28-apr-2014 22.53.51 by Hibernate Tools 3.4.0.CR1
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,8 +28,6 @@ public class Prodotto implements java.io.Serializable {
 	private long codiceBarre;
 	private String descrizione;
 	private Set inserziones = new HashSet(0);
-	private Set listaDesideriProdottis = new HashSet(0);
-	private Set listaSpesaProdottis = new HashSet(0);
 
 	public Prodotto() {
 	}
@@ -42,14 +40,11 @@ public class Prodotto implements java.io.Serializable {
 	}
 
 	public Prodotto(Sottocategoria sottocategoria, long codiceBarre,
-			String descrizione, Set inserziones, Set listaDesideriProdottis,
-			Set listaSpesaProdottis) {
+			String descrizione, Set inserziones) {
 		this.sottocategoria = sottocategoria;
 		this.codiceBarre = codiceBarre;
 		this.descrizione = descrizione;
 		this.inserziones = inserziones;
-		this.listaDesideriProdottis = listaDesideriProdottis;
-		this.listaSpesaProdottis = listaSpesaProdottis;
 	}
 
 	@Id
@@ -63,7 +58,7 @@ public class Prodotto implements java.io.Serializable {
 		this.idProdotto = idProdotto;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_SottoCategoria", nullable = false)
 	public Sottocategoria getSottocategoria() {
 		return this.sottocategoria;
@@ -91,31 +86,13 @@ public class Prodotto implements java.io.Serializable {
 		this.descrizione = descrizione;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "prodotto")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "prodotto")
 	public Set getInserziones() {
 		return this.inserziones;
 	}
 
 	public void setInserziones(Set inserziones) {
 		this.inserziones = inserziones;
-	}
-
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "prodotto")
-	public Set getListaDesideriProdottis() {
-		return this.listaDesideriProdottis;
-	}
-
-	public void setListaDesideriProdottis(Set listaDesideriProdottis) {
-		this.listaDesideriProdottis = listaDesideriProdottis;
-	}
-
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "prodotto")
-	public Set getListaSpesaProdottis() {
-		return this.listaSpesaProdottis;
-	}
-
-	public void setListaSpesaProdottis(Set listaSpesaProdottis) {
-		this.listaSpesaProdottis = listaSpesaProdottis;
 	}
 
 }

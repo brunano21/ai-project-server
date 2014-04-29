@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated 17-apr-2014 0.21.19 by Hibernate Tools 3.4.0.CR1 -->
+<!-- Generated 28-apr-2014 22.53.51 by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
     <class name="hibernate.Prodotto" table="prodotto" catalog="supermercati">
         <id name="idProdotto" type="java.lang.Integer">
@@ -17,23 +17,11 @@
         <property name="descrizione" type="string">
             <column name="Descrizione" length="45" not-null="true" />
         </property>
-        <set name="inserziones" table="inserzione" inverse="true" lazy="false" fetch="select">
+        <set name="inserziones" table="inserzione" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="ID_Prodotto" />
             </key>
             <one-to-many class="hibernate.Inserzione" />
-        </set>
-        <set name="listaDesideriProdottis" table="lista_desideri_prodotti" inverse="true" lazy="false" fetch="select">
-            <key>
-                <column name="ID_Prodotto" not-null="true" />
-            </key>
-            <one-to-many class="hibernate.ListaDesideriProdotti" />
-        </set>
-        <set name="listaSpesaProdottis" table="lista_spesa_prodotti" inverse="true" lazy="false" fetch="select">
-            <key>
-                <column name="ID_Prodotto" not-null="true" />
-            </key>
-            <one-to-many class="hibernate.ListaSpesaProdotti" />
         </set>
     </class>
 </hibernate-mapping>

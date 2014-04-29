@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated 17-apr-2014 0.21.19 by Hibernate Tools 3.4.0.CR1
+// Generated 28-apr-2014 22.53.51 by Hibernate Tools 3.4.0.CR1
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -11,44 +11,33 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class ListaSpesaProdottiId implements java.io.Serializable {
 
-	private int idSpesa;
-	private int idProdotto;
-	private String descrizione;
+	private int idElemento;
+	private int idListaSpesa;
 
 	public ListaSpesaProdottiId() {
 	}
 
-	public ListaSpesaProdottiId(int idSpesa, int idProdotto, String descrizione) {
-		this.idSpesa = idSpesa;
-		this.idProdotto = idProdotto;
-		this.descrizione = descrizione;
+	public ListaSpesaProdottiId(int idElemento, int idListaSpesa) {
+		this.idElemento = idElemento;
+		this.idListaSpesa = idListaSpesa;
 	}
 
-	@Column(name = "ID_Spesa", nullable = false)
-	public int getIdSpesa() {
-		return this.idSpesa;
+	@Column(name = "ID_Elemento", nullable = false)
+	public int getIdElemento() {
+		return this.idElemento;
 	}
 
-	public void setIdSpesa(int idSpesa) {
-		this.idSpesa = idSpesa;
+	public void setIdElemento(int idElemento) {
+		this.idElemento = idElemento;
 	}
 
-	@Column(name = "ID_Prodotto", nullable = false)
-	public int getIdProdotto() {
-		return this.idProdotto;
+	@Column(name = "ID_ListaSpesa", nullable = false)
+	public int getIdListaSpesa() {
+		return this.idListaSpesa;
 	}
 
-	public void setIdProdotto(int idProdotto) {
-		this.idProdotto = idProdotto;
-	}
-
-	@Column(name = "Descrizione", nullable = false, length = 45)
-	public String getDescrizione() {
-		return this.descrizione;
-	}
-
-	public void setDescrizione(String descrizione) {
-		this.descrizione = descrizione;
+	public void setIdListaSpesa(int idListaSpesa) {
+		this.idListaSpesa = idListaSpesa;
 	}
 
 	public boolean equals(Object other) {
@@ -60,23 +49,15 @@ public class ListaSpesaProdottiId implements java.io.Serializable {
 			return false;
 		ListaSpesaProdottiId castOther = (ListaSpesaProdottiId) other;
 
-		return (this.getIdSpesa() == castOther.getIdSpesa())
-				&& (this.getIdProdotto() == castOther.getIdProdotto())
-				&& ((this.getDescrizione() == castOther.getDescrizione()) || (this
-						.getDescrizione() != null
-						&& castOther.getDescrizione() != null && this
-						.getDescrizione().equals(castOther.getDescrizione())));
+		return (this.getIdElemento() == castOther.getIdElemento())
+				&& (this.getIdListaSpesa() == castOther.getIdListaSpesa());
 	}
 
 	public int hashCode() {
 		int result = 17;
 
-		result = 37 * result + this.getIdSpesa();
-		result = 37 * result + this.getIdProdotto();
-		result = 37
-				* result
-				+ (getDescrizione() == null ? 0 : this.getDescrizione()
-						.hashCode());
+		result = 37 * result + this.getIdElemento();
+		result = 37 * result + this.getIdListaSpesa();
 		return result;
 	}
 

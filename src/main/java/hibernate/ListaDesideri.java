@@ -1,14 +1,12 @@
 package hibernate;
 
-// Generated 17-apr-2014 0.21.19 by Hibernate Tools 3.4.0.CR1
+// Generated 28-apr-2014 22.53.51 by Hibernate Tools 3.4.0.CR1
 
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -22,7 +20,7 @@ import javax.persistence.Table;
 @Table(name = "lista_desideri", catalog = "supermercati")
 public class ListaDesideri implements java.io.Serializable {
 
-	private Integer idListaDesideri;
+	private int idListaDesideri;
 	private Utente utente;
 	private String nomeListaDesideri;
 	private Set listaDesideriProdottis = new HashSet(0);
@@ -30,30 +28,32 @@ public class ListaDesideri implements java.io.Serializable {
 	public ListaDesideri() {
 	}
 
-	public ListaDesideri(Utente utente, String nomeListaDesideri) {
+	public ListaDesideri(int idListaDesideri, Utente utente,
+			String nomeListaDesideri) {
+		this.idListaDesideri = idListaDesideri;
 		this.utente = utente;
 		this.nomeListaDesideri = nomeListaDesideri;
 	}
 
-	public ListaDesideri(Utente utente, String nomeListaDesideri,
-			Set listaDesideriProdottis) {
+	public ListaDesideri(int idListaDesideri, Utente utente,
+			String nomeListaDesideri, Set listaDesideriProdottis) {
+		this.idListaDesideri = idListaDesideri;
 		this.utente = utente;
 		this.nomeListaDesideri = nomeListaDesideri;
 		this.listaDesideriProdottis = listaDesideriProdottis;
 	}
 
 	@Id
-	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "ID_ListaDesideri", unique = true, nullable = false)
-	public Integer getIdListaDesideri() {
+	public int getIdListaDesideri() {
 		return this.idListaDesideri;
 	}
 
-	public void setIdListaDesideri(Integer idListaDesideri) {
+	public void setIdListaDesideri(int idListaDesideri) {
 		this.idListaDesideri = idListaDesideri;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_Utente", nullable = false)
 	public Utente getUtente() {
 		return this.utente;
@@ -72,7 +72,7 @@ public class ListaDesideri implements java.io.Serializable {
 		this.nomeListaDesideri = nomeListaDesideri;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "listaDesideri")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "listaDesideri")
 	public Set getListaDesideriProdottis() {
 		return this.listaDesideriProdottis;
 	}

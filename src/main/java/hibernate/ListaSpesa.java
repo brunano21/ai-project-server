@@ -1,14 +1,12 @@
 package hibernate;
 
-// Generated 17-apr-2014 0.21.19 by Hibernate Tools 3.4.0.CR1
+// Generated 28-apr-2014 22.53.51 by Hibernate Tools 3.4.0.CR1
 
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -22,40 +20,39 @@ import javax.persistence.Table;
 @Table(name = "lista_spesa", catalog = "supermercati")
 public class ListaSpesa implements java.io.Serializable {
 
-	private Integer idSpesa;
+	private int idSpesa;
 	private Utente utente;
 	private String nomeListaSpesa;
-	private Float prezzoTot;
 	private Set listaSpesaProdottis = new HashSet(0);
 
 	public ListaSpesa() {
 	}
 
-	public ListaSpesa(Utente utente, String nomeListaSpesa) {
+	public ListaSpesa(int idSpesa, Utente utente, String nomeListaSpesa) {
+		this.idSpesa = idSpesa;
 		this.utente = utente;
 		this.nomeListaSpesa = nomeListaSpesa;
 	}
 
-	public ListaSpesa(Utente utente, String nomeListaSpesa, Float prezzoTot,
+	public ListaSpesa(int idSpesa, Utente utente, String nomeListaSpesa,
 			Set listaSpesaProdottis) {
+		this.idSpesa = idSpesa;
 		this.utente = utente;
 		this.nomeListaSpesa = nomeListaSpesa;
-		this.prezzoTot = prezzoTot;
 		this.listaSpesaProdottis = listaSpesaProdottis;
 	}
 
 	@Id
-	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "ID_Spesa", unique = true, nullable = false)
-	public Integer getIdSpesa() {
+	public int getIdSpesa() {
 		return this.idSpesa;
 	}
 
-	public void setIdSpesa(Integer idSpesa) {
+	public void setIdSpesa(int idSpesa) {
 		this.idSpesa = idSpesa;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_Utente", nullable = false)
 	public Utente getUtente() {
 		return this.utente;
@@ -74,16 +71,7 @@ public class ListaSpesa implements java.io.Serializable {
 		this.nomeListaSpesa = nomeListaSpesa;
 	}
 
-	@Column(name = "Prezzo_Tot", precision = 12, scale = 0)
-	public Float getPrezzoTot() {
-		return this.prezzoTot;
-	}
-
-	public void setPrezzoTot(Float prezzoTot) {
-		this.prezzoTot = prezzoTot;
-	}
-
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "listaSpesa")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "listaSpesa")
 	public Set getListaSpesaProdottis() {
 		return this.listaSpesaProdottis;
 	}

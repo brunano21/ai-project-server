@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated 17-apr-2014 0.21.19 by Hibernate Tools 3.4.0.CR1
+// Generated 28-apr-2014 22.53.51 by Hibernate Tools 3.4.0.CR1
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -11,18 +11,24 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class ListaDesideriProdottiId implements java.io.Serializable {
 
+	private int idElemento;
 	private int idListaDesideri;
-	private int idProdotto;
-	private String descrizione;
 
 	public ListaDesideriProdottiId() {
 	}
 
-	public ListaDesideriProdottiId(int idListaDesideri, int idProdotto,
-			String descrizione) {
+	public ListaDesideriProdottiId(int idElemento, int idListaDesideri) {
+		this.idElemento = idElemento;
 		this.idListaDesideri = idListaDesideri;
-		this.idProdotto = idProdotto;
-		this.descrizione = descrizione;
+	}
+
+	@Column(name = "ID_Elemento", nullable = false)
+	public int getIdElemento() {
+		return this.idElemento;
+	}
+
+	public void setIdElemento(int idElemento) {
+		this.idElemento = idElemento;
 	}
 
 	@Column(name = "ID_ListaDesideri", nullable = false)
@@ -34,24 +40,6 @@ public class ListaDesideriProdottiId implements java.io.Serializable {
 		this.idListaDesideri = idListaDesideri;
 	}
 
-	@Column(name = "ID_Prodotto", nullable = false)
-	public int getIdProdotto() {
-		return this.idProdotto;
-	}
-
-	public void setIdProdotto(int idProdotto) {
-		this.idProdotto = idProdotto;
-	}
-
-	@Column(name = "Descrizione", nullable = false, length = 45)
-	public String getDescrizione() {
-		return this.descrizione;
-	}
-
-	public void setDescrizione(String descrizione) {
-		this.descrizione = descrizione;
-	}
-
 	public boolean equals(Object other) {
 		if ((this == other))
 			return true;
@@ -61,23 +49,15 @@ public class ListaDesideriProdottiId implements java.io.Serializable {
 			return false;
 		ListaDesideriProdottiId castOther = (ListaDesideriProdottiId) other;
 
-		return (this.getIdListaDesideri() == castOther.getIdListaDesideri())
-				&& (this.getIdProdotto() == castOther.getIdProdotto())
-				&& ((this.getDescrizione() == castOther.getDescrizione()) || (this
-						.getDescrizione() != null
-						&& castOther.getDescrizione() != null && this
-						.getDescrizione().equals(castOther.getDescrizione())));
+		return (this.getIdElemento() == castOther.getIdElemento())
+				&& (this.getIdListaDesideri() == castOther.getIdListaDesideri());
 	}
 
 	public int hashCode() {
 		int result = 17;
 
+		result = 37 * result + this.getIdElemento();
 		result = 37 * result + this.getIdListaDesideri();
-		result = 37 * result + this.getIdProdotto();
-		result = 37
-				* result
-				+ (getDescrizione() == null ? 0 : this.getDescrizione()
-						.hashCode());
 		return result;
 	}
 

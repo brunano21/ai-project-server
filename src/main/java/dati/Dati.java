@@ -66,7 +66,7 @@ public class Dati {
 	private volatile Map<Integer,ArgomentiInserzione> mappaArgomentiInserzione = new ConcurrentHashMap<Integer, ArgomentiInserzione>();
 	private volatile Map<Integer,Categoria> mappaCategorie = new ConcurrentHashMap<Integer, Categoria>();
 	private volatile Map<Integer,ListaSpesaProdotti> mappaListaSpesaProdotti = new ConcurrentHashMap<Integer, ListaSpesaProdotti>();
-	private volatile Map<Integer,ListaDesideriProdotti> mappaListaDesideriProdotti = new ConcurrentHashMap<Integer, ListaDesideriProdotti>();
+	private volatile Map<ListaDesideriProdottiId,ListaDesideriProdotti> mappaListaDesideriProdotti = new ConcurrentHashMap<ListaDesideriProdottiId, ListaDesideriProdotti>();
 	private volatile Map<String,Argomenti> mappaArgomenti = new ConcurrentHashMap<String, Argomenti>();
 	private volatile Map<Integer,Inserzione> mappaInserzioni = new ConcurrentHashMap<Integer, Inserzione>();
 	private volatile Map<Integer,ListaDesideri> mappaListaDesideri = new ConcurrentHashMap<Integer, ListaDesideri>();
@@ -124,7 +124,7 @@ public class Dati {
 			}
 			for(ListaDesideriProdotti ldp :(List<ListaDesideriProdotti>)session.createQuery("from ListaDesideriProdotti").list())
 			{
-				mappaListaDesideriProdotti.put(ldp.getId().hashCode(), ldp);
+				mappaListaDesideriProdotti.put(ldp.getId(), ldp);
 			}
 			for(Argomenti a : (List<Argomenti>)session.createQuery("from Argomenti").list())
 			{
@@ -624,40 +624,34 @@ public class Dati {
 	
 	/**Inserimento di una lista desideri
 	 * @param utente
-	 * @param prodottiQuantita 
-	 * Set di ListaDesideriProdotti con id nulli e con la quantità del prodotto
+	 * @param listaElementi 
+	 * Set di ListaDesideriProdotti dove ogni suo elemento ha come id composto, l'id elemento e l'id listadesideri (Hashcodes) da voi creati
 	 * @param nomeListaDesideri
 	 * @param descrizione
 	 */
-	public void inserisciListaDesideri(Utente utente,Set<ListaDesideriProdotti> prodottiQuantita,String nomeListaDesideri,String descrizione){
-		if(utente == null || prodottiQuantita == null || nomeListaDesideri == null || descrizione == null)
+	public void inserisciListaDesideri(int idListaDesideri,Utente utente,Set<ListaDesideriProdotti> listaElementi,String nomeListaDesideri,String descrizione){
+		if(utente == null || listaElementi == null || nomeListaDesideri == null || descrizione == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		boolean salvataggioListaDesideriProdotti = false;
-		Set<ListaDesideriProdotti> listaDesideriProdotti = new HashSet<ListaDesideriProdotti>();
+		Set<ListaDesideriProdotti> listaDesideriProdottiAggiunti = new HashSet<ListaDesideriProdotti>();
 		try {
 			tx=session.beginTransaction();		
-
-			ListaDesideri listaDesideri = new ListaDesideri(utente, nomeListaDesideri, new HashSet<ListaDesideriProdotti>());
-			Integer idListaDesideri=(Integer)session.save(listaDesideri);
 			
-			for(ListaDesideriProdotti listaDesideriProdotto : prodottiQuantita){
-				ListaDesideriProdottiId id = new ListaDesideriProdottiId(listaDesideri.getIdListaDesideri(), listaDesideriProdotto.getProdotto().getIdProdotto(), listaDesideriProdotto.getProdotto().getDescrizione());
-				listaDesideriProdotto.setId(id);
+			ListaDesideri listaDesideri = new ListaDesideri(idListaDesideri,utente, nomeListaDesideri, new HashSet<ListaDesideriProdotti>());
+			session.save(listaDesideri);
+			
+			for(ListaDesideriProdotti listaDesideriProdotto : listaElementi){
 				listaDesideri.getListaDesideriProdottis().add(listaDesideriProdotto);
 				session.save(listaDesideriProdotto);
-				mappaListaDesideriProdotti.put(id.hashCode(), listaDesideriProdotto);
-				listaDesideriProdotti.add(listaDesideriProdotto);
+				mappaListaDesideriProdotti.put(listaDesideriProdotto.getId(), listaDesideriProdotto);
+				listaDesideriProdottiAggiunti.add(listaDesideriProdotto);
 				
 				if(!salvataggioListaDesideriProdotti)
 					salvataggioListaDesideriProdotti=true;
 			}
-			
-			for(ListaDesideriProdotti ldp : (Set<ListaDesideriProdotti>)listaDesideri.getListaDesideriProdottis()){				
-				mappaProdotti.get(ldp.getProdotto().getCodiceBarre()).getListaDesideriProdottis().add(ldp);
-			}
-			
+					
 			mappaListaDesideri.put(idListaDesideri,listaDesideri);
 			mappaUtente.get(utente.getMail()).getListaDesideris().add(listaDesideri);
 			tx.commit();
@@ -665,8 +659,8 @@ public class Dati {
 			if(tx!=null)
 				tx.rollback();
 			if(salvataggioListaDesideriProdotti == true){
-				for(ListaDesideriProdotti ldp : listaDesideriProdotti){
-					mappaListaDesideriProdotti.remove(ldp.getId().hashCode());
+				for(ListaDesideriProdotti ldp : listaDesideriProdottiAggiunti){
+					mappaListaDesideriProdotti.remove(ldp.getId());
 				}
 			}
 				
@@ -680,21 +674,22 @@ public class Dati {
 	}
 
 	/**modifica di una lista desideri
-	 * @param idListaDesideri
+	 * @param idListaDesideri 
+	 * id della listadesideri vecchia da modificare
 	 * @param utente
 	 * @param nomeListaDesideri
-	 * @param prodottiQuantita
-	 * Set di ListaDesideriProdotti con id nulli e con Prodotti e quantità
+	 * @param listaDesideriElementi 
+	 * Set di ListaDesideriProdotti nuova, dove ogni suo elemento ha come id composto, l'id elemento e l'id listadesideri (Hashcodes) da voi creati
+	 * 
 	 */
-	public void modificaListaDesideri(int idListaDesideri,Utente utente,String nomeListaDesideri,Set<ListaDesideriProdotti> prodottiQuantita){
+	public void modificaListaDesideri(int idListaDesideri,Utente utente,String nomeListaDesideri,Set<ListaDesideriProdotti> listaDesideriElementi){
 		Session session = factory.getCurrentSession();
 
 		Transaction tx = null;
-		if(idListaDesideri <= 0 || utente == null || nomeListaDesideri == null || prodottiQuantita == null)
+		if(idListaDesideri <= 0 || utente == null || nomeListaDesideri == null || listaDesideriElementi == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
 		
-		ListaDesideri listaDesideri = new ListaDesideri(utente, nomeListaDesideri,new HashSet<ListaDesideriProdotti>());
-		listaDesideri.setIdListaDesideri(idListaDesideri);
+		ListaDesideri listaDesideri = new ListaDesideri(idListaDesideri,utente, nomeListaDesideri,new HashSet<ListaDesideriProdotti>());
 		boolean salvataggioListaDesideriProdotti = false;
 		boolean eliminazioneListaDesideriProdotti = false;
 		ListaDesideri listaDesideriVecchia = mappaListaDesideri.get(idListaDesideri);
@@ -709,13 +704,11 @@ public class Dati {
 			tx=session.beginTransaction();
 			session.update(listaDesideri);	
 			
-			for(ListaDesideriProdotti listaDesideriProdotto : prodottiQuantita) {
-				ListaDesideriProdottiId id = new ListaDesideriProdottiId(idListaDesideri, listaDesideriProdotto.getProdotto().getIdProdotto(), listaDesideriProdotto.getProdotto().getDescrizione());
-				ListaDesideriProdotti listaDesideriProdottiTrovato = mappaListaDesideriProdotti.get(id.hashCode());
+			for(ListaDesideriProdotti listaDesideriProdotto : listaDesideriElementi) {
+				ListaDesideriProdotti listaDesideriProdottiTrovato = mappaListaDesideriProdotti.get(listaDesideriProdotto.getId());
 				if(listaDesideriProdottiTrovato != null){
 					listaDesideriProdottiNuovi.add(listaDesideriProdottiTrovato);
 				}else{
-					listaDesideriProdotto.setId(id);
 					listaDesideriVecchia.getListaDesideriProdottis().add(listaDesideriProdotto);		
 					listaDesideriProdottiNuovi.add(listaDesideriProdotto);
 				}
@@ -725,10 +718,8 @@ public class Dati {
 			for(ListaDesideriProdotti ldp : (Set<ListaDesideriProdotti>) listaDesideriVecchia.getListaDesideriProdottis()){
 				if(!listaDesideriProdottiNuovi.contains(ldp)){
 					session.delete(ldp);
-					mappaProdotti.get(ldp.getProdotto().getCodiceBarre()).getListaDesideriProdottis().remove(ldp);
-					mappaListaDesideriProdotti.remove(ldp.getId().hashCode());
-					listaDesideriProdottiRimossi.add(ldp);
-					
+					mappaListaDesideriProdotti.remove(ldp.getId());
+					listaDesideriProdottiRimossi.add(ldp);					
 					if(!eliminazioneListaDesideriProdotti)
 						eliminazioneListaDesideriProdotti = true;
 				}
@@ -737,10 +728,8 @@ public class Dati {
 			for(ListaDesideriProdotti ldp : listaDesideriProdottiNuovi){
 				if(!listaDesideriProdottiVecchia.contains(ldp)){	
 					session.save(ldp);
-					mappaProdotti.get(ldp.getProdotto().getCodiceBarre()).getListaDesideriProdottis().add(ldp);					
-					mappaListaDesideriProdotti.put(listaDesideri.getIdListaDesideri().hashCode(), ldp);
-					listaDesideriProdottiAggiunti.add(ldp);
-					
+					mappaListaDesideriProdotti.put(ldp.getId(), ldp);
+					listaDesideriProdottiAggiunti.add(ldp);					
 					if(!salvataggioListaDesideriProdotti)
 						salvataggioListaDesideriProdotti = true;
 				}
@@ -756,8 +745,7 @@ public class Dati {
 				mappaListaDesideri.put(idListaDesideri, listaDesideriVecchia);
 				
 				for(ListaDesideriProdotti ldp : listaDesideriProdottiRimossi){					
-					mappaProdotti.get(ldp.getProdotto().getCodiceBarre()).getListaDesideriProdottis().add(ldp);
-					mappaListaDesideriProdotti.put(ldp.getId().hashCode(),ldp);
+					mappaListaDesideriProdotti.put(ldp.getId(),ldp);
 				}
 			}
 			
@@ -766,13 +754,11 @@ public class Dati {
 				mappaListaDesideri.put(idListaDesideri, listaDesideriVecchia);
 				
 				for(ListaDesideriProdotti ldp : listaDesideriProdottiAggiunti){
-					mappaProdotti.get(ldp.getProdotto().getCodiceBarre()).getListaDesideriProdottis().remove(ldp);
-					mappaListaDesideriProdotti.remove(listaDesideri.getIdListaDesideri().hashCode());
+					mappaListaDesideriProdotti.remove(ldp.getId());
 				}
 				
 				for(ListaDesideriProdotti ldp : listaDesideriProdottiRimossi){					
-					mappaProdotti.get(ldp.getProdotto().getCodiceBarre()).getListaDesideriProdottis().add(ldp);
-					mappaListaDesideriProdotti.put(ldp.getId().hashCode(),ldp);
+					mappaListaDesideriProdotti.put(ldp.getId(),ldp);
 				}				
 			}
 			throw new RuntimeException(ex);
@@ -803,8 +789,7 @@ public class Dati {
 				
 			for(ListaDesideriProdotti ldp : (Set<ListaDesideriProdotti>)listaDesideri.getListaDesideriProdottis()) {					
 				session.delete(ldp);
-				mappaListaDesideriProdotti.remove(ldp.getId().hashCode());
-				mappaProdotti.get(ldp.getProdotto().getCodiceBarre()).getListaDesideriProdottis().remove(ldp);
+				mappaListaDesideriProdotti.remove(ldp.getId());
 				listaDesideriProdotti.add(ldp);
 				
 				if(!eliminazioneListaDesideriProdotti)
@@ -821,8 +806,7 @@ public class Dati {
 				tx.rollback();
 			if(eliminazioneListaDesideriProdotti){
 				for(ListaDesideriProdotti ldp : listaDesideriProdotti) {					
-					mappaListaDesideriProdotti.put(ldp.getId().hashCode(),ldp);
-					mappaProdotti.get(ldp.getProdotto().getCodiceBarre()).getListaDesideriProdottis().add(ldp);
+					mappaListaDesideriProdotti.put(ldp.getId(),ldp);
 				}
 			}
 			throw new RuntimeException(ex);

@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated 17-apr-2014 0.21.19 by Hibernate Tools 3.4.0.CR1
+// Generated 28-apr-2014 22.53.51 by Hibernate Tools 3.4.0.CR1
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -20,33 +20,32 @@ import javax.persistence.Table;
 public class ListaDesideriProdotti implements java.io.Serializable {
 
 	private ListaDesideriProdottiId id;
-	private Prodotto prodotto;
 	private ListaDesideri listaDesideri;
+	private String descrizione;
 	private Integer quantità;
 
 	public ListaDesideriProdotti() {
 	}
 
-	public ListaDesideriProdotti(ListaDesideriProdottiId id, Prodotto prodotto,
-			ListaDesideri listaDesideri) {
+	public ListaDesideriProdotti(ListaDesideriProdottiId id,
+			ListaDesideri listaDesideri, String descrizione) {
 		this.id = id;
-		this.prodotto = prodotto;
 		this.listaDesideri = listaDesideri;
+		this.descrizione = descrizione;
 	}
 
-	public ListaDesideriProdotti(ListaDesideriProdottiId id, Prodotto prodotto,
-			ListaDesideri listaDesideri, Integer quantità) {
+	public ListaDesideriProdotti(ListaDesideriProdottiId id,
+			ListaDesideri listaDesideri, String descrizione, Integer quantità) {
 		this.id = id;
-		this.prodotto = prodotto;
 		this.listaDesideri = listaDesideri;
+		this.descrizione = descrizione;
 		this.quantità = quantità;
 	}
 
 	@EmbeddedId
 	@AttributeOverrides({
-			@AttributeOverride(name = "idListaDesideri", column = @Column(name = "ID_ListaDesideri", nullable = false)),
-			@AttributeOverride(name = "idProdotto", column = @Column(name = "ID_Prodotto", nullable = false)),
-			@AttributeOverride(name = "descrizione", column = @Column(name = "Descrizione", nullable = false, length = 45)) })
+			@AttributeOverride(name = "idElemento", column = @Column(name = "ID_Elemento", nullable = false)),
+			@AttributeOverride(name = "idListaDesideri", column = @Column(name = "ID_ListaDesideri", nullable = false)) })
 	public ListaDesideriProdottiId getId() {
 		return this.id;
 	}
@@ -55,17 +54,7 @@ public class ListaDesideriProdotti implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_Prodotto", nullable = false, insertable = false, updatable = false)
-	public Prodotto getProdotto() {
-		return this.prodotto;
-	}
-
-	public void setProdotto(Prodotto prodotto) {
-		this.prodotto = prodotto;
-	}
-
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_ListaDesideri", nullable = false, insertable = false, updatable = false)
 	public ListaDesideri getListaDesideri() {
 		return this.listaDesideri;
@@ -73,6 +62,15 @@ public class ListaDesideriProdotti implements java.io.Serializable {
 
 	public void setListaDesideri(ListaDesideri listaDesideri) {
 		this.listaDesideri = listaDesideri;
+	}
+
+	@Column(name = "Descrizione", nullable = false, length = 45)
+	public String getDescrizione() {
+		return this.descrizione;
+	}
+
+	public void setDescrizione(String descrizione) {
+		this.descrizione = descrizione;
 	}
 
 	@Column(name = "Quantità")
