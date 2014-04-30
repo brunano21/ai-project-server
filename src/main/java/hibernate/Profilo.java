@@ -77,7 +77,7 @@ public class Profilo implements java.io.Serializable {
 		this.idProfilo = idProfilo;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_Utente", unique = true, nullable = false)
 	public Utente getUtente() {
 		return this.utente;

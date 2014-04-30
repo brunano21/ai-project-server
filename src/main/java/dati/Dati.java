@@ -65,7 +65,7 @@ public class Dati {
 	private volatile Map<String,Utente> mappaUtente = new ConcurrentHashMap<String, Utente>();
 	private volatile Map<Integer,ArgomentiInserzione> mappaArgomentiInserzione = new ConcurrentHashMap<Integer, ArgomentiInserzione>();
 	private volatile Map<Integer,Categoria> mappaCategorie = new ConcurrentHashMap<Integer, Categoria>();
-	private volatile Map<Integer,ListaSpesaProdotti> mappaListaSpesaProdotti = new ConcurrentHashMap<Integer, ListaSpesaProdotti>();
+	private volatile Map<ListaSpesaProdottiId,ListaSpesaProdotti> mappaListaSpesaProdotti = new ConcurrentHashMap<ListaSpesaProdottiId, ListaSpesaProdotti>();
 	private volatile Map<ListaDesideriProdottiId,ListaDesideriProdotti> mappaListaDesideriProdotti = new ConcurrentHashMap<ListaDesideriProdottiId, ListaDesideriProdotti>();
 	private volatile Map<String,Argomenti> mappaArgomenti = new ConcurrentHashMap<String, Argomenti>();
 	private volatile Map<Integer,Inserzione> mappaInserzioni = new ConcurrentHashMap<Integer, Inserzione>();
@@ -120,7 +120,7 @@ public class Dati {
 			
 			for(ListaSpesaProdotti lsp : (List<ListaSpesaProdotti>)session.createQuery("from ListaSpesaProdotti").list())
 			{
-				mappaListaSpesaProdotti.put(lsp.getId().hashCode(), lsp);
+				mappaListaSpesaProdotti.put(lsp.getId(), lsp);
 			}
 			for(ListaDesideriProdotti ldp :(List<ListaDesideriProdotti>)session.createQuery("from ListaDesideriProdotti").list())
 			{
@@ -695,28 +695,16 @@ public class Dati {
 		ListaDesideri listaDesideriVecchia = mappaListaDesideri.get(idListaDesideri);
 		if(listaDesideriVecchia == null) 
 			throw new RuntimeException("elemento non trovato");
-		Set<ListaDesideriProdotti> listaDesideriProdottiNuovi = new HashSet<ListaDesideriProdotti>();
 		Set<ListaDesideriProdotti> listaDesideriProdottiVecchia = new HashSet<ListaDesideriProdotti>();
 		listaDesideriProdottiVecchia.addAll(listaDesideriVecchia.getListaDesideriProdottis());
 		Set<ListaDesideriProdotti> listaDesideriProdottiAggiunti = new HashSet<ListaDesideriProdotti>();
 		Set<ListaDesideriProdotti> listaDesideriProdottiRimossi = new HashSet<ListaDesideriProdotti>();
 		try {
 			tx=session.beginTransaction();
-			session.update(listaDesideri);	
-			
-			for(ListaDesideriProdotti listaDesideriProdotto : listaDesideriElementi) {
-				ListaDesideriProdotti listaDesideriProdottiTrovato = mappaListaDesideriProdotti.get(listaDesideriProdotto.getId());
-				if(listaDesideriProdottiTrovato != null){
-					listaDesideriProdottiNuovi.add(listaDesideriProdottiTrovato);
-				}else{
-					listaDesideriVecchia.getListaDesideriProdottis().add(listaDesideriProdotto);		
-					listaDesideriProdottiNuovi.add(listaDesideriProdotto);
-				}
-			}
-		
+			session.update(listaDesideri);		
 			
 			for(ListaDesideriProdotti ldp : (Set<ListaDesideriProdotti>) listaDesideriVecchia.getListaDesideriProdottis()){
-				if(!listaDesideriProdottiNuovi.contains(ldp)){
+				if(!listaDesideriElementi.contains(ldp)){
 					session.delete(ldp);
 					mappaListaDesideriProdotti.remove(ldp.getId());
 					listaDesideriProdottiRimossi.add(ldp);					
@@ -724,16 +712,18 @@ public class Dati {
 						eliminazioneListaDesideriProdotti = true;
 				}
 			}				
-			
-			for(ListaDesideriProdotti ldp : listaDesideriProdottiNuovi){
-				if(!listaDesideriProdottiVecchia.contains(ldp)){	
-					session.save(ldp);
-					mappaListaDesideriProdotti.put(ldp.getId(), ldp);
-					listaDesideriProdottiAggiunti.add(ldp);					
+			for(ListaDesideriProdotti listaDesideriProdotto : listaDesideriElementi) {
+				if(!listaDesideriProdottiVecchia.contains(listaDesideriProdotto)){
+					session.save(listaDesideriProdotto);
+					mappaListaDesideriProdotti.put(listaDesideriProdotto.getId(), listaDesideriProdotto);
+					listaDesideriProdottiAggiunti.add(listaDesideriProdotto);					
 					if(!salvataggioListaDesideriProdotti)
 						salvataggioListaDesideriProdotti = true;
 				}
+				listaDesideri.getListaDesideriProdottis().add(listaDesideriProdotto);
 			}
+			mappaListaDesideri.remove(idListaDesideri);
+			mappaListaDesideri.put(idListaDesideri, listaDesideri);
 			
 			tx.commit();
 		}catch(Throwable ex){
@@ -741,17 +731,23 @@ public class Dati {
 				tx.rollback();			
 			
 			if(eliminazioneListaDesideriProdotti && !salvataggioListaDesideriProdotti) {
-				mappaListaDesideri.remove(idListaDesideri);
-				mappaListaDesideri.put(idListaDesideri, listaDesideriVecchia);
-				
+								
 				for(ListaDesideriProdotti ldp : listaDesideriProdottiRimossi){					
 					mappaListaDesideriProdotti.put(ldp.getId(),ldp);
 				}
 			}
 			
-			if(salvataggioListaDesideriProdotti){
-				mappaListaDesideri.remove(idListaDesideri);
-				mappaListaDesideri.put(idListaDesideri, listaDesideriVecchia);
+			if(salvataggioListaDesideriProdotti && !eliminazioneListaDesideriProdotti){
+				
+				
+				for(ListaDesideriProdotti ldp : listaDesideriProdottiAggiunti){
+					mappaListaDesideriProdotti.remove(ldp.getId());
+				}
+				
+			}
+			
+			if(salvataggioListaDesideriProdotti && eliminazioneListaDesideriProdotti){
+				
 				
 				for(ListaDesideriProdotti ldp : listaDesideriProdottiAggiunti){
 					mappaListaDesideriProdotti.remove(ldp.getId());
@@ -823,8 +819,7 @@ public class Dati {
 	 * @return
 	 */
 	public ListaDesideri getListaDesideri(int idListaDesideri){
-		Session session = factory.getCurrentSession();
-
+	
 		ListaDesideri ld = mappaListaDesideri.get(idListaDesideri);
 		if(ld==null)
 			throw new RuntimeException("elemento non trovato");
@@ -835,59 +830,31 @@ public class Dati {
 	/**Inserimento di una inserzione
 	 * @param utente
 	 * @param prodottiQuantita
-	 * Set di listaSpesaProdotti con id nulli e con prodotto e quantità
+	 * Set di ListaSpesaProdotti nuova, dove ogni suo elemento ha come id composto, l'id elemento e l'id listaspesa (Hashcodes) da voi creati
 	 * @param nomeListaSpesa
 	 */
-	public void inserimentoListaSpesa(Utente utente,Set<ListaSpesaProdotti> prodottiQuantita,String nomeListaSpesa){
+	public void inserimentoListaSpesa(int idSpesa,Utente utente,Set<ListaSpesaProdotti> prodottiQuantita,String nomeListaSpesa){
 		if(utente == null || prodottiQuantita == null || nomeListaSpesa == null )
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
-		float prezzo = 0;
-		Inserzione inserzione,ultima;
-		ultima = null;
 		Set<ListaSpesaProdotti> listaSpesaProdotti = new HashSet<ListaSpesaProdotti>();
 		boolean salvataggioListaSpesaProdotti = false;
 		try{
 			tx=session.beginTransaction();			
-			Iterator <Inserzione> it;
-			for(ListaSpesaProdotti lsp : prodottiQuantita){
-				it=lsp.getProdotto().getInserziones().iterator();
-				for(;it.hasNext();){
-					if(ultima==null){
-						ultima = it.next();
-					}else{
-						inserzione = it.next();
-						if(ultima.getDataInizio().getTime()<inserzione.getDataInizio().getTime()){
-							ultima=inserzione;
-						}
-					}
-				}
-				if(ultima!=null){
-					prezzo+=ultima.getPrezzo();
-				}
-			}
-
-			ListaSpesa listaspesa = new ListaSpesa(utente, nomeListaSpesa,prezzo, new HashSet<ListaSpesaProdotti>());
-			Integer idListaSpesa =(Integer) session.save(listaspesa);
+			
+			ListaSpesa listaspesa = new ListaSpesa(idSpesa,utente, nomeListaSpesa);
+			session.save(listaspesa);
 			
 			for(ListaSpesaProdotti listaSpesaProdotto : prodottiQuantita){
-				ListaSpesaProdottiId id = new ListaSpesaProdottiId(listaspesa.getIdSpesa(), listaSpesaProdotto.getProdotto().getIdProdotto(), listaSpesaProdotto.getProdotto().getDescrizione());
-				listaSpesaProdotto.setId(id);
-				listaspesa.getListaSpesaProdottis().add(listaSpesaProdotto);
 				session.save(listaSpesaProdotto);
-				mappaListaSpesaProdotti.put(id.hashCode(), listaSpesaProdotto);
+				mappaListaSpesaProdotti.put(listaSpesaProdotto.getId(), listaSpesaProdotto);
 				listaSpesaProdotti.add(listaSpesaProdotto);
 				if(!salvataggioListaSpesaProdotti)
 					salvataggioListaSpesaProdotti=true;
-
 			}
-
-			for(ListaSpesaProdotti lsp : listaSpesaProdotti){				
-				mappaProdotti.get(lsp.getProdotto().getCodiceBarre()).getListaSpesaProdottis().add(lsp);				
-			}
-
-			mappaListaSpesa.put(idListaSpesa,listaspesa);
+		
+			mappaListaSpesa.put(idSpesa,listaspesa);
 			mappaUtente.get(utente.getMail()).getListaSpesas().add(listaspesa);
 			
 			tx.commit();
@@ -896,7 +863,7 @@ public class Dati {
 				tx.rollback();
 			if(salvataggioListaSpesaProdotti){
 				for(ListaSpesaProdotti lsp : listaSpesaProdotti){
-					mappaListaSpesaProdotti.remove(lsp.getId().hashCode());
+					mappaListaSpesaProdotti.remove(lsp.getId());
 				}
 			}
 			throw new RuntimeException(ex);
@@ -913,7 +880,7 @@ public class Dati {
 	 * @param utente
 	 * @param nomeListaSpesa
 	 * @param prodottiQuantita
-	 * Set di listaSpesaProdotti con id nulli e con prodotto e quantità
+	 * Set di ListaSpesaProdotti nuova, dove ogni suo elemento ha come id composto, l'id elemento e l'id listaspesa (Hashcodes) da voi creati
 	 */
 	public void modificaListaSpesa(int idSpesa,Utente utente,String nomeListaSpesa,Set<ListaSpesaProdotti> prodottiQuantita){
 		if(utente == null || prodottiQuantita == null || nomeListaSpesa == null )
@@ -921,95 +888,78 @@ public class Dati {
 		
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
-		Iterator <Inserzione> it;
-		Inserzione ultima = null;
-		Inserzione inserzione;
-		float prezzo = 0;		
-
-		for(ListaSpesaProdotti listaSpesaProdotto : prodottiQuantita){
-
-			it=listaSpesaProdotto.getProdotto().getInserziones().iterator();
-			for(;it.hasNext();){
-				if(ultima==null){
-					ultima = it.next();
-				}else{
-					inserzione = it.next();
-					if(ultima.getDataInizio().getTime()<inserzione.getDataInizio().getTime()){
-						ultima=inserzione;
-					}
-				}
-			}
-			if(ultima!=null){
-				prezzo+=ultima.getPrezzo();
-			}
-		}
-		
-		Set<ListaSpesaProdotti> listaSpesaProdotti = new HashSet<ListaSpesaProdotti>();
+				
 		Set<ListaSpesaProdotti> listaSpesaProdottiVecchia = new HashSet<ListaSpesaProdotti>();
-		Set<ListaSpesaProdotti> listaSpesaProdottiNuovi = new HashSet<ListaSpesaProdotti>();
+		Set<ListaSpesaProdotti> listaSpesaProdottiInseriti = new HashSet<ListaSpesaProdotti>();
+		Set<ListaSpesaProdotti> listaSpesaProdottiRimossi = new HashSet<ListaSpesaProdotti>();
 		boolean salvataggioListaSpesaProdotti = false;
 		boolean eliminazioneListaSpesaProdottiVecchia = false;
-		ListaSpesa listaspesa = new ListaSpesa(utente, nomeListaSpesa,prezzo, new HashSet<ListaSpesaProdotti>());
-		listaspesa.setIdSpesa(idSpesa);
-		ListaSpesa listaSpesaVecchia = mappaListaSpesa.get(idSpesa);
+		ListaSpesa listaSpesa = new ListaSpesa(idSpesa,utente, nomeListaSpesa, new HashSet<ListaSpesaProdotti>());
+		ListaSpesa listaSpesaVecchia = mappaListaSpesa.get(idSpesa);		
 		
 		if(listaSpesaVecchia == null)
 			throw new RuntimeException("elemento non trovato");
+		
+		listaSpesaProdottiVecchia.addAll(listaSpesaVecchia.getListaSpesaProdottis());
 
 		try{
 			tx=session.beginTransaction();
-			session.update(listaspesa);					
+			session.update(listaSpesa);					
 			for(ListaSpesaProdotti listaSpesaProdotto : prodottiQuantita){
-				ListaSpesaProdottiId id = new ListaSpesaProdottiId(listaspesa.getIdSpesa(), listaSpesaProdotto.getProdotto().getIdProdotto(), listaSpesaProdotto.getProdotto().getDescrizione());
-				ListaSpesaProdotti listaSpesaProdottiTrovato = mappaListaSpesaProdotti.get(id.hashCode());
-				if(listaSpesaProdottiTrovato != null){	
-					listaSpesaProdottiNuovi.add(listaSpesaProdottiTrovato);
-				}else{
-					ListaSpesaProdotti lsp = new ListaSpesaProdotti(id , listaSpesaProdotto.getProdotto(), listaspesa);
-					listaSpesaVecchia.getListaSpesaProdottis().add(lsp);	
-					session.save(lsp);
-					mappaListaSpesaProdotti.put(lsp.getId().hashCode(), lsp);
-					listaSpesaProdotti.add(lsp);	
-					listaSpesaProdottiNuovi.add(lsp);
-					mappaProdotti.get(listaSpesaProdotto.getProdotto().getCodiceBarre()).getListaSpesaProdottis().add(lsp);
+				if(!listaSpesaProdottiVecchia.contains(listaSpesaProdotto)){
+				
+					session.save(listaSpesaProdotto);
+					listaSpesaProdottiInseriti.add(listaSpesaProdotto);
+					mappaListaSpesaProdotti.put(listaSpesaProdotto.getId(), listaSpesaProdotto);
 					if(!salvataggioListaSpesaProdotti)
-						salvataggioListaSpesaProdotti=true;
+						salvataggioListaSpesaProdotti=true;				
 				}
+				listaSpesa.getListaSpesaProdottis().add(listaSpesaProdotto);	
 			}
 			
 			for(ListaSpesaProdotti lsp :(Set<ListaSpesaProdotti>) listaSpesaVecchia.getListaSpesaProdottis()){
-				if(!listaSpesaProdottiNuovi.contains(lsp)){
+				if(!prodottiQuantita.contains(lsp)){
 					session.delete(lsp);
-					mappaListaSpesaProdotti.remove(lsp.getId().hashCode());
-					listaSpesaProdottiVecchia.add(lsp);
-					mappaProdotti.get(lsp.getProdotto().getCodiceBarre()).getListaSpesaProdottis().remove(lsp);
+					listaSpesaProdottiRimossi.add(lsp);
+					mappaListaSpesaProdotti.remove(lsp.getId());
 					if(!eliminazioneListaSpesaProdottiVecchia)
 						eliminazioneListaSpesaProdottiVecchia = true;
 				}
 			}
+			mappaListaSpesa.remove(idSpesa);
+			mappaListaSpesa.put(listaSpesa.getIdSpesa(), listaSpesa);
 			
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx!=null)
 				tx.rollback();
 			if(eliminazioneListaSpesaProdottiVecchia && !salvataggioListaSpesaProdotti){
-				mappaListaSpesa.remove(idSpesa);
-				mappaListaSpesa.put(idSpesa, listaSpesaVecchia);
 				
-				for(ListaSpesaProdotti lsp : listaSpesaProdottiVecchia){
-					mappaListaSpesaProdotti.put(lsp.getId().hashCode(), lsp);
+				for(ListaSpesaProdotti lsp : listaSpesaProdottiRimossi){
+					mappaListaSpesaProdotti.put(lsp.getId(), lsp);
 				}
 			}
-			if(salvataggioListaSpesaProdotti){
-				mappaListaSpesa.remove(idSpesa);
-				mappaListaSpesa.put(idSpesa, listaSpesaVecchia);
+			if(salvataggioListaSpesaProdotti && !eliminazioneListaSpesaProdottiVecchia){
+				
 
-				for(ListaSpesaProdotti lsp : listaSpesaProdotti){
-					mappaListaSpesaProdotti.remove(lsp.getId().hashCode());
+				for(ListaSpesaProdotti lsp : listaSpesaProdottiInseriti){
+					mappaListaSpesaProdotti.remove(lsp.getId());
 				}
 				
-				for(ListaSpesaProdotti lsp : listaSpesaProdottiVecchia){
-					mappaListaSpesaProdotti.put(lsp.getId().hashCode(), lsp);
+				for(ListaSpesaProdotti lsp : listaSpesaProdottiRimossi){
+					mappaListaSpesaProdotti.put(lsp.getId(), lsp);
+				}
+				
+			}
+			if(salvataggioListaSpesaProdotti && eliminazioneListaSpesaProdottiVecchia){
+				
+
+				for(ListaSpesaProdotti lsp : listaSpesaProdottiInseriti){
+					mappaListaSpesaProdotti.remove(lsp.getId());
+				}
+				
+				for(ListaSpesaProdotti lsp : listaSpesaProdottiRimossi){
+					mappaListaSpesaProdotti.put(lsp.getId(), lsp);
 				}
 				
 			}
@@ -1047,8 +997,7 @@ public class Dati {
 
 			for(ListaSpesaProdotti lsp : (Set<ListaSpesaProdotti>)listaSpesaDaEliminare.getListaSpesaProdottis()){
 				session.delete(lsp);
-				mappaListaSpesaProdotti.remove(lsp.getId().hashCode());
-				mappaProdotti.get(lsp.getProdotto().getCodiceBarre()).getListaSpesaProdottis().remove(lsp);
+				mappaListaSpesaProdotti.remove(lsp.getId());
 				listaSpesaProdotti.add(lsp);
 				if(!eliminazioneListaSpesaProdotti)
 					eliminazioneListaSpesaProdotti = true;
@@ -1065,8 +1014,7 @@ public class Dati {
 			if(eliminazioneListaSpesaProdotti){
 				mappaListaSpesa.put(listaSpesaDaEliminare.getIdSpesa(), listaSpesaDaEliminare);
 				for(ListaSpesaProdotti lsp : listaSpesaProdotti){
-					mappaListaSpesaProdotti.put(lsp.getId().hashCode(), lsp);
-					mappaProdotti.get(lsp.getProdotto().getCodiceBarre()).getListaSpesaProdottis().add(lsp);
+					mappaListaSpesaProdotti.put(lsp.getId(), lsp);
 				}
 			}
 			throw new RuntimeException(ex);
@@ -1107,7 +1055,7 @@ public class Dati {
 		int idProdotto=-1;
 		try{
 			tx=session.beginTransaction();
-			Prodotto prodotto = new Prodotto(sottoCategoria,codiceBarre, descrizione, new HashSet<Inserzione>(), new HashSet<ListaDesideriProdotti>(),new HashSet<ListaSpesaProdotti>());			
+			Prodotto prodotto = new Prodotto(sottoCategoria,codiceBarre, descrizione, new HashSet<Inserzione>());			
 			idProdotto = (Integer)session.save(prodotto);
 			prodotto.setIdProdotto(idProdotto);
 			mappaProdotti.put(codiceBarre,prodotto);
@@ -1147,7 +1095,7 @@ public class Dati {
 		long codiceBarreVecchio = prodottoVecchio.getCodiceBarre();
 		Sottocategoria sottoCategoriaVecchia = prodottoVecchio.getSottocategoria();
 		String descrizioneVecchia = prodottoVecchio.getDescrizione();
-		Prodotto prodotto = new Prodotto(sottoCategoria, codiceBarre, descrizione, prodottoVecchio.getInserziones(), prodottoVecchio.getListaDesideriProdottis(), prodottoVecchio.getListaSpesaProdottis());
+		Prodotto prodotto = new Prodotto(sottoCategoria, codiceBarre, descrizione, prodottoVecchio.getInserziones());
 		prodotto.setIdProdotto(idProdotto);
 		
 		try{
@@ -1187,12 +1135,7 @@ public class Dati {
 		Transaction tx = null;
 		Prodotto prodotto = mappaProdotti.get(codiceBarre);
 		boolean eliminazioneInserzione = false;
-		boolean eliminazioneListaDesideriProdotti = false;
-		boolean eliminazioneListaSpesaProdotti = false;
 		Set<Inserzione> inserzioni = new HashSet<Inserzione>();
-		Set<ListaDesideriProdotti> listaDesideriProdotti = new HashSet<ListaDesideriProdotti>();
-		Set<ListaSpesaProdotti> listaSpesaProdotti = new HashSet<ListaSpesaProdotti>();
-		System.out.println("******"+prodotto);
 		if(prodotto!=null){
 			try{
 				tx=session.beginTransaction();
@@ -1205,54 +1148,18 @@ public class Dati {
 					
 					if(!eliminazioneInserzione)
 						eliminazioneInserzione = true;
-				}
-				
-				for(ListaDesideriProdotti ldp : (Set<ListaDesideriProdotti>)prodotto.getListaDesideriProdottis()){
-					session.delete(ldp);
-					mappaListaDesideriProdotti.remove(ldp.getId().hashCode());		
-					listaDesideriProdotti.add(ldp);
-					
-					if(!eliminazioneListaDesideriProdotti)
-						eliminazioneListaDesideriProdotti = true;
-				}
-
-				for(ListaSpesaProdotti lsp : (Set<ListaSpesaProdotti>)prodotto.getListaSpesaProdottis()){
-					session.delete(lsp);
-					mappaListaSpesaProdotti.remove(lsp.getId().hashCode());
-					listaSpesaProdotti.add(lsp);
-					
-					if(!eliminazioneListaSpesaProdotti)
-						eliminazioneListaSpesaProdotti = true;
-				}
+				}				
 				tx.commit();
 
 			}catch(Throwable ex){
 				if(tx!=null)
 					tx.rollback();
-				if(eliminazioneInserzione && !eliminazioneListaDesideriProdotti){
+				if(eliminazioneInserzione){
 					for(Inserzione i : inserzioni){
 						mappaInserzioni.put(i.getIdInserzione(),i);
 					}
-				}
-				if(eliminazioneListaDesideriProdotti && !eliminazioneListaSpesaProdotti){
-					for(ListaDesideriProdotti lsp : listaDesideriProdotti){
-						mappaListaDesideriProdotti.put(lsp.getId().hashCode(), lsp);
-					}
-					for(Inserzione i : inserzioni){
-						mappaInserzioni.put(i.getIdInserzione(),i);
-					}
-				}
-				if(eliminazioneListaSpesaProdotti){
-					for(ListaSpesaProdotti lsp : listaSpesaProdotti){
-						mappaListaSpesaProdotti.put(lsp.getId().hashCode(), lsp);
-					}
-					for(ListaDesideriProdotti lsp : listaDesideriProdotti){
-						mappaListaDesideriProdotti.put(lsp.getId().hashCode(), lsp);
-					}
-					for(Inserzione i : inserzioni){
-						mappaInserzioni.put(i.getIdInserzione(),i);
-					}
-				}
+				}				
+				
 				throw new RuntimeException(ex);
 			}finally{
 				if(session!=null && session.isOpen()){

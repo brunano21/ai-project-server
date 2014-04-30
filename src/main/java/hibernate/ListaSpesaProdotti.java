@@ -60,7 +60,7 @@ public class ListaSpesaProdotti implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_ListaSpesa", nullable = false, insertable = false, updatable = false)
 	public ListaSpesa getListaSpesa() {
 		return this.listaSpesa;

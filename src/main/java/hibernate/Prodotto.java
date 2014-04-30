@@ -58,7 +58,7 @@ public class Prodotto implements java.io.Serializable {
 		this.idProdotto = idProdotto;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_SottoCategoria", nullable = false)
 	public Sottocategoria getSottocategoria() {
 		return this.sottocategoria;
@@ -86,7 +86,7 @@ public class Prodotto implements java.io.Serializable {
 		this.descrizione = descrizione;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "prodotto")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "prodotto")
 	public Set getInserziones() {
 		return this.inserziones;
 	}

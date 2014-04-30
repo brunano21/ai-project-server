@@ -43,7 +43,7 @@ public class Argomenti implements java.io.Serializable {
 		this.argomento = argomento;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "argomenti")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "argomenti")
 	public Set getArgomentiInserziones() {
 		return this.argomentiInserziones;
 	}
