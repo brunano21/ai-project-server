@@ -15,7 +15,6 @@ public class LoginController {
 	
 	 @RequestMapping(value="/welcome",method = RequestMethod.GET)
 	 public ModelAndView printWelcome(Principal principal){
-		 System.out.println(principal);
 		 String name = principal.getName();
 		 HashMap<String, String> map = new HashMap<String, String>();
 		 map.put("name", name);
