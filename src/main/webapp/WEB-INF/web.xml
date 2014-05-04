@@ -72,7 +72,7 @@
     </filter-mapping>
     <filter-mapping>
     	<filter-name>FiltroUtente</filter-name>
-    	<url-pattern>/*</url-pattern>
+    	<url-pattern>/inserzione</url-pattern>
     </filter-mapping> 
 	
 </web-app>
