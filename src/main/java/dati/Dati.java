@@ -18,8 +18,6 @@ import hibernate.Supermercato;
 import hibernate.Utente;
 import hibernate.ValutazioneInserzione;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -30,14 +28,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -53,7 +47,7 @@ import org.springframework.stereotype.Service;
  */
 
 /**
- * @author gnz.chp
+ * @author IgnazioChp
  */
 
 @Service("dati")
@@ -202,7 +196,7 @@ public class Dati {
 		
 		timer.schedule(timerSC, cal.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
 		
-		// SOLO TEST
+		// SOLO TEST, fa scattare il timer un minuto dopo essere stato inizializzato e poi ogni 100 secondi
 		//cal.add(Calendar.MINUTE, +1);
 		//timer.schedule(timerSC, cal.getTime(), 100*1000);
 	}
@@ -1240,17 +1234,21 @@ public class Dati {
 		}
 	}
 
-	/**Modifica di un profilo
+	/**
+	 * 
 	 * @param idProfilo
-	 * @param utente
 	 * @param creditiAcquisiti
 	 * @param creditiPendenti
 	 * @param reputazione
 	 * @param premium
 	 * @param contatoreInfrazioni
+	 * @param numInserzioniPositive
+	 * @param numInserzioniTotali
+	 * @param numValutazioniPositive
+	 * @param numValutazioniTotali
 	 */
-	public void modificaProfilo(int idProfilo,int creditiAcquisiti,int creditiPendenti,int reputazione,boolean premium,int contatoreInfrazioni,int numeroInserzioniPositive,int numeroInserzioniTotali,int numeroValutazioniPositive,int numeroValutazioniTotali){
-		if(idProfilo <0 || creditiAcquisiti<0 || creditiPendenti<0 ||  contatoreInfrazioni<0)
+	public void modificaProfilo(int idProfilo,int creditiAcquisiti,int creditiPendenti,int reputazione,boolean premium,int contatoreInfrazioni, int numInserzioniPositive, int numInserzioniTotali, int numValutazioniPositive, int numValutazioniTotali){
+		if(idProfilo <0 || creditiAcquisiti<0 || creditiPendenti<0 ||  contatoreInfrazioni<0 || numInserzioniPositive<0 || numInserzioniTotali<0 || numValutazioniPositive<0 || numValutazioniTotali<0)
 			throw new RuntimeException("parametro/i non validi");
 		
 		Session session = factory.getCurrentSession();
@@ -1258,7 +1256,8 @@ public class Dati {
 		Profilo profiloVecchio = mappaProfili.get(idProfilo);
 
 		if(profiloVecchio != null){
-			Profilo profilo = new Profilo(profiloVecchio.getUtente(), creditiAcquisiti, creditiPendenti, reputazione, premium, contatoreInfrazioni,numeroInserzioniPositive,numeroInserzioniTotali,numeroValutazioniPositive, numeroValutazioniTotali);
+
+			Profilo profilo = new Profilo(profiloVecchio.getUtente(), creditiAcquisiti, creditiPendenti, reputazione, premium, contatoreInfrazioni, 0, 0, 0, 0);
 			profilo.setIdProfilo(idProfilo);
 
 			try{
@@ -1269,6 +1268,10 @@ public class Dati {
 				profiloVecchio.setCreditiPendenti(creditiPendenti);
 				profiloVecchio.setPremium(premium);
 				profiloVecchio.setReputazione(reputazione);
+				profiloVecchio.setNumeroInserzioniPositive(numInserzioniPositive);
+				profiloVecchio.setNumeroInserzioniTotali(numInserzioniTotali);
+				profiloVecchio.setNumeroValutazioniPositive(numValutazioniPositive);
+				profiloVecchio.setNumeroValutazioniTotali(numValutazioniTotali);
 				tx.commit();
 			}catch(Throwable ex){
 				if(tx!=null)
