@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated 28-apr-2014 22.53.51 by Hibernate Tools 3.4.0.CR1
+// Generated 2-mag-2014 16.20.34 by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
 import javax.persistence.AttributeOverride;
@@ -60,7 +60,7 @@ public class ListaSpesaProdotti implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_ListaSpesa", nullable = false, insertable = false, updatable = false)
 	public ListaSpesa getListaSpesa() {
 		return this.listaSpesa;

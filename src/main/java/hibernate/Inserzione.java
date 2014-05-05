@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated 28-apr-2014 22.53.51 by Hibernate Tools 3.4.0.CR1
+// Generated 2-mag-2014 16.20.34 by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
 import java.util.HashSet;
@@ -72,7 +72,7 @@ public class Inserzione implements java.io.Serializable {
 		this.idInserzione = idInserzione;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_Utente")
 	public Utente getUtente() {
 		return this.utente;
@@ -82,7 +82,7 @@ public class Inserzione implements java.io.Serializable {
 		this.utente = utente;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_Supermercato")
 	public Supermercato getSupermercato() {
 		return this.supermercato;
@@ -92,7 +92,7 @@ public class Inserzione implements java.io.Serializable {
 		this.supermercato = supermercato;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_Prodotto")
 	public Prodotto getProdotto() {
 		return this.prodotto;
