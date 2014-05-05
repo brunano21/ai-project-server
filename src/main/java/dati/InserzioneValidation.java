@@ -51,6 +51,10 @@ public class InserzioneValidation {
 				errors.rejectValue("dataInizio", "invalidDate.InserzioneForm.dataInizio", 
 						"Tempo inconsistente");
 			}
+			if(sdf.parse(inserzione.getDataInizio()).getTime() >= sdf.parse(inserzione.getDataFine()).getTime())
+				errors.rejectValue("dataInizio", "invalidDate.InserzioneForm.dataInizio", 
+						"Data di inizio maggiore della data di Fine");
+			
 			Prodotto prodotto = dati.getProdotti().get(inserzione.getCodiceBarre());
 			int count = 0;
 			if(prodotto != null){

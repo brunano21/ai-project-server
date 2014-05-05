@@ -13,6 +13,7 @@ import java.io.File;
 import java.net.URL;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -236,7 +237,10 @@ public class InserzioneController {
 					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), sdf.parse(inserzioneForm.getDataFine()), inserzioneForm.getDescrizione(),path,argomenti,valori);
 					inserimentoInserzione=true;
 				}else{
-					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), null, inserzioneForm.getDescrizione(), path,argomenti,valori);
+					Calendar c = Calendar.getInstance();
+					c.setTime(sdf.parse(inserzioneForm.getDataInizio()));
+					c.add(Calendar.DATE, 14);
+					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()),c.getTime() , inserzioneForm.getDescrizione(), path,argomenti,valori);
 					inserimentoInserzione=true;
 				}
 			}
