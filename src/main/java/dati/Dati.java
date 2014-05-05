@@ -621,7 +621,12 @@ public class Dati {
 		}
 	}
 
-	
+	/**
+	 * Inserisce una nuova todo list per l'utente loggato.
+	 * @param idListaDesideri Id generato lato client tramite un hashcode applicato su un timestamp.
+	 * @param utente utente loggato
+	 * @param nomeListaDesideri nome assegnato alla lista desideri.
+	 */
 	public void inserisciListaDesideri(int idListaDesideri, Utente utente, String nomeListaDesideri) {
 		if(idListaDesideri == 0 || utente == null || nomeListaDesideri == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
