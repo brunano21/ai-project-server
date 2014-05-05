@@ -37,7 +37,7 @@
 	</tr>
 	<tr>
 	<td><form:input id="descrizione" path="descrizione"/></td>
-	<td><img id="preview" src=""></td>
+	<td><img id="preview" ></td>
 	</tr>
 	<tr>
 	<td>Codice a barre<font color="red"><form:errors path="codiceBarre"></form:errors></font></td>
@@ -109,8 +109,6 @@
             <td>Browse File :</td>
             <td><form:input type="file" path="file" /></td>
         </tr>
-		
-	
 	<tr>
 	<td><input type="submit" value="Invia">
 	</td>	

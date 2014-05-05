@@ -72,7 +72,6 @@ public class InserzioneController {
 	public String showForm(Map<String, Object> model){
 		
 		InserzioneForm inserzioneForm = new InserzioneForm();
-		inserzioneForm.setDataInizio("dd/MM/yyyy");
 		model.put("inserzioneForm", inserzioneForm);
 		Set<String> categorie = new HashSet<String>();
 		

@@ -48,6 +48,14 @@ getSottocategorie();
 
 function initialize(){
 	
+	
+	$("#dataInizio").datepicker({
+		dateFormat: 'dd-mm-yy'
+	});
+	
+	$("#dataFine").datepicker({
+		dateFormat: 'dd-mm-yy'
+	});
 
 	for(var i = 3;i > 0;i--){
 		numeriDettagli.push(i);
@@ -121,62 +129,68 @@ function initialize(){
 	//overide del sumbit
 	$('#insertionForm').submit(function(event){
 		var vuoto = false;
+		event.preventDefault();
 		$("input.argomenti").each(function(){
 			if($(this).val() == "")
 				vuoto = true;
 		});		
-		if(!vuoto){
-			if(risposta=="No"){
-				$('#preview').attr("src","");
-			}
-			$("select.argomenti").prop('disabled',false);
-			$("input.argomenti").prop('disabled',false);
-			$('#supermercato').val($('#supermercato').val()+" - "+$('#indirizzo').val());
-			var geocoder = new google.maps.Geocoder();
-			geocoder.geocode({'address':$("#indirizzo").val()},function(results,status){
-				if(status == google.maps.GeocoderStatus.OK){			
-					var form = new FormData();
-					
-					$.each($("form").serializeArray(),function(index,value){				
-						form.append(value.name,value.value);
-					});
-					form.append("lat",results[0].geometry.location.lat());
-					form.append("lng",results[0].geometry.location.lng());
-					form.append("foto",$('#preview').attr("src"));
-					if($("#file")[0].files[0] != undefined)
-						form.append("file",$("#file")[0].files[0]);
-					$.ajax({
-						type:'POST',
-						url:window.location.pathname,
-					//	cache:false,
-						dataType: 'text',
-						contentType:false,
-						processData:false,
-						data: form,
-						success:function(response){	
-							document.documentElement.innerHTML = response;
-							risposta = "No";
-							i = 0;
-							codici_prodotti= [];
-							prodotto_selected="";
-							infowindow = new google.maps.InfoWindow();
-							geocoder = new google.maps.Geocoder();
-							supermercati_markers = [];
-							doneTypingInterval = 5000;
-							descrizioneInterval= 5000;
-							markers = [];
-							initialize();
-							getSottocategorie();
-						}
-					});
-				}else{
-					alert("errore nel submit");
+		var extension = $("#file").val().split(".").pop();
+		if(extension == "jpg" || extension == "png"){
+			alert("all right");
+			if(!vuoto){
+				if(risposta=="No"){
+					$('#preview').attr("src","");
 				}
-			});
+				$("select.argomenti").prop('disabled',false);
+				$("input.argomenti").prop('disabled',false);
+				$('#supermercato').val($('#supermercato').val()+" - "+$('#indirizzo').val());
+				var geocoder = new google.maps.Geocoder();
+				geocoder.geocode({'address':$("#indirizzo").val()},function(results,status){
+					if(status == google.maps.GeocoderStatus.OK){			
+						var form = new FormData();
+						
+						$.each($("form").serializeArray(),function(index,value){				
+							form.append(value.name,value.value);
+						});
+						form.append("lat",results[0].geometry.location.lat());
+						form.append("lng",results[0].geometry.location.lng());
+						form.append("foto",$('#preview').attr("src"));
+						if($("#file")[0].files[0] != undefined)
+							form.append("file",$("#file")[0].files[0]);
+						$.ajax({
+							type:'POST',
+							url:window.location.pathname,
+						//	cache:false,
+							dataType: 'text',
+							contentType:false,
+							processData:false,
+							data: form,
+							success:function(response){	
+								document.documentElement.innerHTML = response;
+								risposta = "No";
+								i = 0;
+								codici_prodotti= [];
+								prodotto_selected="";
+								infowindow = new google.maps.InfoWindow();
+								geocoder = new google.maps.Geocoder();
+								supermercati_markers = [];
+								doneTypingInterval = 5000;
+								descrizioneInterval= 5000;
+								markers = [];
+								initialize();
+								getSottocategorie();
+							}
+						});
+					}else{
+						alert("errore nel submit");
+					}
+				});
+			}else{
+				alert("impossibile avviare il submit, il campo del dettaglio precedente e' vuoto");
+			}
 		}else{
-			alert("impossibile avviare il submit, il campo del dettaglio precedente e' vuoto");
+			alert("tipo del file caricato non valido, sono validi soltanto i file png e jpg");
 		}
-		event.preventDefault();
 	});
 
 	$('#indirizzo').keyup(function(){
@@ -188,6 +202,13 @@ function initialize(){
 	});
 	
 	$('#descrizione').keyup(function(){
+		if($("#progressBar").length == 0){
+			$("#preview").removeAttr("src");
+			$("#preview").parent().before('<td><div id="progressBar"></div></td>');
+			$("#progressBar").progressbar({
+				value:false
+			});
+		}
 		descrizioneTimer = setTimeout(searchImage,descrizioneInterval);
 	});
 
@@ -377,7 +398,7 @@ function searchImage(){
 	    		$('img').attr("src",json.responseData.results[0].unescapedUrl);
 	    }
 	});*/
-	
+	$("#progressBar").parent().remove();
 	var imageSearch = new google.search.ImageSearch();
 
    

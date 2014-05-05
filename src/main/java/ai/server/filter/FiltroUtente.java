@@ -63,7 +63,7 @@ public class FiltroUtente implements Filter {
 					break;
 				}
 				
-				if(profilo.getReputazione() == 0){
+				if(profilo.getReputazione() < 0){
 					request.setAttribute("dati", dati);
 					request.setAttribute("error", "Non hai i requisiti per andare in quella pagina");
 					request.getRequestDispatcher("/WEB-INF/views/home.jsp").forward(request, response);
