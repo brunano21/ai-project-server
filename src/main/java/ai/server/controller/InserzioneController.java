@@ -196,7 +196,6 @@ public class InserzioneController {
 				BufferedImage image = ImageIO.read(url);
 				path = context.getRealPath("/")+"resources\\images"+File.separator+inserzioneForm.getCodiceBarre()+".png";
 				File file = new File(path);
-				File parent = file.getParentFile();
 			    ImageIO.write(image, "png", file);			    
 			}
 			if(inserzioneForm.getFile()!=null){
