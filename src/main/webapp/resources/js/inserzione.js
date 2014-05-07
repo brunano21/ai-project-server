@@ -134,63 +134,66 @@ function initialize(){
 			if($(this).val() == "")
 				vuoto = true;
 		});		
-		var extension = $("#file").val().split(".").pop();
-		if(extension == "jpg" || extension == "png"){
-			alert("all right");
-			if(!vuoto){
-				if(risposta=="No"){
-					$('#preview').attr("src","");
-				}
-				$("select.argomenti").prop('disabled',false);
-				$("input.argomenti").prop('disabled',false);
-				$('#supermercato').val($('#supermercato').val()+" - "+$('#indirizzo').val());
-				var geocoder = new google.maps.Geocoder();
-				geocoder.geocode({'address':$("#indirizzo").val()},function(results,status){
-					if(status == google.maps.GeocoderStatus.OK){			
-						var form = new FormData();
-						
-						$.each($("form").serializeArray(),function(index,value){				
-							form.append(value.name,value.value);
-						});
-						form.append("lat",results[0].geometry.location.lat());
-						form.append("lng",results[0].geometry.location.lng());
-						form.append("foto",$('#preview').attr("src"));
-						if($("#file")[0].files[0] != undefined)
-							form.append("file",$("#file")[0].files[0]);
-						$.ajax({
-							type:'POST',
-							url:window.location.pathname,
-						//	cache:false,
-							dataType: 'text',
-							contentType:false,
-							processData:false,
-							data: form,
-							success:function(response){	
-								document.documentElement.innerHTML = response;
-								risposta = "No";
-								i = 0;
-								codici_prodotti= [];
-								prodotto_selected="";
-								infowindow = new google.maps.InfoWindow();
-								geocoder = new google.maps.Geocoder();
-								supermercati_markers = [];
-								doneTypingInterval = 5000;
-								descrizioneInterval= 5000;
-								markers = [];
-								initialize();
-								getSottocategorie();
-							}
-						});
-					}else{
-						alert("errore nel submit");
-					}
-				});
-			}else{
-				alert("impossibile avviare il submit, il campo del dettaglio precedente e' vuoto");
+		
+		if(!vuoto){
+			if(risposta=="No"){
+				$('#preview').attr("src","");
 			}
+			$("select.argomenti").prop('disabled',false);
+			$("input.argomenti").prop('disabled',false);
+			$('#supermercato').val($('#supermercato').val()+" - "+$('#indirizzo').val());
+			var geocoder = new google.maps.Geocoder();
+			geocoder.geocode({'address':$("#indirizzo").val()},function(results,status){
+				if(status == google.maps.GeocoderStatus.OK){			
+					var form = new FormData();
+					
+					$.each($("form").serializeArray(),function(index,value){				
+						form.append(value.name,value.value);
+					});
+					form.append("lat",results[0].geometry.location.lat());
+					form.append("lng",results[0].geometry.location.lng());
+					form.append("foto",$('#preview').attr("src"));
+					
+					if($("#file")[0].files[0] != undefined){
+						var extension = $("#file").val().split(".").pop();
+						if(extension == "jpg" || extension == "png"){
+							form.append("file",$("#file")[0].files[0]);
+						}else{
+							alert("tipo del file caricato non valido, sono validi soltanto i file png e jpg");
+						}
+					}
+					$.ajax({
+						type:'POST',
+						url:window.location.pathname,
+					//	cache:false,
+						dataType: 'text',
+						contentType:false,
+						processData:false,
+						data: form,
+						success:function(response){	
+							document.documentElement.innerHTML = response;
+							risposta = "No";
+							i = 0;
+							codici_prodotti= [];
+							prodotto_selected="";
+							infowindow = new google.maps.InfoWindow();
+							geocoder = new google.maps.Geocoder();
+							supermercati_markers = [];
+							doneTypingInterval = 5000;
+							descrizioneInterval= 5000;
+							markers = [];
+							initialize();
+							getSottocategorie();
+						}
+					});
+				}else{
+					alert("l'indirizzo immesso non è corretto");
+				}
+			});
 		}else{
-			alert("tipo del file caricato non valido, sono validi soltanto i file png e jpg");
+			alert("impossibile avviare il submit, il campo del dettaglio precedente e' vuoto");
 		}
+		
 	});
 
 	$('#indirizzo').keyup(function(){
@@ -336,6 +339,21 @@ function initialize(){
 						});
 					}				
 				});
+				if(navigator.geolocation){
+					if(!localStorage.getItem("lat")){
+						navigator.geolocation.getCurrentPosition(function(position){
+							currentLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+							map.setCenter(currentLocation);
+							localStorage.setItem("lat", position.coords.latitude);
+							localStorage.setItem("lng", position.coords.longitude);
+						}, function(){
+							alert('consenti di sapere la tua posizione se vuoi essere localizzato error: ');			
+						},null);
+					}else{
+						currentLocation = new google.maps.LatLng(localStorage.getItem("lat"),localStorage.getItem("lng"));
+						map.setCenter(currentLocation);
+					}
+				}
 			});
 			
 		}else{
@@ -343,16 +361,6 @@ function initialize(){
 		};
 	});
 	
-	if(navigator.geolocation){
-		navigator.geolocation.getCurrentPosition(function(position){
-			currentLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-			map.setCenter(currentLocation);
-			
-		}, function(){
-			alert('consenti di sapere la tua posizione se vuoi essere localizzato error: ');			
-		},null);
-		
-	}
 	
 	
 	

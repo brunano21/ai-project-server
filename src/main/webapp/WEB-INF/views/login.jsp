@@ -14,6 +14,11 @@
 	margin: 16px;
 }
 </style>
+<script language="Javascript" type="text/javascript">
+    //<!
+    localStorage.removeItem("lat");
+    localStorage.removeItem("lng");
+    </script>
 </head>
 <body onload='document.f.j_username.focus();'>
 	<h3>Login with Username and Password (Custom Page)</h3>
