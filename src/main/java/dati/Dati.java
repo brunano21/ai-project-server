@@ -1007,6 +1007,8 @@ public class Dati {
 	 * @param nomeListaDesideri
 	 * @param descrizione
 	 */
+	
+	/*
 	public void inserisciListaDesideri(int idListaDesideri,Utente utente,Set<ListaDesideriProdotti> listaElementi,String nomeListaDesideri,String descrizione){
 		if(utente == null || listaElementi == null || nomeListaDesideri == null || descrizione == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
@@ -1050,7 +1052,8 @@ public class Dati {
 			session=null;
 		}
 	}
-
+	*/
+	
 	/**modifica di una lista desideri
 	 * @param idListaDesideri 
 	 * id della listadesideri vecchia da modificare
@@ -1060,6 +1063,7 @@ public class Dati {
 	 * Set di ListaDesideriProdotti nuova, dove ogni suo elemento ha come id composto, l'id elemento e l'id listadesideri (Hashcodes) da voi creati
 	 * 
 	 */
+	/*
 	public void modificaListaDesideri(int idListaDesideri,Utente utente,String nomeListaDesideri,Set<ListaDesideriProdotti> listaDesideriElementi){
 		Session session = factory.getCurrentSession();
 
@@ -1143,10 +1147,13 @@ public class Dati {
 			session=null;
 		}
 	}
-
+	*/
+	
 	/**Eliminazione di una lista desideri
 	 * @param idListaDesideri
 	 */
+	
+	/*
 	public void eliminaListaDesideri(int idListaDesideri) {
 		if(idListaDesideri <= 0)
 			throw new RuntimeException("id non valido");	
@@ -1191,11 +1198,12 @@ public class Dati {
 			session=null;
 		}
 	}
-
+	 */
 	/**metodo get di una ListaDesideri
 	 * @param idListaDesideri
 	 * @return
 	 */
+	
 	public ListaDesideri getListaDesideri(int idListaDesideri){
 	
 		ListaDesideri ld = mappaListaDesideri.get(idListaDesideri);
@@ -1211,6 +1219,7 @@ public class Dati {
 	 * Set di ListaSpesaProdotti nuova, dove ogni suo elemento ha come id composto, l'id elemento e l'id listaspesa (Hashcodes) da voi creati
 	 * @param nomeListaSpesa
 	 */
+	/*
 	public void inserimentoListaSpesa(int idSpesa,Utente utente,Set<ListaSpesaProdotti> prodottiQuantita,String nomeListaSpesa){
 		if(utente == null || prodottiQuantita == null || nomeListaSpesa == null )
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
@@ -1252,7 +1261,7 @@ public class Dati {
 			session=null;
 		}
 	}
-
+	*/
 	/**Modifica di una ListaSpesa
 	 * @param idSpesa
 	 * @param utente
@@ -1260,6 +1269,7 @@ public class Dati {
 	 * @param prodottiQuantita
 	 * Set di ListaSpesaProdotti nuova, dove ogni suo elemento ha come id composto, l'id elemento e l'id listaspesa (Hashcodes) da voi creati
 	 */
+	/*
 	public void modificaListaSpesa(int idSpesa,Utente utente,String nomeListaSpesa,Set<ListaSpesaProdotti> prodottiQuantita){
 		if(utente == null || prodottiQuantita == null || nomeListaSpesa == null )
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
@@ -1349,10 +1359,11 @@ public class Dati {
 			session=null;
 		}
 	}
-
+	*/
 	/**eliminazione di una ListaSpesa
 	 * @param idSpesa
 	 */
+	/*
 	public void eliminaListaSpesa(int idSpesa){
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
@@ -1403,11 +1414,12 @@ public class Dati {
 			session=null;
 		}
 	}
-
+	*/
 	/**metodo get per una listaSpesa
 	 * @param idSpesa
 	 * @return
 	 */
+	
 	public ListaSpesa getListaSpesa(int idSpesa){
 		ListaSpesa listaSpesa = mappaListaSpesa.get(idSpesa);
 		
