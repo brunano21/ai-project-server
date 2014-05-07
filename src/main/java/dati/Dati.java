@@ -652,6 +652,12 @@ public class Dati {
 		}
 	}
 	
+	/**
+	 * Modifica il nome di una lista desideri
+	 * @param idListaDesideri
+	 * @param utente
+	 * @param nuovoNomeListaDesideri
+	 */
 	public void modificaNomeListaDesideri(int idListaDesideri, Utente utente, String nuovoNomeListaDesideri) {
 		if(idListaDesideri == 0 || utente == null || nuovoNomeListaDesideri == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
@@ -687,6 +693,11 @@ public class Dati {
 		}
 	}
 	
+	/**
+	 * Elimina una lista dei desideri dal database, con i relativi elementi eventualmente inseriti
+	 * @param idListaDesideri
+	 * @param utente
+	 */
 	public void eliminaListaDesideri(int idListaDesideri, Utente utente) {
 		if(idListaDesideri == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
@@ -730,6 +741,14 @@ public class Dati {
 		}
 	}
 	
+	/**
+	 * Inserisci un elemento all'interno di una lista dei desideri.
+	 * @param idListaDesideri
+	 * @param idElemento
+	 * @param descrizione
+	 * @param quantita
+	 * @param utente
+	 */
 	public void inserisciElementoListaDesideri(int idListaDesideri, int idElemento, String descrizione, int quantita, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || descrizione == null || quantita <=0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
@@ -764,6 +783,13 @@ public class Dati {
 		}
 	}
 
+	/**
+	 * Modifica il testo di un elemento della lista dei desideri
+	 * @param idListaDesideri
+	 * @param idElemento
+	 * @param descrizione
+	 * @param utente
+	 */
 	public void modificaDescrizioneElementoListaDesideri(int idListaDesideri, int idElemento, String descrizione, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || descrizione == null || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
@@ -802,6 +828,13 @@ public class Dati {
 		}
 	}
 	
+	/**
+	 * * Modifica la quantità di un elemento della lista dei desideri
+	 * @param idListaDesideri
+	 * @param idElemento
+	 * @param quantita
+	 * @param utente
+	 */
 	public void modificaQuantitaElementoListaDesideri(int idListaDesideri, int idElemento, int quantita, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || quantita == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
@@ -838,6 +871,12 @@ public class Dati {
 		}
 	}
 	
+	/**
+	 * Elimina un elemento all'interno della lista dei desideri
+	 * @param idListaDesideri
+	 * @param idElemento
+	 * @param utente
+	 */
 	public void eliminaElementoListaDesideri(int idListaDesideri, int idElemento, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
@@ -873,6 +912,13 @@ public class Dati {
 		}
 	}
 	
+	/**
+	 * A seconda del valore acquistato, questa funzione contrassegna come acquistato o no. In particolare se acquistato = true, allora la tupla relativa all'elemento viene spostato dalla tabella lista_desideri alla tabella lista_spesa, aggiungendo anche un time stamp. Se il parametro acquistato = false allora viene eseguito il processo inverso, scartando ovviamente il timestamp. 
+	 * @param idListaDesideri
+	 * @param idElemento
+	 * @param acquistato
+	 * @param utente
+	 */
 	public void modificaAcquistatoElementoListaDesideri(int idListaDesideri, int idElemento, boolean acquistato, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");

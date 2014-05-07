@@ -303,6 +303,7 @@ function prepareList() {
 
                 // appendo gli elenti alla lista in questione
                 for(var k in todoMap[index]['Elementi']) {
+                	console.log(k);
                     var acquistato = todoMap[index]['Elementi'][k]['acquistato'];
                     
                     $("#"+index + " > ul").append(

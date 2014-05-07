@@ -2,16 +2,12 @@ package ai.server.controller;
 
 import hibernate.ListaDesideri;
 import hibernate.ListaDesideriProdotti;
-import hibernate.Supermercato;
-
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import java.security.Principal;
-
-import javax.validation.Valid;
 
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
@@ -43,8 +39,6 @@ public class ListaSpesaController {
 	
 	@RequestMapping(value="/todolist", method = RequestMethod.GET)
 	public String showForm(Map model) {
-		//Registration registration = new Registration();
-		//model.put("registration",registration);	
 		
 		return "todolist";
 	}
@@ -144,29 +138,6 @@ public class ListaSpesaController {
 		
 		}
 		
-		
-		//System.out.println(request.getParameter("value"));
-		
-		/*registrationValidation.validate(registration, result);
-		String numerocasuale = java.util.UUID.randomUUID().toString();
-		if(result.hasErrors()){
-			return new ModelAndView("register");
-		}
-		try{
-			dati.inserisciUtente(registration.getEmail(), registration.getUserName(), registration.getPassword(),new Date(),numerocasuale);
-		}catch(Exception e){
-			
-			return new ModelAndView("register","error",e.toString());
-		}
-		
-		Mail mail = (Mail)context.getBean("mail");
-
-		String [] temp = request.getRequestURL().toString().split("/");
-		String url = temp[0]+"//"+temp[1]+temp[2]+"/"+temp[3]+"/";
-		
-		mail.sendMail("giorgio.ciacchella@gmail.com", registration.getEmail(), "Registration Confirmation", "Click the link above to confirm your registration\n\n\n"+"<a href='"+url+"confirmregistration?numeroCasuale="+numerocasuale+"&email="+registration.getEmail()+"' />");
-		return new ModelAndView("registersuccess","registration",registration);
-		*/
 		return "todolist";
 	}
 }
