@@ -35,23 +35,27 @@ public class ValutazioneController {
 	
 	private Map<Integer,Inserzione> inserzioni;
 	
+	
 	@RequestMapping(value = "/valutazione")
 	public ModelAndView showValutazione(){
 
-		if(inserzioni == null){
-			inserzioni = new HashMap<Integer,Inserzione>();	
-			
-			for(Map.Entry<Integer, Inserzione> ii : dati.getInserzioni().entrySet()){
-				if((int)((ii.getValue().getDataFine().getTime() - new Date().getTime()) / 86400000) > 1)
-					inserzioni.put(ii.getKey(), ii.getValue());	
-			}
-		}
+		
 		return new ModelAndView("valutazione");
 	}
 	
 	
 	@RequestMapping(value="/valutazione/getIds",method = RequestMethod.GET,consumes="application/json")
-	public @ResponseBody Set<Integer> getIds(){
+	public @ResponseBody Set<Integer> getIds(String lat,String lng){
+		
+		if(inserzioni == null){
+			inserzioni = new HashMap<Integer,Inserzione>();	
+			
+			for(Map.Entry<Integer, Inserzione> ii : dati.getInserzioni().entrySet()){
+				if((int)((ii.getValue().getDataFine().getTime() - new Date().getTime()) / 86400000) > 1 &&
+						distFrom(Float.parseFloat(lat), Float.parseFloat(lng), ii.getValue().getSupermercato().getLatitudine(), ii.getValue().getSupermercato().getLongitudine()) < 10)
+					inserzioni.put(ii.getKey(), ii.getValue());	
+			}
+		}
 		
 		Set<Integer> ids = new HashSet<Integer>();
 		for(Map.Entry<Integer, Inserzione> ii : inserzioni.entrySet()){
@@ -77,5 +81,19 @@ public class ValutazioneController {
 			return null;
 		}
 	}
+	
+	public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
+	    double earthRadius = 6371;
+	    double dLat = Math.toRadians(lat2-lat1);
+	    double dLng = Math.toRadians(lng2-lng1);
+	    double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+	               Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+	               Math.sin(dLng/2) * Math.sin(dLng/2);
+	    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+	    double dist = earthRadius * c;
+
+
+	    return new Float(dist).floatValue();
+	 }
 
 }
