@@ -16,11 +16,15 @@
 		<sec:intercept-url pattern="/register" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<sec:intercept-url pattern="/registersuccess" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<sec:intercept-url pattern="/confirmregistration" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-		<sec:intercept-url pattern="/loginfailed" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<sec:intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<sec:intercept-url pattern="/" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+		
+		<intercept-url pattern="/resources/**" access="ROLE_ANONYMOUS,ROLE_USER"/>
+		
 		<sec:intercept-url pattern="/**" access="ROLE_USER"/>
 		<sec:form-login always-use-default-target="false" login-page="/login" default-target-url="/welcome" authentication-failure-url="/loginfailed"/>
+		
+		
 		<sec:logout logout-success-url="/logout"/>
 		<sec:session-management>
 			<sec:concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>
