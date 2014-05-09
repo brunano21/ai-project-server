@@ -10,7 +10,12 @@
 <title>Insert title here</title>
 </head>
 <body>
-<div id="pic"><img id="picture"></div>
+<table>
+	<tr>
+		<td><div id="pic"><img id="picture"></div></td>
+	</tr>
+</table>
+
 <script type="text/javascript" src="resources/js/valutazione.js"></script>
 </body>
 </html>
