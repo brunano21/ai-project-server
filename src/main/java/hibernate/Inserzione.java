@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated 2-mag-2014 16.20.34 by Hibernate Tools 3.4.0.CR1
+// Generated 10-mag-2014 10.34.39 by Hibernate Tools 4.0.0
 
 import java.util.Date;
 import java.util.HashSet;
@@ -167,7 +167,7 @@ public class Inserzione implements java.io.Serializable {
 		this.totaleVoti = totaleVoti;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "inserzione")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "inserzione")
 	public Set getValutazioneInserziones() {
 		return this.valutazioneInserziones;
 	}
@@ -176,7 +176,7 @@ public class Inserzione implements java.io.Serializable {
 		this.valutazioneInserziones = valutazioneInserziones;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "inserzione")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "inserzione")
 	public Set getArgomentiInserziones() {
 		return this.argomentiInserziones;
 	}
