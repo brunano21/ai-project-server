@@ -1,5 +1,6 @@
 package ai.server.controller;
 
+import hibernate.ArgomentiInserzione;
 import hibernate.Categoria;
 import hibernate.Inserzione;
 import hibernate.Sottocategoria;
@@ -13,6 +14,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.JsonNodeFactory;
+import org.codehaus.jackson.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,35 +48,72 @@ public class ValutazioneController {
 	}
 	
 	
-	@RequestMapping(value="/valutazione/getIds",method = RequestMethod.GET,consumes="application/json")
-	public @ResponseBody Set<Integer> getIds(String lat,String lng){
+	@RequestMapping(value="/valutazione/getInserzioni",method = RequestMethod.GET,consumes="application/json")
+	public @ResponseBody ArrayNode getIds(String lat,String lng){
 		
-		if(inserzioni == null){
-			inserzioni = new HashMap<Integer,Inserzione>();	
-			
+		JsonNodeFactory factory = JsonNodeFactory.instance;
+		ArrayNode results = factory.arrayNode();
+		ObjectNode obj;
+		ArrayNode argomenti = factory.arrayNode();
+		ObjectNode argomento = factory.objectNode();
+		
+		if(!lat.equals("null") && !lng.equals("null")){
+			if(inserzioni == null){
+				inserzioni = new HashMap<Integer,Inserzione>();	
+				
+				for(Map.Entry<Integer, Inserzione> ii : dati.getInserzioni().entrySet()){
+					if((int)((ii.getValue().getDataFine().getTime() - new Date().getTime()) / 86400000) > 1 &&
+							distFrom(Float.parseFloat(lat), Float.parseFloat(lng), ii.getValue().getSupermercato().getLatitudine(), ii.getValue().getSupermercato().getLongitudine()) < 20 &&
+							ii.getValue().getFoto() != null){
+						inserzioni.put(ii.getKey(), ii.getValue());	
+						obj=factory.objectNode();
+						obj.put("descrizione", ii.getValue().getDescrizione());
+						obj.put("numerovalutazioni", ii.getValue().getNumeroValutazioni());
+						obj.put("prezzo", ii.getValue().getPrezzo());
+						obj.put("totalevoti", ii.getValue().getTotaleVoti());
+						obj.put("supermercato", ii.getValue().getSupermercato().getNome());
+						for(ArgomentiInserzione ai : (Set<ArgomentiInserzione>) ii.getValue().getArgomentiInserziones()){
+							argomento = factory.objectNode();
+							argomento.put(ai.getArgomenti().getArgomento(), ai.getArgVal());
+							argomenti.add(argomento);
+						}
+						obj.put("argomenti", argomenti);
+						results.add(obj);				
+					}
+				}
+			}			
+		}else{
 			for(Map.Entry<Integer, Inserzione> ii : dati.getInserzioni().entrySet()){
-				if((int)((ii.getValue().getDataFine().getTime() - new Date().getTime()) / 86400000) > 1 &&
-						distFrom(Float.parseFloat(lat), Float.parseFloat(lng), ii.getValue().getSupermercato().getLatitudine(), ii.getValue().getSupermercato().getLongitudine()) < 10)
+				if(ii.getValue().getFoto() != null){
 					inserzioni.put(ii.getKey(), ii.getValue());	
+					obj=factory.objectNode();
+					obj.put("descrizione", ii.getValue().getDescrizione());
+					obj.put("numerovalutazioni", ii.getValue().getNumeroValutazioni());
+					obj.put("prezzo", ii.getValue().getPrezzo());
+					obj.put("totalevoti", ii.getValue().getTotaleVoti());
+					obj.put("supermercato", ii.getValue().getSupermercato().getNome());
+					for(ArgomentiInserzione ai : (Set<ArgomentiInserzione>) ii.getValue().getArgomentiInserziones()){
+						argomento = factory.objectNode();
+						argomento.put(ai.getArgomenti().getArgomento(), ai.getArgVal());
+						argomenti.add(argomento);
+					}
+					obj.put("argomenti", argomenti);
+					results.add(obj);
+				}
 			}
 		}
 		
-		Set<Integer> ids = new HashSet<Integer>();
-		for(Map.Entry<Integer, Inserzione> ii : inserzioni.entrySet()){
-			ids.add(ii.getKey());
-		}
-		
-		return ids;
+		return results;
 		
 	}
 	
 	
 	
-	@RequestMapping(value = "/valutazione/pictures/{imageId}")
+	@RequestMapping(value = "/valutazione/pictures/{idInserzione}")
 	@ResponseBody
-	public byte[] getImage(@PathVariable long imageId)  {
+	public byte[] getImage(@PathVariable Integer idInserzione)  {
 		
-		File image = new File(inserzioni.get(imageId).getFoto());
+		File image = new File(inserzioni.get(idInserzione).getFoto());
 		
 		try {
 			return FileUtils.readFileToByteArray(image);

@@ -14,6 +14,10 @@
 	<tr>
 		<td><div id="pic"><img id="picture"></div></td>
 	</tr>
+	<tr>
+		<td><div id="corretta">Corretta</div></td>
+		<td><div id="errata">Errata</div>		
+	</tr>
 </table>
 
 <script type="text/javascript" src="resources/js/valutazione.js"></script>
