@@ -15,6 +15,26 @@
 		<td><div id="pic"><img id="picture"></div></td>
 	</tr>
 	<tr>
+		<td><div id="descrizione">Descrizione</div></td>
+		<td><div id="descrizione_corpo"></div>		
+	</tr>
+	<tr>
+		<td><div id="numerovalutazione">Numero valutazioni</div></td>
+		<td><div id="numerovalutazione_corpo"></div>		
+	</tr>
+	<tr>
+		<td><div id="prezzo">Prezzo</div></td>
+		<td><div id="prezzo_corpo"></div>		
+	</tr>
+	<tr>
+		<td><div id="totalevoti">Totale voti</div></td>
+		<td><div id="totalevoti_corpo"></div>		
+	</tr>
+	<tr>
+		<td><div id="supermercato">Supermercato</div></td>
+		<td><div id="supermercato_corpo"></div>		
+	</tr>
+	<tr>
 		<td><div id="corretta">Corretta</div></td>
 		<td><div id="errata">Errata</div>		
 	</tr>

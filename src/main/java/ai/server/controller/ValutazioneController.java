@@ -65,8 +65,10 @@ public class ValutazioneController {
 					if((int)((ii.getValue().getDataFine().getTime() - new Date().getTime()) / 86400000) > 1 &&
 							distFrom(Float.parseFloat(lat), Float.parseFloat(lng), ii.getValue().getSupermercato().getLatitudine(), ii.getValue().getSupermercato().getLongitudine()) < 20 &&
 							ii.getValue().getFoto() != null){
+						argomenti = factory.arrayNode();
 						inserzioni.put(ii.getKey(), ii.getValue());	
 						obj=factory.objectNode();
+						obj.put("id", ii.getKey());
 						obj.put("descrizione", ii.getValue().getDescrizione());
 						obj.put("numerovalutazioni", ii.getValue().getNumeroValutazioni());
 						obj.put("prezzo", ii.getValue().getPrezzo());
@@ -87,6 +89,7 @@ public class ValutazioneController {
 				if(ii.getValue().getFoto() != null){
 					inserzioni.put(ii.getKey(), ii.getValue());	
 					obj=factory.objectNode();
+					obj.put("id", ii.getKey());
 					obj.put("descrizione", ii.getValue().getDescrizione());
 					obj.put("numerovalutazioni", ii.getValue().getNumeroValutazioni());
 					obj.put("prezzo", ii.getValue().getPrezzo());
@@ -102,7 +105,6 @@ public class ValutazioneController {
 				}
 			}
 		}
-		
 		return results;
 		
 	}
