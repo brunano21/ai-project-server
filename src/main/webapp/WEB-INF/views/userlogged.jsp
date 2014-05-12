@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 
-
 <form id="logoutForm" action="javascript:void(0);" onsubmit="sendLogout();">
 	<h4>Bentornato, ${username}! </h4>
 	<div>
@@ -12,4 +11,16 @@
 	<input type="submit" id="logout" value="Logout"> 
 </form>
 
+ <script type="text/javascript">
+$("#logout").click(function(){
+	$.ajax({url:"./j_spring_security_logout", 
+        type: 'POST', 
+        async: false, 
+        data: { }, 
+        success: function(returnedData) {         
+        	window.location.replace("http://localhost:8080/supermarket/");
+        }    
+    });
+});
+ </script>
 

@@ -31,10 +31,9 @@ public class RegisterController {
 	
 	
 	public void setRegistrationValidation(RegistrationValidation registrationValidation){
-		
 		this.registrationValidation = registrationValidation;
-
 	}
+	
 	@Autowired
 	private Dati dati;
 	
@@ -95,8 +94,6 @@ public class RegisterController {
 			dati.modificaUtente(utente.getIdUtente(), utente.getMail(), utente.getNickname(), utente.getPassword(), utente.getDataRegistrazione(), true, "-1");
 			
 		}
-		
-		
 		return new ModelAndView("confirmregistration");
 		
 	}

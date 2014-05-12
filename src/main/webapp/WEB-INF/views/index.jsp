@@ -53,7 +53,6 @@
     };
 
     function sendLogin() {
-   		// qui posso far apparire un scritta con contacting server
         $.ajax({
         	url:"./j_spring_security_check", 
             type: 'POST', 
@@ -62,12 +61,10 @@
 	            j_username: $("#username").val(), 
 	            j_password: $("#password").val()
 	        }, 
-            success: function(returnedData) {         
-            	console.log("done!");
-               	console.log(returnedData);
+            success: function(returnedData, textStatus, jqXHR) {         
+            	console.log(returnedData);
 				$("#loginForm").hide();
-				$("#logContainer").append(returnedData);
-   				// e qui invece 
+				$("#logContainer").html(returnedData);
             }      
         });
     };
@@ -87,9 +84,6 @@
                    } 
         });
     };
-
-
-       
     	       
    	function getRegisterForm() {
    		$.ajax({
