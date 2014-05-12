@@ -23,9 +23,10 @@
 <link rel="stylesheet" href="<c:url value="resources/css/zerogrid.css" />" type="text/css" media="screen">
 <link rel="stylesheet" href="<c:url value="resources/css/responsive.css" />" type="text/css" media="screen">
 
-<script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.js" />" ></script>
-<script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-migrate.min.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-1.10.2.min.js" />" ></script>
+<!-- <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.js" />" ></script>-->
+<script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-migrate.min.js" />" ></script>
+
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.carouFredSel-6.2.1-packed.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/hoverIntent.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/superfish.js" />" ></script>
@@ -44,46 +45,70 @@
         $("#forgotPwdContainer").show();
     };
 
-    function sendLogin() {
-   	// qui posso far apparire un scritta con contacting server
-           $.ajax({url:"./j_spring_security_check", 
-               type: 'POST', 
-                   async: false, 
-                   data: {
-                       j_username: $("#username").val(), 
-                       j_password: $("#password").val()
-                   }, 
-                   success: function(returnedData) {         
-                   	console.log("done!");
-                   	console.log(returnedData);
-					$("#loginForm").hide();
-					$("#logContainer").append(returnedData);
-   					// e qui invece 
-                   },
-                   complete: function() { 
-                       //callback option fires, when the request finishes, whether in failure or success. 
-                       //It receives the jqXHR object, as well as a string containing the success or error code.
-                      } 
-                   
-           });
-       };
+    function hideOverlayPanel(e) {
+        if ( e.target.id != 'overlayPanel')
+            return false;
+        $(this).children().hide();
+        $(this).hide();
+    };
 
-       function sendLogout() {
-    	   	// qui posso far apparire un scritta con contacting server
-    	           $.ajax({url:"./j_spring_security_logout", 
-    	               type: 'POST', 
-    	                   async: false, 
-    	                   data: { }, 
-    	                   success: function(returnedData) {         
-    	                   	console.log("done!");
-    	                   },
-    	                   complete: function() { 
-    	                       //callback option fires, when the request finishes, whether in failure or success. 
-    	                       //It receives the jqXHR object, as well as a string containing the success or error code.
-    	                      } 
-    	                   
-    	           });
-    	       };
+    function sendLogin() {
+   		// qui posso far apparire un scritta con contacting server
+        $.ajax({
+        	url:"./j_spring_security_check", 
+            type: 'POST', 
+            async: false, 
+            data: {
+	            j_username: $("#username").val(), 
+	            j_password: $("#password").val()
+	        }, 
+            success: function(returnedData) {         
+            	console.log("done!");
+               	console.log(returnedData);
+				$("#loginForm").hide();
+				$("#logContainer").append(returnedData);
+   				// e qui invece 
+            }      
+        });
+    };
+
+   function sendLogout() {
+	   	// qui posso far apparire un scritta con contacting server
+        $.ajax({url:"./j_spring_security_logout", 
+            type: 'POST', 
+                async: false, 
+                data: { }, 
+                success: function(returnedData) {         
+                	console.log("done!");
+                },
+                complete: function() { 
+                    //callback option fires, when the request finishes, whether in failure or success. 
+                    //It receives the jqXHR object, as well as a string containing the success or error code.
+                   } 
+        });
+    };
+
+
+       
+    	       
+   	function getRegisterForm() {
+   		$.ajax({
+        	url:"./register", 
+            type: 'GET', 
+                async: false,
+                context: document.body, 
+                data: { }, 
+                success: function(returnedData, textStatus, jqXHR) {         
+					$("#registerContainer").html(returnedData);
+					/*$("#registerContainer").find("script").each(function(i) {
+                        eval($(this).text());
+                    });*/
+                	$("#overlayPanel").show();
+                    $("#registerContainer").show();
+                }
+        });
+    };
+
     
 </script>
 
@@ -163,13 +188,7 @@
                 }                   
             });
 
-            $("#overlayPanel").on('click', function(e) {
-                if ( e.target.id != 'overlayPanel')
-                    return false;
-                $(this).children().hide();
-                $(this).hide();
-
-            });
+            $("#overlayPanel").on('click', hideOverlayPanel);
 
 			
 
@@ -182,38 +201,9 @@
 
 <body class="home blog">
     <div id="overlayPanel">
-        <div id="registerContainer">
-            <form  id="registerForm" action="" autocomplete="on"> 
-                <h1> Sign up </h1> 
-                <fieldset id="registerInputs" >
-                    <p> 
-                        <label for="usernamesignup">Your username</label>
-                        <input id="usernamesignup" name="usernamesignup" required="required" type="text" placeholder="mysuperusername690" />
-                    </p>
-                    <p> 
-                        <label for="emailsignup"> Your email</label>
-                        <input id="emailsignup" name="emailsignup" required="required" type="email" autocomplete="off" placeholder="mysupermail@mail.com"/> 
-                    </p>
-                    <p> 
-                        <label for="passwordsignup">Your password </label>
-                        <input id="passwordsignup" name="passwordsignup" required="required" type="password" placeholder="eg. X8df!90EO"/>
-                    </p>
-                    <p> 
-                        <label for="passwordsignup_confirm">Please confirm your password </label>
-                        <input id="passwordsignup_confirm" name="passwordsignup_confirm" required="required" type="password" placeholder="eg. X8df!90EO"/>
-                    </p>
-                </fieldset>
-                <fieldset id="registerButtons">
-                    <input type="submit" id="signup" value="Sign Up">
-                    <p>
-                        Già Registrato?<br>
-                        <a href="#tologin" class="to_register">Effettua il Log In </a>
-                    </p>
-                </fieldset>
-            </form>
-        </div>
+        <div id="registerContainer"></div>
         <div id="forgotPwdContainer">
-            <form  id="forgotPwdForm" action="" autocomplete="on"> 
+            <form  id="forgotPwdForm" action="javascript:void(0);" onsubmit="sendForgotPassword();" autocomplete="on"> 
                 <h1> Forgot Password </h1> 
                 <fieldset id="forgotPwdInputs" >
                     <p> 
@@ -258,7 +248,7 @@
                         <fieldset id="actions">
                             <input type="submit" id="submit" value="Log in">
                             <a href="javascript:void(0);" onclick="showForgotPwdForm();">Password dimenticata?</a>
-                            <a href="javascript:void(0);" onclick="showRegisterForm();">Registrati</a>
+                            <a href="javascript:void(0);" onclick="getRegisterForm();">Registrati</a>
                         </fieldset>
                         
                     </form>
