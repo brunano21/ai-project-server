@@ -94,6 +94,7 @@ function getInserzione(){
 		});
 		$("#picture").attr("src",window.location.pathname+"/pictures/"+inserzione.id);
 		$("div").width(300);
+		$("#pic").parent().attr("id",inserzione.id);
 	}else{
 		$("#descrizione_corpo").remove();
 		$("#numerovalutazione_corpo").remove();
@@ -118,10 +119,39 @@ function initialize(){
 	getInserzioni();
 	$("#progressBar").parent().remove();
 	$("#corretta").click(function(){
-		getInserzione();
+		alert(window.location.pathname);
+		$.ajax({type:"POST",
+			url: window.location.pathname+"/riceviValutazione",
+			contentType:"application/json",
+			data:{"valutazione":"corretta","idInserzione":$("#pic").parent().attr("id")},
+			success:function(data){	
+				if(data == "ok"){
+					getInserzione();
+				}else{
+					alert("errore nella richiesta");
+				}				
+			},
+			error:function(){
+				alert("errore nella richiesta");
+			}
+		});		
 	});
 	$("#errata").click(function(){
-		getInserzione();
+		$.ajax({type:"POST",
+			url: window.location.pathname+"/riceviValutazione",
+			contentType:"application/json",
+			data:{"valutazione":"errata","idInserzione":$("#pic").parent().attr("id")},
+			success:function(data){				
+				if(data == "ok"){
+					getInserzione();
+				}else{
+					alert("errore nella richiesta");
+				}	
+			},
+			error:function(){
+				alert("errore nella richiesta");
+			}
+		});	
 	});
 }
 

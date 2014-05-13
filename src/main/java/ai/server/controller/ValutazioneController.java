@@ -4,9 +4,11 @@ import hibernate.ArgomentiInserzione;
 import hibernate.Categoria;
 import hibernate.Inserzione;
 import hibernate.Sottocategoria;
+import hibernate.ValutazioneInserzione;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,46 +49,88 @@ public class ValutazioneController {
 		return new ModelAndView("valutazione");
 	}
 	
+	@RequestMapping(value = "/valutazione/riceviValutazione",method = RequestMethod.POST)
+	public String riceviValutazione(String valutazione,Integer idInserzione,Principal principal){
+		System.out.println(idInserzione);
+		Inserzione inserzione = dati.getInserzioni().get(idInserzione);
+		boolean trovato = false;
+		if(inserzione != null){			
+			for(ValutazioneInserzione vi : (Set<ValutazioneInserzione>)inserzione.getValutazioneInserziones()){				
+				if(vi.getUtenteByIdUtenteValutatore().getMail().equals(principal.getName())){
+					trovato = true;
+					break;
+				}				
+			}			
+			if(!trovato){
+				if("corretta".equals(valutazione)){
+					dati.inserimentoValutazioneInserzione(inserzione,inserzione.getUtente(), dati.getUtenti().get(principal.getName()),1, new Date());
+					return "ok";
+				}
+				if("errata".equals(valutazione)){
+					dati.inserimentoValutazioneInserzione(inserzione,inserzione.getUtente(), dati.getUtenti().get(principal.getName()),0, new Date());
+					return "ok";
+				}
+			}
+		}
+		return "errore";
+	}
+	
 	
 	@RequestMapping(value="/valutazione/getInserzioni",method = RequestMethod.GET,consumes="application/json")
-	public @ResponseBody ArrayNode getIds(String lat,String lng){
+	public @ResponseBody ArrayNode getInserzioni(String lat,String lng,Principal principal){
 		
 		JsonNodeFactory factory = JsonNodeFactory.instance;
 		ArrayNode results = factory.arrayNode();
 		ObjectNode obj;
 		ArrayNode argomenti = factory.arrayNode();
 		ObjectNode argomento = factory.objectNode();
-		
+		boolean trovato = false;
 		if(!lat.equals("null") && !lng.equals("null")){
-			if(inserzioni == null){
-				inserzioni = new HashMap<Integer,Inserzione>();	
-				
-				for(Map.Entry<Integer, Inserzione> ii : dati.getInserzioni().entrySet()){
-					if((int)((ii.getValue().getDataFine().getTime() - new Date().getTime()) / 86400000) > 1 &&
-							distFrom(Float.parseFloat(lat), Float.parseFloat(lng), ii.getValue().getSupermercato().getLatitudine(), ii.getValue().getSupermercato().getLongitudine()) < 20 &&
-							ii.getValue().getFoto() != null){
-						argomenti = factory.arrayNode();
-						inserzioni.put(ii.getKey(), ii.getValue());	
-						obj=factory.objectNode();
-						obj.put("id", ii.getKey());
-						obj.put("descrizione", ii.getValue().getDescrizione());
-						obj.put("numerovalutazioni", ii.getValue().getNumeroValutazioni());
-						obj.put("prezzo", ii.getValue().getPrezzo());
-						obj.put("totalevoti", ii.getValue().getTotaleVoti());
-						obj.put("supermercato", ii.getValue().getSupermercato().getNome());
-						for(ArgomentiInserzione ai : (Set<ArgomentiInserzione>) ii.getValue().getArgomentiInserziones()){
-							argomento = factory.objectNode();
-							argomento.put(ai.getArgomenti().getArgomento(), ai.getArgVal());
-							argomenti.add(argomento);
-						}
-						obj.put("argomenti", argomenti);
-						results.add(obj);				
-					}
-				}
-			}			
-		}else{
+			inserzioni = new HashMap<Integer,Inserzione>();	
+			
 			for(Map.Entry<Integer, Inserzione> ii : dati.getInserzioni().entrySet()){
-				if(ii.getValue().getFoto() != null){
+				for(ValutazioneInserzione vi : (Set<ValutazioneInserzione>)ii.getValue().getValutazioneInserziones()){				
+					if(vi.getUtenteByIdUtenteValutatore().getMail().equals(principal.getName())){
+						trovato = true;
+						break;
+					}				
+				}					
+				if((int)((ii.getValue().getDataFine().getTime() - new Date().getTime()) / 86400000) > 1 &&
+						distFrom(Float.parseFloat(lat), Float.parseFloat(lng), ii.getValue().getSupermercato().getLatitudine(), ii.getValue().getSupermercato().getLongitudine()) < 20 &&
+						ii.getValue().getFoto() != null &&
+						!trovato){
+					argomenti = factory.arrayNode();
+					inserzioni.put(ii.getKey(), ii.getValue());	
+					obj=factory.objectNode();
+					obj.put("id", ii.getKey());
+					obj.put("descrizione", ii.getValue().getDescrizione());
+					obj.put("numerovalutazioni", ii.getValue().getNumeroValutazioni());
+					obj.put("prezzo", ii.getValue().getPrezzo());
+					obj.put("totalevoti", ii.getValue().getTotaleVoti());
+					obj.put("supermercato", ii.getValue().getSupermercato().getNome());
+					for(ArgomentiInserzione ai : (Set<ArgomentiInserzione>) ii.getValue().getArgomentiInserziones()){
+						argomento = factory.objectNode();
+						argomento.put(ai.getArgomenti().getArgomento(), ai.getArgVal());
+						argomenti.add(argomento);
+					}
+					obj.put("argomenti", argomenti);
+					results.add(obj);				
+				}
+			}
+						
+		}else{
+			
+			inserzioni = new HashMap<Integer,Inserzione>();	
+			for(Map.Entry<Integer, Inserzione> ii : dati.getInserzioni().entrySet()){
+				for(ValutazioneInserzione vi : (Set<ValutazioneInserzione>)ii.getValue().getValutazioneInserziones()){				
+					if(vi.getUtenteByIdUtenteValutatore().getMail().equals(principal.getName())){
+						trovato = true;
+						break;
+					}				
+				}	
+				if((int)((ii.getValue().getDataFine().getTime() - new Date().getTime()) / 86400000) > 1 &&
+						ii.getValue().getFoto() != null &&
+						!trovato){
 					inserzioni.put(ii.getKey(), ii.getValue());	
 					obj=factory.objectNode();
 					obj.put("id", ii.getKey());
