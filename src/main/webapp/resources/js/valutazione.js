@@ -18,6 +18,7 @@ function getInserzioni(){
 					entry.totalevoti = value.totalevoti;
 					entry.supermercato = value.supermercato;
 					entry.argomenti = value.argomenti;
+					entry.foto = value.foto;
 					inserzioni.push(entry);
 				});	
 				getInserzione();
@@ -43,6 +44,7 @@ function getInserzioni(){
 							entry.totalevoti = value.totalevoti;
 							entry.supermercato = value.supermercato;
 							entry.argomenti = value.argomenti;
+							entry.foto = value.foto;
 							inserzioni.push(entry);
 						});	
 						getInserzione();
@@ -92,7 +94,10 @@ function getInserzione(){
 			'</tr>');
 			});
 		});
-		$("#picture").attr("src",window.location.pathname+"/pictures/"+inserzione.id);
+		if(inserzione.foto == "true")
+			$("#picture").attr("src",window.location.pathname+"/pictures/"+inserzione.id);
+		else
+			$("#picture").html("nessuna immagine");
 		$("div").width(300);
 		$("#pic").parent().attr("id",inserzione.id);
 	}else{
@@ -119,10 +124,8 @@ function initialize(){
 	getInserzioni();
 	$("#progressBar").parent().remove();
 	$("#corretta").click(function(){
-		alert(window.location.pathname);
 		$.ajax({type:"POST",
 			url: window.location.pathname+"/riceviValutazione",
-			contentType:"application/json",
 			data:{"valutazione":"corretta","idInserzione":$("#pic").parent().attr("id")},
 			success:function(data){	
 				if(data == "ok"){
@@ -130,26 +133,20 @@ function initialize(){
 				}else{
 					alert("errore nella richiesta");
 				}				
-			},
-			error:function(){
-				alert("errore nella richiesta");
 			}
 		});		
 	});
 	$("#errata").click(function(){
 		$.ajax({type:"POST",
 			url: window.location.pathname+"/riceviValutazione",
-			contentType:"application/json",
 			data:{"valutazione":"errata","idInserzione":$("#pic").parent().attr("id")},
-			success:function(data){				
+			success:function(data){	
+				alert(data);
 				if(data == "ok"){
 					getInserzione();
 				}else{
 					alert("errore nella richiesta");
 				}	
-			},
-			error:function(){
-				alert("errore nella richiesta");
 			}
 		});	
 	});

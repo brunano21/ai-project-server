@@ -1,9 +1,7 @@
 package ai.server.controller;
 
 import hibernate.ArgomentiInserzione;
-import hibernate.Categoria;
 import hibernate.Inserzione;
-import hibernate.Sottocategoria;
 import hibernate.ValutazioneInserzione;
 
 import java.io.File;
@@ -11,7 +9,6 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,15 +41,14 @@ public class ValutazioneController {
 	
 	@RequestMapping(value = "/valutazione")
 	public ModelAndView showValutazione(){
-
 		
 		return new ModelAndView("valutazione");
 	}
 	
 	@RequestMapping(value = "/valutazione/riceviValutazione",method = RequestMethod.POST)
-	public String riceviValutazione(String valutazione,Integer idInserzione,Principal principal){
-		System.out.println(idInserzione);
-		Inserzione inserzione = dati.getInserzioni().get(idInserzione);
+	public @ResponseBody String riceviValutazione(String valutazione,String idInserzione,Principal principal){
+		
+		Inserzione inserzione = dati.getInserzioni().get(new Integer(idInserzione));
 		boolean trovato = false;
 		if(inserzione != null){			
 			for(ValutazioneInserzione vi : (Set<ValutazioneInserzione>)inserzione.getValutazioneInserziones()){				
@@ -67,7 +63,7 @@ public class ValutazioneController {
 					return "ok";
 				}
 				if("errata".equals(valutazione)){
-					dati.inserimentoValutazioneInserzione(inserzione,inserzione.getUtente(), dati.getUtenti().get(principal.getName()),0, new Date());
+					dati.inserimentoValutazioneInserzione(inserzione,inserzione.getUtente(), dati.getUtenti().get(principal.getName()),-1, new Date());
 					return "ok";
 				}
 			}
@@ -97,7 +93,6 @@ public class ValutazioneController {
 				}					
 				if((int)((ii.getValue().getDataFine().getTime() - new Date().getTime()) / 86400000) > 1 &&
 						distFrom(Float.parseFloat(lat), Float.parseFloat(lng), ii.getValue().getSupermercato().getLatitudine(), ii.getValue().getSupermercato().getLongitudine()) < 20 &&
-						ii.getValue().getFoto() != null &&
 						!trovato){
 					argomenti = factory.arrayNode();
 					inserzioni.put(ii.getKey(), ii.getValue());	
@@ -114,6 +109,10 @@ public class ValutazioneController {
 						argomenti.add(argomento);
 					}
 					obj.put("argomenti", argomenti);
+					if(ii.getValue().getFoto() != null)
+						obj.put("foto", "true");
+					else
+						obj.put("foto", "false");
 					results.add(obj);				
 				}
 			}
@@ -129,7 +128,6 @@ public class ValutazioneController {
 					}				
 				}	
 				if((int)((ii.getValue().getDataFine().getTime() - new Date().getTime()) / 86400000) > 1 &&
-						ii.getValue().getFoto() != null &&
 						!trovato){
 					inserzioni.put(ii.getKey(), ii.getValue());	
 					obj=factory.objectNode();
@@ -145,6 +143,10 @@ public class ValutazioneController {
 						argomenti.add(argomento);
 					}
 					obj.put("argomenti", argomenti);
+					if(ii.getValue().getFoto() != null)
+						obj.put("foto", "true");
+					else
+						obj.put("foto", "false");
 					results.add(obj);
 				}
 			}
