@@ -23,5 +23,8 @@
           <bean id="mail" class="ai.server.controller.Mail">
           	<property name="mailSender" ref="mailSender"></property>
           </bean>
+          
+          
+ 		  
 </beans>
           

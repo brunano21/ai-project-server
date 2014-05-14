@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated 28-apr-2014 22.53.51 by Hibernate Tools 3.4.0.CR1 -->
+<!-- Generated 2-mag-2014 16.20.35 by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
     <class name="hibernate.ListaSpesa" table="lista_spesa" catalog="supermercati">
         <id name="idSpesa" type="int">
@@ -14,7 +14,7 @@
         <property name="nomeListaSpesa" type="string">
             <column name="NomeListaSpesa" length="45" not-null="true" />
         </property>
-        <set name="listaSpesaProdottis" table="lista_spesa_prodotti" inverse="true" lazy="false" fetch="select">
+        <set name="listaSpesaProdottis" table="lista_spesa_prodotti" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="ID_ListaSpesa" not-null="true" />
             </key>
