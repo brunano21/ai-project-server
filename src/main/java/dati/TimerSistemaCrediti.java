@@ -2,6 +2,7 @@ package dati;
 
 import hibernate.Profilo;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -51,7 +52,7 @@ public class TimerSistemaCrediti extends TimerTask {
 			 */
 			Query q1 = session.createSQLQuery("select vi.ID_Inserzione, vi.ID_UtenteInserzionista, t1.ID_Profilo, sum(vi.Valutazione*p.Reputazione)/(count(vi.Valutazione)*100) as valutazioneFinale " +
 											  "from valutazione_inserzione vi, profilo p, (select ID_Inserzione, ID_Profilo from inserzione i, profilo p1 where i.DataFine = :data and i.ID_Utente = p1.ID_Utente) as t1 " +
-											  "where vi.ID_Inserzione = t1.ID_inserzione and vi.ID_UtenteValutatore = p.ID_Utente" +
+											  "where vi.ID_Inserzione = t1.ID_Inserzione and vi.ID_UtenteValutatore = p.ID_Utente " +
 											  "group by vi.ID_Inserzione");
 			q1.setParameter("data", formato.format(cal.getTime()));
 			List inserzioniDaValutareList = q1.list();
@@ -74,7 +75,7 @@ public class TimerSistemaCrediti extends TimerTask {
 	            p = mappaProfili.get(inserzioneObj[2]);
 	            System.out.println("Mappa - ID_Profilo: " + p.getIdProfilo() + " - Reputazione: " + p.getReputazione());
 	            
-	            if ((Integer)inserzioneObj[3] > 0)
+	            if (((BigDecimal)inserzioneObj[3]).intValue() > 0)
 	            	Dati.getInstance().modificaProfilo(p.getIdProfilo(),
 								            			p.getCreditiAcquisiti() + 10,
 								            			p.getCreditiPendenti() - 10,
@@ -98,9 +99,9 @@ public class TimerSistemaCrediti extends TimerTask {
 								            			p.getNumeroValutazioniTotali());
 	            
 	            // SELECT UTENTI VALUTATORI PER L'INSERZIONE CONSIDERATA
-	            q2Text = "select vi.ID_UtenteValutatore, vi.Valutazione, p.ID_profilo" +
-	            		 "from valutazione_inserzione vi, profilo p" +
-	            		 "where vi.ID_Inserzione = :idInserzione and vi.ID_UtenteValutatore = p.ID_Utente";
+	            q2Text = "select vi.ID_UtenteValutatore, vi.Valutazione, p.ID_profilo " +
+	            		 "from valutazione_inserzione vi, profilo p " +
+	            		 "where vi.ID_Inserzione = :idInserzione and vi.ID_UtenteValutatore = p.ID_Utente ";
 	            q2 = session.createSQLQuery(q2Text);
 	            q2.setParameter("idInserzione", inserzioneObj[0]);
 	            List utentiValutatoriList = q2.list();
@@ -113,7 +114,7 @@ public class TimerSistemaCrediti extends TimerTask {
 		            p = mappaProfili.get(utenteObj[2]);
 		            System.out.println("Mappa - ID_Profilo: " + p.getIdProfilo() + " - Reputazione: " + p.getReputazione());
 
-		            if (((Integer)inserzioneObj[3] > 0 && (Integer)utenteObj[1] > 0) || ((Integer)inserzioneObj[3] < 0 && (Integer)utenteObj[1] < 0))
+		            if ((((BigDecimal)inserzioneObj[3]).intValue() > 0 && (Integer)utenteObj[1] > 0) || (((BigDecimal)inserzioneObj[3]).intValue() < 0 && (Integer)utenteObj[1] < 0))
 		            	Dati.getInstance().modificaProfilo(p.getIdProfilo(),
 									            			p.getCreditiAcquisiti() + 2,
 									            			p.getCreditiPendenti() - 2,
