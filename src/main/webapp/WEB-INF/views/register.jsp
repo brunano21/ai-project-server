@@ -11,7 +11,7 @@ Registrazione avvenuta con successo!\n Fra pochi istanti dovresti ricevere una e
 	<h1> Sign up </h1> 
 	<fieldset id="registerInputs" >
 	    <p> 
-	        <label for="usernamesignup">Your username</label><div></div>
+	        <label for="usernamesignup">Your username</label>
 	        <input id="usernamesignup" name="userName" required type="text" placeholder="mysuperusername690" />
 	    </p>
 	    <p> 

@@ -4,12 +4,17 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.sun.mail.iap.Response;
 
 import dati.Dati;
 import hibernate.Profilo;
@@ -26,13 +31,6 @@ public class LoginController {
 	
 	 @RequestMapping(value="/welcome",method = RequestMethod.GET)
 	 public ModelAndView printWelcome(Principal principal){
-		 /*
-		 System.out.println(principal);
-		 String name = principal.getName();
-		 HashMap<String, String> map = new HashMap<String, String>();
-		 map.put("name", name);
-		 map.put("message", "Spring Security Custom Form example");
-		 */
 		 Map <String, Object> userModel = new HashMap<String, Object>();
 		 userModel.put("username", dati.getUtenti().get(principal.getName()).getNickname());
 		 
@@ -45,20 +43,31 @@ public class LoginController {
 	 }
 	 
 	 @RequestMapping(value="/login",method = RequestMethod.GET)
-	 public String login(Principal principal,RedirectAttributes attributes){
+	 public String login(@RequestParam(value = "error", required = false) String error,
+		 				Principal principal, 
+		 				RedirectAttributes attributes, HttpServletResponse response){
+		 
 		 if(principal != null){
 			 attributes.addFlashAttribute("error", "you're already logged");
 			 System.out.println("Redirect");
 			 return "redirect:/";
-		 }else{
-			System.out.println("Login"); 
-		 	return "login";
+		 } 
+		 
+		 if(error != null) {
+			 /* viene ritornata una jsp indicante un error nel login */
+			 response.addHeader("loginFailed", "true");
+			 return "loginfailed";
 		 }
+		System.out.println("Login");
+		return "login";
+		 
 	 }
 	 
-	 @RequestMapping(value="/loginfailed",method = RequestMethod.GET)
+	 /*MAI INVOCATA!!*/
+	 @RequestMapping(value="/loginfailed")
 	 public ModelAndView loginerror(){
-		 return new ModelAndView("login","error","true");
+		 System.out.println("Login Failed");
+		 return new ModelAndView("loginfailed");
 	 }
 	 
 	 @RequestMapping(value="/logout",method = RequestMethod.GET)

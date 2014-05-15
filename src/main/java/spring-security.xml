@@ -21,10 +21,15 @@
 		<intercept-url pattern="/resources/**" access="ROLE_ANONYMOUS,ROLE_USER"/>
 		
 		<sec:intercept-url pattern="/**" access="ROLE_USER"/>
-		<sec:form-login always-use-default-target="false" login-page="/login" default-target-url="/welcome" authentication-failure-url="/loginfailed"/>
+		<sec:form-login 
+			always-use-default-target="true" 
+			login-page="/login" 
+			default-target-url="/welcome" 
+			authentication-failure-url="/login?error=true" />
 		
 		
 		<sec:logout logout-success-url="/logout"/>
+		
 		<sec:session-management>
 			<sec:concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>
 		</sec:session-management>

@@ -15,22 +15,31 @@
 <title>Clever Buy Homepage</title>
 
 <link rel="stylesheet" id="reset-css" href="<c:url value="resources/css/reset.css" />" type="text/css" media="all" >
-<link rel="stylesheet" id="superfish-css" href="<c:url value="resources/css/superfish.css" />" type="text/css" media="all" >
-<link rel="stylesheet" id="fontawsome-css"  href="<c:url value="resources/css/font-awsome/css/font-awsome.css" />" type="text/css" media="all" >
-<!-- <link rel='stylesheet' id='orbit-css-css'  href='css/orbit.css' type='text/css' media='all' /> -->
-<link rel="stylesheet" id="style-css" href="<c:url value="resources/css/indexStyle.css" />" type="text/css" media="all" >
-<link rel="stylesheet" id="color-scheme-css" href="<c:url value="resources/css/color/green.css" />" media="all" >
-<link rel="stylesheet" href="<c:url value="resources/css/zerogrid.css" />" type="text/css" media="screen">
-<link rel="stylesheet" href="<c:url value="resources/css/responsive.css" />" type="text/css" media="screen">
+<link rel="stylesheet" id="zerogrid-css" href="<c:url value="resources/css/zerogrid.css" />" type="text/css" media="screen">
+<link rel="stylesheet" id="superfish-css" href="<c:url value="resources/css/superfish.css" />" type="text/css" media="all">
+<link rel="stylesheet" id="fontawsome-css" href="<c:url value="resources/css/font-awsome/css/font-awesome.css" />" type="text/css" media="all">
+<link rel="stylesheet" id="responsive-css" href="<c:url value="resources/css/responsive.css" />" type="text/css"  media="screen">
+<link rel="stylesheet" id="mainstyle-css" href="<c:url value="resources/css/indexStyle.css" />" type="text/css" media="all">
+<link rel="stylesheet" id="select-css" href="<c:url value="resources/css/select-theme-default.css" />" >
+<link rel="stylesheet" id="color-scheme-css" href="<c:url value="resources/css/color/green.css" />" media="all">
+<link rel="stylesheet" id="jquery-ui-css" href="<c:url value="resources/css/ui-lightness/jquery-ui-1.10.4.custom.min.css" />" media="all">
+
 
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-1.10.2.min.js" />" ></script>
-<!-- <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.js" />" ></script>-->
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-migrate.min.js" />" ></script>
-
+<script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-ui-1.10.4.custom.min.js" />" ></script>
+<script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.ui.datepicker-it.js" />" ></script>
+<script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.color-2.1.2.min.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.carouFredSel-6.2.1-packed.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/hoverIntent.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/superfish.js" />" ></script>
+<script type="text/javascript" src="<c:url value="resources/js/indexJS/select.min.js" />" ></script>
 
+
+<!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places"></script>
+<script src="https://www.google.com/jsapi" type="text/javascript"></script> -->
+
+<!-- <link rel='stylesheet' id='orbit-css-css'  href='css/orbit.css' type='text/css' media='all' /> -->
 <!--<script type='text/javascript' src='js/orbit.min.js'></script>-->
 <!--<script src="js/css3-mediaqueries.js"></script>-->
 
@@ -63,13 +72,23 @@
 	        }, 
             success: function(returnedData, textStatus, jqXHR) {         
             	console.log(returnedData);
-				$("#loginForm").hide();
-				$("#logContainer").html(returnedData);
+				
+				if(jqXHR.getResponseHeader("loginFailed") != null) {
+					$("#executeJS").html(returnedData);
+						
+					//console.log($(returnedData).find("script").innerHTML);
+					//eval($(returnedData).find("script").innerHTML);
+				}
+										
+				else {
+					$("#loginForm").hide();
+					$("#logContainer").html(returnedData);
+	            }
             }      
         });
     };
 
-   function sendLogout() {
+    function sendLogout() {
 	   	// qui posso far apparire un scritta con contacting server
         $.ajax({url:"./j_spring_security_logout", 
             type: 'POST', 
@@ -79,9 +98,7 @@
                 	console.log("done!");
                 },
                 complete: function() { 
-                    //callback option fires, when the request finishes, whether in failure or success. 
-                    //It receives the jqXHR object, as well as a string containing the success or error code.
-                   } 
+                } 
         });
     };
     	       
@@ -94,26 +111,33 @@
                 data: { }, 
                 success: function(returnedData, textStatus, jqXHR) {         
 					$("#registerContainer").html(returnedData);
-					/*$("#registerContainer").find("script").each(function(i) {
-                        eval($(this).text());
-                    });*/
+					//$("#registerContainer").find("script").each(function(i) { eval($(this).text()); });
                 	$("#overlayPanel").show();
                     $("#registerContainer").show();
                 }
         });
     };
 
-    
+    function getInserzioneForm() {
+		// controllare se l'inserzioneContainer non è gia presente. Se fosse cosi, devo solo mostralo e non fare la GET.
+    	$.ajax({
+        	url:"./inserzione", 
+            type: 'GET', 
+            async: false, 
+            success: function(returnedData, textStatus, jqXHR) {         
+            	//console.log(returnedData);
+				$(".post").children().hide();
+				$(".post").html(returnedData);
+            }      
+        });
+    };
 </script>
 
 <script type="text/javascript">
 	$(function() {
-		
 
-
-		/* Start Carousel */
-		
-/*
+		/* Start Carousel */		
+        /* 
         $('#carousel-list').carouFredSel({
             //auto                : true,
             //circular: true,
@@ -129,9 +153,11 @@
                 easing          : "scroll",
                 duration        : 1000,                         
                 pauseOnHover    : true
-        }                   
-    });*/
-/*
+            }                   
+        });
+        */
+        
+        /*
         $('#carousel-list').carouFredSel({
             //auto                : true,
             //circular: true,
@@ -143,31 +169,32 @@
                 easing          : "elastic",
                 duration        : 1000,                         
                 pauseOnHover    : true
-        }                   
-    });
+            }                   
+        });
         */
 		/* End Carousel */
-		
 		
 		/* Start Orbit Slider */
 		/*
         $(window).load(function() {
 			$('.post-gallery').orbit({
-				animation: 'fade',
-			});
-		});
+                animation: 'fade',
+            });
+        });
         */
-		/* End Orbit Slider */
-			
-			
-		/* Start Super fish */
-		$(document).ready(function(){
-			$('ul.sf-menu').superfish({
-				delay:         100,
-				speed:         'fast',
-				speedOut:      'fast',
-			});
-
+        /* End Orbit Slider */
+            
+            
+        jQuery(document).ready(function($){
+            
+            /* Start Super fish */
+            $('ul.sf-menu').superfish({
+                delay : 100,
+                speed : 'fast',
+                speedOut : 'fast'
+            });
+		    /* End Of Super fish */
+            
             $('#caro22usel-list').carouFredSel({
                 //auto                : true,
                 //circular: true,
@@ -181,16 +208,11 @@
                     pauseOnHover    : true
                 }                   
             });
-
-            $("#overlayPanel").on('click', hideOverlayPanel);
-
-			
-
-		});
-		/* End Of Super fish */
+        });
 			
 	});
 </script>
+
 </head>
 
 <body class="home blog">
@@ -232,7 +254,7 @@
         <div class="col-2-5">
             <div class="wrap-col">
                 <div id="logContainer">
-                
+                	
                     <!-- login -->
                     <form id="loginForm" action="javascript:void(0);" onsubmit="sendLogin();">
                         <fieldset id="inputs">
@@ -246,7 +268,7 @@
                         </fieldset>
                         
                     </form>
-                        
+                    <div id="executeJS"></div>  
                     <div class="clear"></div>
                 </div>
             </div>
@@ -265,12 +287,15 @@
                 
                     <!-- Navigation Menu -->
                     <ul class="sf-menu">
-                        <!-- current-menu-item-->
-
+                        
+                        <li class="menu-item current-menu-item">
+                            <a href="#">Home</a>
+                        </li>
+                        
                         <li class="menu-item">
                             <a href="#">Prodotti</a>
                             <ul class="sub-menu">
-                                <li class="menu-item"><a href="#">Inserisci</a></li>
+                                <li class="menu-item"><a href="javascript:void(0);" onclick="getInserzioneForm();"">Inserisci</a></li>
                                 <li class="menu-item"><a href="#">Valuta</a></li>
                                 <li class="menu-item"><a href="#">Cerca</a></li>
                             </ul>
@@ -293,10 +318,13 @@
                                 <li class="menu-item"><a href="#">Premium</a></li>
                             </ul>
                         </li>
+						<li class="menu-item">
+                            <a href="#">About</a>
+                        </li>
                     </ul>	
                     <!-- End Navigation Menu -->
                         
-                        <div class="clear"></div>
+                    <div class="clear"></div>
                 </div>
 			</div>
         </div>
@@ -314,41 +342,7 @@
  			<div class="wrap-col">
         	    <!-- Start Post Item -->
                 <div class="post">
-                    <h2>DESCRIZIONE0</h2><br>
-                    <h2>DESCRIZIONE1</h2><br>
-                    <h2>DESCRIZIONE2</h2>
-                    <!-- <div id="registerContainer">
-                        <form  id="registerForm" action="" autocomplete="on"> 
-                            <h1> Sign up </h1> 
-                            <fieldset id="registerInputs" >
-                                <p> 
-                                    <label for="usernamesignup">Your username</label>
-                                    <input id="usernamesignup" name="usernamesignup" required="required" type="text" placeholder="mysuperusername690" />
-                                </p>
-                                <p> 
-                                    <label for="emailsignup"> Your email</label>
-                                    <input id="emailsignup" name="emailsignup" required="required" type="email" placeholder="mysupermail@mail.com"/> 
-                                </p>
-                                <p> 
-                                    <label for="passwordsignup">Your password </label>
-                                    <input id="passwordsignup" name="passwordsignup" required="required" type="password" placeholder="eg. X8df!90EO"/>
-                                </p>
-                                <p> 
-                                    <label for="passwordsignup_confirm">Please confirm your password </label>
-                                    <input id="passwordsignup_confirm" name="passwordsignup_confirm" required="required" type="password" placeholder="eg. X8df!90EO"/>
-                                </p>
-                            </fieldset>
-                            <fieldset id="registerButtons">
-                                <input type="submit" id="signup" value="Sign Up">
-                                <p>
-                                    Già Registrato?<br>
-                                    <a href="#tologin" class="to_register">Effettua il Log In </a>
-                                </p>
-                            </fieldset>
-                                
-                                
-                            </form>
-                    </div> -->
+                   
                 </div>
                 <div class="clear"></div>
             </div>
