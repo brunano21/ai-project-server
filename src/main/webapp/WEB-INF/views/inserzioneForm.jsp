@@ -37,11 +37,7 @@
                     <label for="sottocategoriaInput">Sottocategoria</label>
                     <div>
                         <select id="sottocategoriaInput">
-                            <option value="1">Uno</option>
-                            <option value="2">Due</option>
-                            <option value="3">Tre</option>
-                            <option value="4">Quattro</option>
-                            <option value="5">Cinque</option>
+                            <option value="Scegli">Seleziona la categoria</option>
                         </select>
                     </div>
                 </div>
@@ -123,10 +119,15 @@
         
         <div id="supermercatoBox">
             <div class="col-1-4 supermercato">
-                <label for="cittaInput">Supermercato</label>
+                <label for="supermercatoInput">Supermercato</label>
                 <div class="input-group">
                     <span class="input-icon"><i class="fa fa-map-marker fa-fw"></i></span>
                     <input id="supermercatoInput" class="input-control" type="text" placeholder="Supermercato">
+                </div>
+                <label for="indirizzoInput">Indirizzo</label>
+                <div class="input-group">
+                    <span class="input-icon"><i class="fa fa-map-marker fa-fw"></i></span>
+                    <input id="indirizzoInput" class="input-control" type="text" placeholder="Indirizzo" disabled>
                 </div>
             </div>
             <div class="col-3-4" id="map-canvas"></div>
@@ -166,7 +167,7 @@
 
     //Select.init({selector : "select#categoriaInput, #sottocategoriaInput, #descrizioneDettaglioInput"});
     //Select.init(); 
-	var sottocategoriaInputSelect;
+	var sottocategoriaInputSelect = new Select({el: $('#sottocategoriaInput')[0]})
     var categoriaInputSelect = new Select({el: $('#categoriaInput')[0]});
 
     $('#categoriaInput').change(function(){
@@ -222,7 +223,38 @@
     $('#descrizioneInput').keydown(function(){
         clearTimeout(typingTimer);
     });
-    
+
+	$("#descrizioneInput").autocomplete({
+		source: function(request, response){
+			var risp = [];
+			$.ajax({type:"GET",
+				url : window.location.pathname+"inserzione/getSuggerimenti/prodotti",
+				contentType : "application/json",
+				data : {"term": request.term},
+				success : function(data){
+					codici_prodotti=data;
+				}				
+			});
+			$.each(codici_prodotti, function(index, value){
+				$.each(value,function(index, value){
+					risp.push(value);
+				});
+			});
+			response(risp);	
+		},
+		select:function(event, ui){
+			$.each(codici_prodotti,function(index,value){
+				
+				$.each(value,function(index,value){
+					if(value == ui.item.label){
+						$('#codiceBarreInput').val(index);
+						return false;
+					}
+				});			
+				
+			});
+		}
+	});
 
     function searchImage(){
         // TODO - nascondere lo spinner
@@ -243,12 +275,8 @@
                     if(imgIndex < 64 && imgIndex <= imgResults.length)
                         $('#suggerimentoImgInput').attr("src", imgResults[imgIndex].tbUrl);   
                     else console.log(imgResults);
-                });         
-            
-                    
-            
+                });            
             }
-        
         }, 
         null);
 
@@ -256,5 +284,19 @@
 
     };
     
+    $("#supermercatoInput").autocomplete({
+        source : window.location.pathname+"inserzione/getSuggerimenti/supermercati",
+        select : function(event, ui){
+            var selected = ui.item.label;
+            var strs = selected.split(/\s-\s/);
+            $('#supermercatoInput').val(strs[0]);
+            $('#indirizzoInput').val(strs[1]);
+            //TODO to check!!
+            //$('#indirizzoInput').trigger("keyup");
+            //event.preventDefault();
+        }
+    });
+
+
 </script>
 
