@@ -48,8 +48,6 @@ Registrazione avvenuta con successo!\n Fra pochi istanti dovresti ricevere una e
 	</fieldset>
 </form>
 
-<script type="text/javascript" src="<c:url value="resources/js/registrationJS/jquery.balloon.min.js" />"></script>
-
 <script type="text/javascript">
 $('#registerButtons').find('a').click(function (){
 	$("#overlayPanel").children().hide();

@@ -36,6 +36,11 @@
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/select.min.js" />" ></script>
 
 
+<script src="https://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript">
+    google.load('search', '1');
+</script>
+
 <!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places"></script>
 <script src="https://www.google.com/jsapi" type="text/javascript"></script> -->
 

@@ -221,7 +221,7 @@ function initialize(){
 	
 	$("#descrizione").autocomplete({
 		
-		source: function(request,response){
+		source: function(request, response){
 			var risp = [];
 			$.ajax({type:"GET",
 				url: window.location.pathname+"/getSuggerimenti/prodotti",

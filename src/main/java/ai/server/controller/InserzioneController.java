@@ -92,7 +92,14 @@ public class InserzioneController {
 		model.put("argomenti", argomenti);
 		return "inserzione";*/
 		
-		return new ModelAndView("inserzioneForm");
+		Set<String> categorie = new HashSet<String>();
+		
+		for(Map.Entry<Integer,Categoria> c : dati.getCategorie().entrySet()){
+			categorie.add(c.getValue().getNome());
+		}
+		model.put("categoria", categorie);
+		
+		return new ModelAndView("inserzioneForm", model);
 	}
 	
 	@RequestMapping(value="/inserzione/sottocategorie/{name}",method = RequestMethod.GET, consumes="application/json")

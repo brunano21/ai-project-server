@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-    
 <div id="inserzione" class="inserzioneContainer" >
     <h2>INSERZIONE</h2>
     <form id="inserzioneForm" class="inserzioneForm">
@@ -26,11 +27,9 @@
                     <label for="categoriaInput">Categoria</label>
                     <div>
                         <select id="categoriaInput">
-                            <option value="a">Uno</option>
-                            <option value="b">Due</option>
-                            <option value="c">Tre</option>
-                            <option value="d">Quattro</option>
-                            <option value="e">Cinque</option>
+							<c:forEach items="${categoria}" var="cat">
+						        <option>${cat}</option>
+							</c:forEach>	                            
                         </select>
                     </div>
                 </div>    
@@ -146,29 +145,116 @@
 </div>
 
 <script type="text/javascript">
-	var fromDate = $("#dataInizioInput").datepicker($.datepicker.regional[ "it" ], {
-	    defaultDate: "+1w",
-	    changeMonth: true,
-	    numberOfMonths: 1,
-	    minDate: new Date(),
-	    onSelect: function(selectedDate) {
-	        var instance = $(this).data("datepicker");
-	        var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
-	        date.setDate(date.getDate()+5);
-	        toDate.datepicker("option", "minDate", date);
-	    }
-	});
-	
-	var toDate = jQuery("#dataFineInput").datepicker($.datepicker.regional[ "it" ], {
-	    defaultDate: "+1w",
-	    changeMonth: true,
-	    numberOfMonths: 1
-	});
+    var fromDate = $("#dataInizioInput").datepicker($.datepicker.regional[ "it" ], {
+        defaultDate: "+1w",
+        changeMonth: true,
+        numberOfMonths: 1,
+        minDate: new Date(),
+        onSelect: function(selectedDate) {
+            var instance = $(this).data("datepicker");
+            var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
+            date.setDate(date.getDate()+5);
+            toDate.datepicker("option", "minDate", date);
+        }
+    });
+    
+    var toDate = jQuery("#dataFineInput").datepicker($.datepicker.regional[ "it" ], {
+        defaultDate: "+1w",
+        changeMonth: true,
+        numberOfMonths: 1
+    });
 
-	//Select.init({selector : "select#categoriaInput, #sottocategoriaInput, #descrizioneDettaglioInput"});
-	Select.init(); 
+    //Select.init({selector : "select#categoriaInput, #sottocategoriaInput, #descrizioneDettaglioInput"});
+    //Select.init(); 
+	var sottocategoriaInputSelect;
+    var categoriaInputSelect = new Select({el: $('#categoriaInput')[0]});
 
-	$('.fileinputs > input[type=file]').change(function(){
-		$(this).next().find('input').val($(this).val().split('\\').slice(-1)[0]);
-	});
+    $('#categoriaInput').change(function(){
+    	path = window.location.pathname + "inserzione/sottocategorie/" + categoriaInputSelect.value;
+		console.log(path);
+		$.ajax({
+			type:"GET",
+			url: path,
+			contentType:"application/json"})
+			.done(function( data ) {
+		    	var select = $("#sottocategoriaInput");
+		    	var options;
+		    	if(select.prop){
+		    		options = select.prop('options');
+		    	}else{
+		    		options = select.attr('options');
+		    	}
+		    	$('option',select).remove();
+		    	
+		    	$.each(data,function(val,text){
+		    		options[options.length] = new Option(text, text);
+		    	});
+		    	sottocategoriaInputSelect = new Select({el: $('#sottocategoriaInput')[0]});
+	    });
+    });
+    
+	/* GESTIONE IMMAGINE QUANDO CARICATA DA LOCALE */
+    $('.fileinputs > input[type=file]').change(function(ev){
+        var f = ev.target.files[0];
+        var fr = new FileReader();
+        var path = $(this).val();
+
+        fr.onload = function(ev2) {
+            $('#suggerimentoImgInput').attr("src", ev2.target.result);
+        };
+        
+        fr.readAsDataURL(f);
+        $(this).next().find('input').val(path.split('\\').slice(-1)[0]);
+
+    });
+
+    var imgIndex = 0;
+    var imgResults = [];
+    var typingTimer;
+    var descrizioneInterval = 2500;
+
+    $("#descrizioneInput").keyup(function(){
+        // TODO gestire spinner -- avviarlo!
+
+        typingTimer = setTimeout(searchImage, descrizioneInterval);
+    });
+
+    $('#descrizioneInput').keydown(function(){
+        clearTimeout(typingTimer);
+    });
+    
+
+    function searchImage(){
+        // TODO - nascondere lo spinner
+        
+        var imageSearch = new google.search.ImageSearch();
+        imageSearch.setRestriction(google.search.ImageSearch.RESTRICT_IMAGESIZE, google.search.ImageSearch.IMAGESIZE_LARGE, google.search.Search.SAFESEARCH_STRICT);
+
+
+        imageSearch.setSearchCompleteCallback(this, function(){
+        
+            var searcher = imageSearch;
+            if (searcher.results && searcher.results.length > 0) {
+                imgResults = searcher.results;
+                $('#suggerimentoImgInput').attr("src", searcher.results[imgIndex].tbUrl);
+                //settare visibile il form per la selezione dell'immagine successiva
+                $('.prossimaImg > a').unbind("click").click(function(){
+                    imgIndex++;
+                    if(imgIndex < 64 && imgIndex <= imgResults.length)
+                        $('#suggerimentoImgInput').attr("src", imgResults[imgIndex].tbUrl);   
+                    else console.log(imgResults);
+                });         
+            
+                    
+            
+            }
+        
+        }, 
+        null);
+
+        imageSearch.execute($("#descrizioneInput").val());
+
+    };
+    
 </script>
+
