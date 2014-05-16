@@ -8,7 +8,7 @@
 		<p>Crediti Pendenti: ${creditiPendenti}</p>
 		<p>Crediti Acquisiti: ${creditiAcquisiti}</p>
 	</div>
-	<input type="submit" id="logout" value="Logout"> 
+	<input type="submit" id="logout" class="genericBtn" value="Logout"> 
 </form>
 
  <script type="text/javascript">

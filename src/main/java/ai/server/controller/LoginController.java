@@ -58,8 +58,9 @@ public class LoginController {
 			 response.addHeader("loginFailed", "true");
 			 return "loginfailed";
 		 }
-		System.out.println("Login");
-		return "login";
+		 
+		 System.out.println("Login");
+		 return "login";
 		 
 	 }
 	 

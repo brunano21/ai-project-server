@@ -103,19 +103,22 @@
     };
     	       
    	function getRegisterForm() {
-   		$.ajax({
-        	url:"./register", 
-            type: 'GET', 
-                async: false,
-                context: document.body, 
-                data: { }, 
-                success: function(returnedData, textStatus, jqXHR) {         
-					$("#registerContainer").html(returnedData);
-					//$("#registerContainer").find("script").each(function(i) { eval($(this).text()); });
-                	$("#overlayPanel").show();
-                    $("#registerContainer").show();
-                }
-        });
+		if ($("#registerContainer").children().length != 0)
+			showRegisterForm();
+		else
+	   		$.ajax({
+	        	url:"./register", 
+	            type: 'GET', 
+	                async: false,
+	                context: document.body, 
+	                data: { }, 
+	                success: function(returnedData, textStatus, jqXHR) {         
+						$("#registerContainer").html(returnedData);
+						//$("#registerContainer").find("script").each(function(i) { eval($(this).text()); });
+	                	$("#overlayPanel").show();
+	                    $("#registerContainer").show();
+	                }
+	        });
     };
 
     function getInserzioneForm() {
@@ -208,6 +211,10 @@
                     pauseOnHover    : true
                 }                   
             });
+
+            $("#overlayPanel").on('click', hideOverlayPanel);
+        	
+        	
         });
 			
 	});
@@ -216,6 +223,7 @@
 </head>
 
 <body class="home blog">
+	<div id="executeJS"></div> 
     <div id="overlayPanel">
         <div id="registerContainer"></div>
         <div id="forgotPwdContainer">
@@ -257,18 +265,24 @@
                 	
                     <!-- login -->
                     <form id="loginForm" action="javascript:void(0);" onsubmit="sendLogin();">
-                        <fieldset id="inputs">
-                            <input id="username" type="text" placeholder="Username" autocomplete="on" autofocus required>   
-                            <input id="password" type="password" placeholder="Password" required>
+                         <fieldset id="inputs">
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fa fa-user fa-fw"></i></span>
+                                <input id="username" class="input-control" type="text" placeholder="Username" autocomplete="on" autofocus required>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fa fa-key fa-flip-horizontal fa-fw"></i></span>
+                                <input id="password" class="input-control" type="password" placeholder="Password" autocomplete="on" required>
+                            </div>
                         </fieldset>
                         <fieldset id="actions">
-                            <input type="submit" id="submit" value="Log in">
+                            <input type="submit" class="genericBtn" id="submit" value="Log in">
                             <a href="javascript:void(0);" onclick="showForgotPwdForm();">Password dimenticata?</a>
                             <a href="javascript:void(0);" onclick="getRegisterForm();">Registrati</a>
                         </fieldset>
                         
                     </form>
-                    <div id="executeJS"></div>  
+                     
                     <div class="clear"></div>
                 </div>
             </div>
@@ -342,7 +356,10 @@
  			<div class="wrap-col">
         	    <!-- Start Post Item -->
                 <div class="post">
-                   
+                <div id="home" class="homeContainer" >
+	                <h1>BENVENUTO</h1></br>
+	                <h1>Sig. Malnati!!</h1></br>
+                </div>
                 </div>
                 <div class="clear"></div>
             </div>

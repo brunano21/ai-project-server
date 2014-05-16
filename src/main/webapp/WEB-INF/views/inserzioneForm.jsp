@@ -137,8 +137,8 @@
         <hr>
 
         <div id="controlliBox">                  
-            <input class="inserisciInserzione"type="submit" value="Invia" />
-            <input class="resetInserzione" type="reset" value="reset" />
+            <input class="genericBtn inviaInserzione" type="submit" value="Invia" />
+            <input class="genericBtn resetInserzione" type="reset" value="reset" />
         </div>
 
         <div class="clear"></div>
@@ -165,8 +165,6 @@
 	    numberOfMonths: 1
 	});
 
-	$("#overlayPanel").on('click', hideOverlayPanel);
-	
 	//Select.init({selector : "select#categoriaInput, #sottocategoriaInput, #descrizioneDettaglioInput"});
 	Select.init(); 
 
