@@ -15,7 +15,7 @@ public class Registration {
 	
 	private String userName;
 	@NotEmpty
-	@Size(min = 4,max = 20)
+	@Size(min = 4, max = 20)
 	
 	private String password;
 	

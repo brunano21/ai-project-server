@@ -69,9 +69,9 @@ public class InserzioneController {
 		this.inserzioneValidator=inserzioneValidator;
 	}
 	
-	@RequestMapping(value="/inserzione")
-	public String showForm(Map<String, Object> model){
-		
+	@RequestMapping(value="/inserzione", method=RequestMethod.GET)
+	public ModelAndView showForm(Map<String, Object> model){
+		/*
 		InserzioneForm inserzioneForm = new InserzioneForm();
 		model.put("inserzioneForm", inserzioneForm);
 		Set<String> categorie = new HashSet<String>();
@@ -90,10 +90,12 @@ public class InserzioneController {
 			
 		}
 		model.put("argomenti", argomenti);
-		return "inserzione";
+		return "inserzione";*/
+		
+		return new ModelAndView("inserzioneForm");
 	}
 	
-	@RequestMapping(value="/inserzione/sottocategorie/{name}",method = RequestMethod.GET,consumes="application/json")
+	@RequestMapping(value="/inserzione/sottocategorie/{name}",method = RequestMethod.GET, consumes="application/json")
 	public @ResponseBody Set<String> getSottoCategorie(@PathVariable String name){
 		
 		Set<String> sottocategorie = new HashSet<String>();

@@ -31,10 +31,11 @@ public class HomeController {
 			Map <String,Object> map = new HashMap<String, Object>();
 			map.put("dati",dati);
 			map.put("error", error);
-			return new ModelAndView("home",map);
+			System.out.println("home");
+			return new ModelAndView("index",map);
 		}else{
 			System.out.println("fatto2");
-			return new ModelAndView("home","dati",dati);
+			return new ModelAndView("index","dati",dati);
 		}
 	}
 }

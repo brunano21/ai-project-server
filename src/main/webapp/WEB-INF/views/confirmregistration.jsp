@@ -4,15 +4,25 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="refresh" content="3;url=http://localhost:8080/supermarket/" />
 <title>Registration Confirmed</title>
 </head>
 <body>
 	<% 
-	String error = (String) request.getAttribute("error");
-	if(error!=null){ %>
-		<%= error %>
-	<%}else{ %>
-	Registrazione Confermata
-	<%} %>
+	String noUserError = (String) request.getAttribute("noUser");
+	if(noUserError != null) { %>
+		<h1><font color="red"><%= noUserError %></font></h1>
+	<%} 
+	else { 
+		String alreadyConfimedError = (String) request.getAttribute("alreadyConfirmed");
+		if(alreadyConfimedError != null) { %>
+			<h1><font color="red"><%= alreadyConfimedError %></font></h1>
+			<% }else{%>
+				<h1>Registrazione Confermata</h1>
+				<h2>Verrai rediretto alla homepage in 3 secondi</h2>
+		<%} 
+	}%>
+	
+	
 </body>
 </html>

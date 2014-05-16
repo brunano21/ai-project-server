@@ -1953,14 +1953,16 @@ public class Dati {
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;	
 		Utente utente = new Utente(email, nickname, password, dataRegistrazione,false,numeroCasuale,new HashSet<ValutazioneInserzione>(), new HashSet<ValutazioneInserzione>(), new HashSet<ListaSpesa>(), new HashSet<Inserzione>(), new HashSet<Profilo>(), new HashSet<ListaDesideri>());		
-		int idUtente,idProfilo;
+		int idUtente, idProfilo;
 		try{
-			tx=session.beginTransaction();
+			tx = session.beginTransaction();
 			idUtente = (Integer)session.save(utente);
-			inserisciProfilo(utente, 0, 0, 0, false, 0);
 			mappaUtente.put(email,utente);
 			tx.commit();
+			
+			inserisciProfilo(utente, 0, 0, 0, false, 0);
 		}catch(Throwable ex){
+			System.out.println("error" + ex.getMessage() + " - " + ex.getStackTrace());
 			if(tx!=null)
 				tx.rollback();
 			throw new RuntimeException(ex);
@@ -1988,7 +1990,7 @@ public class Dati {
 		
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
-		Utente utenteVecchio = mappaUtente.get(idUtente);
+		Utente utenteVecchio = mappaUtente.get(email);
 
 		if(utenteVecchio==null)
 			throw new RuntimeException("elemento non trovato");		

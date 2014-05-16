@@ -1,72 +1,66 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated 2-mag-2014 16.20.35 by Hibernate Tools 3.4.0.CR1 -->
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 10-mag-2014 10.34.40 by Hibernate Tools 4.0.0 -->
 <hibernate-mapping>
- <class catalog="supermercati" name="hibernate.Utente" table="utente">
-  <id name="idUtente" type="java.lang.Integer">
-   <column name="ID_Utente"/>
-   <generator class="identity"/>
-  </id>
-  <property generated="never" lazy="false" name="mail" type="string">
-   <column length="45" name="Mail" unique="true"/>
-  </property>
-  <property generated="never" lazy="false" name="nickname" type="string">
-   <column length="45" name="Nickname" unique="true"/>
-  </property>
-  <property generated="never" lazy="false" name="password" type="string">
-   <column length="45" name="Password"/>
-  </property>
-  <property generated="never" lazy="false" name="dataRegistrazione" type="date">
-   <column length="10" name="DataRegistrazione"/>
-  </property>
-  <property generated="never" lazy="false" name="confermato" type="java.lang.Boolean">
-   <column name="Confermato"/>
-  </property>
-  <property generated="never" lazy="false" name="numeroCasuale" type="string">
-   <column length="45" name="NumeroCasuale"/>
-  </property>
-  <set fetch="select" inverse="true" lazy="true"
-   name="valutazioneInserzionesForIdUtenteInserzionista" sort="unsorted" table="valutazione_inserzione">
-   <key>
-    <column name="ID_UtenteInserzionista"/>
-   </key>
-   <one-to-many class="hibernate.ValutazioneInserzione"/>
-  </set>
-  <set fetch="select" inverse="true" lazy="true"
-   name="valutazioneInserzionesForIdUtenteValutatore" sort="unsorted" table="valutazione_inserzione">
-   <key>
-    <column name="ID_UtenteValutatore"/>
-   </key>
-   <one-to-many class="hibernate.ValutazioneInserzione"/>
-  </set>
-  <set fetch="select" inverse="true" lazy="false" name="listaSpesas"
-   sort="unsorted" table="lista_spesa">
-   <key>
-    <column name="ID_Utente" not-null="true"/>
-   </key>
-   <one-to-many class="hibernate.ListaSpesa"/>
-  </set>
-  <set fetch="select" inverse="true" lazy="true" name="inserziones"
-   sort="unsorted" table="inserzione">
-   <key>
-    <column name="ID_Utente"/>
-   </key>
-   <one-to-many class="hibernate.Inserzione"/>
-  </set>
-  <set fetch="select" inverse="true" lazy="true" name="profilos"
-   sort="unsorted" table="profilo">
-   <key>
-    <column name="ID_Utente" not-null="true" unique="true"/>
-   </key>
-   <one-to-many class="hibernate.Profilo"/>
-  </set>
-  <set fetch="select" inverse="true" lazy="false" name="listaDesideris"
-   sort="unsorted" table="lista_desideri">
-   <key>
-    <column name="ID_Utente" not-null="true"/>
-   </key>
-   <one-to-many class="hibernate.ListaDesideri"/>
-  </set>
- </class>
+    <class name="hibernate.Utente" table="utente" catalog="supermercati">
+        <id name="idUtente" type="java.lang.Integer">
+            <column name="ID_Utente" />
+            <generator class="identity" />
+        </id>
+        <property name="mail" type="string">
+            <column name="Mail" length="45" unique="true" />
+        </property>
+        <property name="nickname" type="string">
+            <column name="Nickname" length="45" unique="true" />
+        </property>
+        <property name="password" type="string">
+            <column name="Password" length="45" />
+        </property>
+        <property name="dataRegistrazione" type="date">
+            <column name="DataRegistrazione" length="10" />
+        </property>
+        <property name="confermato" type="java.lang.Boolean">
+            <column name="Confermato" />
+        </property>
+        <property name="numeroCasuale" type="string">
+            <column name="NumeroCasuale" length="45" />
+        </property>
+        <set name="valutazioneInserzionesForIdUtenteInserzionista" table="valutazione_inserzione" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="ID_UtenteInserzionista" />
+            </key>
+            <one-to-many class="hibernate.ValutazioneInserzione" />
+        </set>
+        <set name="valutazioneInserzionesForIdUtenteValutatore" table="valutazione_inserzione" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="ID_UtenteValutatore" />
+            </key>
+            <one-to-many class="hibernate.ValutazioneInserzione" />
+        </set>
+        <set name="listaSpesas" table="lista_spesa" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="ID_Utente" not-null="true" />
+            </key>
+            <one-to-many class="hibernate.ListaSpesa" />
+        </set>
+        <set name="inserziones" table="inserzione" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="ID_Utente" />
+            </key>
+            <one-to-many class="hibernate.Inserzione" />
+        </set>
+        <set name="profilos" table="profilo" inverse="true" lazy="false" fetch="select">
+            <key>
+                <column name="ID_Utente" not-null="true" unique="true" />
+            </key>
+            <one-to-many class="hibernate.Profilo" />
+        </set>
+        <set name="listaDesideris" table="lista_desideri" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="ID_Utente" not-null="true" />
+            </key>
+            <one-to-many class="hibernate.ListaDesideri" />
+        </set>
+    </class>
 </hibernate-mapping>

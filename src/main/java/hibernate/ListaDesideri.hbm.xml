@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated 2-mag-2014 16.20.35 by Hibernate Tools 3.4.0.CR1 -->
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 10-mag-2014 10.34.40 by Hibernate Tools 4.0.0 -->
 <hibernate-mapping>
     <class name="hibernate.ListaDesideri" table="lista_desideri" catalog="supermercati">
         <id name="idListaDesideri" type="int">
@@ -14,7 +14,7 @@
         <property name="nomeListaDesideri" type="string">
             <column name="NomeListaDesideri" length="45" not-null="true" />
         </property>
-        <set name="listaDesideriProdottis" table="lista_desideri_prodotti" inverse="true" lazy="false" fetch="select">
+        <set name="listaDesideriProdottis" table="lista_desideri_prodotti" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="ID_ListaDesideri" not-null="true" />
             </key>
