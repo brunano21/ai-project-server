@@ -1,0 +1,7 @@
+@CHARSET "ISO-8859-1";
+
+#barraRicerca div{
+	width: 100%;
+	height: 40px;
+	background-color: aqua;
+}
