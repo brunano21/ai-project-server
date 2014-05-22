@@ -60,6 +60,7 @@ $('#signup').click(function() {
 		return;
 	
 	var userData = $("#registerForm :input").serializeArray();
+	console.log(userData);
 	$.ajax({
    		url:"./register", 
       	type: 'POST', 

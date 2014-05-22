@@ -653,85 +653,6 @@ border-color: #C0BEBE; }
 #registerInputs .input-group .input-icon {padding: 10px 16px 10px 16px; font-size: 14pt;}
 #registerInputs .input-group .input-control {height: 50px; font-size: 14pt;}
 
-
-/*
-#registerInputs input {
-	background: #f1f1f1 url(../login-sprite.png) no-repeat;
-	padding: 6px 6px 6px 25px;
-	margin: 0 0 10px 5px;
-	width: 444px;
-	height: 38px;
-	border: 1px solid #ccc;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
-	-moz-box-shadow: 0 1px 1px #ccc inset, 0 1px 0 #fff;
-	-webkit-box-shadow: 0 1px 1px #ccc inset, 0 1px 0 #fff;
-	box-shadow: 0 1px 1px #ccc inset, 0 1px 0 #fff;
-	background-position-y: -6px;
-	background-position-x: 4px;
-}
-
-#registerInputs input:focus {
-	background-color: #fff;
-    border-color: #e8c291;
-    outline: none;
-    -moz-box-shadow: 0 0 0 1px #e8c291 inset;
-    -webkit-box-shadow: 0 0 0 1px #e8c291 inset;
-    box-shadow: 0 0 0 1px #e8c291 inset;
-}
-*/
-/* -------- */
-/*
-#signup {	
-    background-color: #ffb94b;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#fddb6f), to(#ffb94b));
-	background-image: -webkit-linear-gradient(top, #fddb6f, #ffb94b);
-	background-image: -moz-linear-gradient(top, #fddb6f, #ffb94b);
-	background-image: -ms-linear-gradient(top, #fddb6f, #ffb94b);
-	background-image: -o-linear-gradient(top, #fddb6f, #ffb94b);
-	background-image: linear-gradient(top, #fddb6f, #ffb94b);
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
-	text-shadow: 0 1px 0 rgba(255,255,255,0.5);
-	-moz-box-shadow: 0 0 1px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.3) inset;
-	-webkit-box-shadow: 0 0 1px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.3) inset;
-	box-shadow: 0 0 1px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.3) inset;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #d69e31 #e3a037 #d5982d #e3a037;
-	float: right;
-	height: 50px;
-	margin-right: 30px;
-	padding-right: 0;
-	width: 160px;
-	cursor: pointer;
-	font: bold 15px Arial, Helvetica;
-	color: #8f5a0a;
-}
-
-#signup:hover, #signup:focus
-{		
-    background-color: #fddb6f;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#ffb94b), to(#fddb6f));
-    background-image: -webkit-linear-gradient(top, #ffb94b, #fddb6f);
-    background-image: -moz-linear-gradient(top, #ffb94b, #fddb6f);
-    background-image: -ms-linear-gradient(top, #ffb94b, #fddb6f);
-    background-image: -o-linear-gradient(top, #ffb94b, #fddb6f);
-    background-image: linear-gradient(top, #ffb94b, #fddb6f);
-}	
-
-#signup:active {		
-    outline: none;
-    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) inset;
-    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) inset;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) inset;		
-}
-
-#signup:-moz-focus-inner { border: none; }
-*/
-
 #registerButtons input {
 	float: right;
 	margin: 18px 0px;
@@ -996,7 +917,7 @@ div.ui-datepicker {
 
 #inserzione label { padding-left: 4px; display: block;}
 #inserzione .input-group {margin-bottom: 20px; margin-top: 4px;}
-
+#inserzione .input-control {height: 45px;}
 input#descrizioneInput { width: 80%; }
 input#codiceBarreInput { width: 50%; }
 
@@ -1006,12 +927,14 @@ input#codiceBarreInput { width: 50%; }
 .descrizionedettaglio > div {margin-bottom: 20px; margin-top: 4px; height:39px;}
 input#quantitaDettaglioInput {width: 40%}
 
-input#dataInizioInput {width: 65%;}
-input#dataFineInput {width: 65%;}
-input#prezzoInput {width: 65%;}
-
+input#dataInizioInput, input#dataFineInput, input#prezzoInput {width: 80%;}
 
 input#supermercatoInput { width: 150%; }
+
+.suggerimentoImg { width:200px; height: 200px;}
+.suggerimentoImg img {position: absolute;}
+.suggerimentoImg div {position: absolute; margin-left: 70px; margin-top: 64px; display:none;}
+.suggerimentoImg i {color: #cccccc};
 
 .prossimaImg { font-size: 10pt; }
 .prossimaImg > a { float: right; margin-right: 40px; cursor: pointer; }
@@ -1020,33 +943,10 @@ input#supermercatoInput { width: 150%; }
 
 
 /* START BOX PER LA SCELTA DELL'IMMAGINE */
-div.fileinputs {
-	position: relative;
-	margin-top: 4px;
-	height: 27px;
-	}
-
-div.fakefile {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	z-index: 1;
-	display: table;
-}
-
-input.file {
-	position: relative;
-	-moz-opacity: 0;
-	filter: alpha(opacity: 0);
-	opacity: 0;
-	z-index: 2;
-	height: 30px;
-	width: 200px;
-}
-
-div.fakefile > input, div.fakefile > span {
-	display: table-cell;
-}
+div.fileinputs { position: relative; margin-top: 4px; height: 27px; }
+div.fakefile { position: absolute; top: 0px; left: 0px;	z-index: 1;	display: table; }
+input.file { position: relative; -moz-opacity: 0; filter: alpha(opacity: 0); opacity: 0; z-index: 2; height: 40px;	width: 200px; }
+div.fakefile > input, div.fakefile > span { display: table-cell;}
 div.fakefile > span {
 	vertical-align: middle;
 	padding: 6px 12px 6px 12px;
@@ -1059,11 +959,12 @@ div.fakefile > span {
 	border-bottom-right-radius: 0;
 	border-top-right-radius: 0;
 	border-right: 0;
+	height:40px;
 }
 
 div.fakefile > input {
 	width: 100%;
-	height: 27px;
+	height: 40px;
 	padding-left: 4px;
 	font-size: 14px;
 	line-height: 1.42857143;

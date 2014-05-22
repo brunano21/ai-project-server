@@ -42,7 +42,11 @@ public class RegisterController {
 	}
 	
 	@RequestMapping(value="/register", method = RequestMethod.GET)
-	public String showForm(Model model){
+	public String showForm(Model model, HttpServletRequest httpServletRequest){
+		if(httpServletRequest.getParameter("android-device")!=null){
+			System.out.println("eccoci");
+			return "eccoci";}
+		
 		Registration registration = new Registration();
 		model.addAttribute("registration", registration);	
 		
