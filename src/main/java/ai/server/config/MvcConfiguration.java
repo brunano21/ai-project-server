@@ -1,10 +1,13 @@
 package ai.server.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.mobile.device.DeviceHandlerMethodArgumentResolver;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -21,6 +24,17 @@ import dati.InserzioneValidation;
 @ImportResource("classpath:spring-security.xml")
 public class MvcConfiguration extends WebMvcConfigurerAdapter{
 
+	
+	@Bean
+	public DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver() {
+	    return new DeviceHandlerMethodArgumentResolver();
+	}
+
+	@Override 
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+	    argumentResolvers.add(deviceHandlerMethodArgumentResolver());
+	}
+	
 	@Bean
 	public ViewResolver getViewResolver(){
 		InternalResourceViewResolver resolver = new InternalResourceViewResolver();

@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.mobile.device.Device;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -42,11 +43,19 @@ public class RegisterController {
 	}
 	
 	@RequestMapping(value="/register", method = RequestMethod.GET)
-	public String showForm(Model model){
-		Registration registration = new Registration();
-		model.addAttribute("registration", registration);	
+	public String showForm(Model model,Device device){
 		
-		return "register";
+		String pagina = "register";
+		
+		if(device.isMobile()){
+			System.out.println("questo è uno smartphone");
+		}
+		
+		if(device.isNormal()){
+			Registration registration = new Registration();
+			model.addAttribute("registration", registration);	
+		}
+		return pagina;
 	}
 	
 	@RequestMapping(value="/register", method = RequestMethod.POST)
