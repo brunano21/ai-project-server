@@ -13,7 +13,10 @@ import java.io.File;
 import java.net.URL;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -23,12 +26,15 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -165,7 +171,7 @@ public class InserzioneController {
 	}
 	
 	@RequestMapping(value="/inserzione",method= RequestMethod.POST)
-	public ModelAndView processInserzione(InserzioneForm inserzioneForm,BindingResult result,Principal principal){
+	public ModelAndView processInserzione(InserzioneForm inserzioneForm, BindingResult result,Principal principal){
 		boolean inserimentoSupermercato=false;
 		boolean inserimentoInserzione=false;
 		boolean inserimentoProdotto=false;
@@ -327,5 +333,91 @@ public class InserzioneController {
 	    return new Float(dist).floatValue();
 	 }
 	
+	
+	@RequestMapping(value="/android/inserzione/getCategorie", method = RequestMethod.GET)
+	@ResponseBody
+	public JSONArray getCategorie() {
+		System.out.println("Called: /android/inserzione/getCategorie");
+		JSONArray response = new JSONArray();
+		
+		ArrayList<String> categorieList = new ArrayList<String>();
+		for(Map.Entry<Integer,Categoria> cat : dati.getCategorie().entrySet()){
+			response.add(cat.getValue().getNome());
+		}
+		return response;
+	}
+	
+	@RequestMapping(value="/android/inserzione/checkbarcode/{barcode}", method= RequestMethod.GET)
+	@ResponseBody
+	public JSONArray checkbarcode(@PathVariable Long barcode) {
+		System.out.println("Called: /android/inserzione/checkbarcode " + barcode);
+		JSONArray response = new JSONArray();
+		JSONObject jsonObj = new JSONObject();
+		
+		if(dati.getProdotti().containsKey(barcode)) {
+			jsonObj.put("descrizione", dati.getProdotti().get(barcode).getDescrizione());
+			jsonObj.put("trovato", true);
+		}
+		else
+			jsonObj.put("trovato", false);
+		
+		response.add(jsonObj);
+		System.out.println("TROVATO:" + jsonObj.get("trovato"));
+		return response;
+	}
+	
+	@RequestMapping(value="/android/inserzione/getSottoCategorie/{categoria}", method = RequestMethod.GET)
+	@ResponseBody
+	public JSONArray getSottoCategorieAndroid(@PathVariable String categoria) {
+		System.out.println("Called: /android/inserzione/getSottoCategorie " + categoria);
+		JSONArray response = new JSONArray();
+		for(Map.Entry<Integer, Categoria> c : dati.getCategorie().entrySet())
+			if(c.getValue().getNome().equals(categoria))
+				for(Sottocategoria s : (Set<Sottocategoria>) c.getValue().getSottocategorias())
+					response.add(s.getNome());
+		return response;
+	}
+	
+	@RequestMapping(value="/android/inserzione/getSupermercati")
+	@ResponseBody 
+	public JSONArray getSupermercatiAndroid(float lat, float lng){
+		System.out.println("Called: /android/inserzione/getSupermercati " + lat + " - " + lng);
+		JSONArray response = new JSONArray();
+		List<JSONObject> jsonObjList = new ArrayList<JSONObject>();
+		float massimaDistanza = 50000; // distanza = 3 km!
+		for(Map.Entry<String, Supermercato> s : dati.getSupermercati().entrySet()) {
+			float distanza = distFromAndroid(lat, lng, s.getValue().getLatitudine().floatValue(), s.getValue().getLongitudine().floatValue());
+			if( distanza <= massimaDistanza) {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("nome", s.getValue().getNome());
+				jsonObj.put("distanza", distanza);
+				jsonObjList.add(jsonObj);
+			}
+		}
+		
+		Collections.sort(jsonObjList, new Comparator<JSONObject>(){
+			@Override
+			public int compare(JSONObject arg0, JSONObject arg1) {
+				return (int) (((float) arg0.get("distanza")) - ((float) arg1.get("distanza")));
+			}});
+		
+		response.addAll(jsonObjList);
+		return response;
+	}
+	
+	public static float distFromAndroid(float lat1, float lng1, float lat2, float lng2) {
+	    double earthRadius = 3958.75;
+	    double dLat = Math.toRadians(lat2-lat1);
+	    double dLng = Math.toRadians(lng2-lng1);
+	    double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+	               Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+	               Math.sin(dLng/2) * Math.sin(dLng/2);
+	    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+	    double dist = earthRadius * c;
+
+	    int meterConversion = 1609;
+
+	    return (float) (dist * meterConversion);
+	    }
 
 }
