@@ -8,12 +8,26 @@
                         http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
 
-	<http authentication-manager-ref="authenticationManagerFromBrowser" pattern="/android/**">
+	<sec:http create-session="stateless" auto-config="true" pattern="/android/**"  
+				authentication-manager-ref="MyAuthenticationManager" use-expressions="true">
+		<sec:intercept-url pattern="/android/register" access="permitAll"  />
+		<sec:intercept-url pattern="/android/**" access="isAuthenticated()" />
 		
-		<sec:http-basic/>
-	</http>
+		<sec:http-basic entry-point-ref="MyBasicAuthenticationEntryPoint" />
+	</sec:http>
 
+	<beans:bean id="MyBasicAuthenticationEntryPoint" class="ai.server.controller.MyBasicAuthenticationEntryPoint">
+		<beans:property name="realmName" value="AndroidRealm"></beans:property>
+	</beans:bean>
 
+	<sec:authentication-manager alias="MyAuthenticationManager">
+		<sec:authentication-provider ref="MyRESTAuthenticationProvider" />
+	</sec:authentication-manager>
+
+	<beans:bean id="MyRESTAuthenticationProvider" class="ai.server.controller.MyRESTAuthenticationProvider"></beans:bean>
+
+	
+	
 	<http authentication-manager-ref="authenticationManagerFromBrowser"
 		auto-config="true">
 		<sec:intercept-url pattern="/register"
@@ -30,7 +44,7 @@
 		<intercept-url pattern="/resources/**" access="ROLE_ANONYMOUS,ROLE_USER" />
 
 		<sec:intercept-url pattern="/**" access="ROLE_USER" />
-		
+
 		<sec:form-login always-use-default-target="true"
 			login-page="/login" default-target-url="/welcome"
 			authentication-failure-url="/login?error=true" />
@@ -45,24 +59,14 @@
 	</http>
 
 
-	<beans:bean id="customUserDetailService" class="ai.server.controller.CustomUserDetailsService"></beans:bean>
+	<beans:bean id="customUserDetailService"
+		class="ai.server.controller.CustomUserDetailsService"></beans:bean>
 
 	<authentication-manager alias="authenticationManagerFromBrowser">
 		<authentication-provider user-service-ref="customUserDetailService">
 		</authentication-provider>
 	</authentication-manager>
 
-
-
-	<authentication-manager id="AndroidAuthenticationManager">
-        <authentication-provider ref="AndroidAuthenticationProvider" />
-    </authentication-manager>
-    
-    <beans:bean id="AndroidAuthenticationProvider" class="ai.server.controller.AndroidAuthenticationProvider"></beans:bean>
-    
-	
-
-	
 
 
 </beans:beans>

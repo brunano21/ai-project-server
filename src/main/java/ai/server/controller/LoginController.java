@@ -66,25 +66,9 @@ public class LoginController {
 		 
 	 }
 	 
-	 /*MAI INVOCATA!!*/
-	 @RequestMapping(value="/loginfailed")
-	 public ModelAndView loginerror(){
-		 System.out.println("Login Failed");
-		 return new ModelAndView("loginfailed");
-	 }
-	 
 	 @RequestMapping(value="/logout",method = RequestMethod.GET)
 	 public ModelAndView logout(){
 		 return new ModelAndView("index");
 	 }
 	 
-	 @RequestMapping(value="/android/login", method = RequestMethod.POST)
-	 @ResponseBody
-	 public Boolean androidLogin(HttpServletRequest request, HttpServletResponse response)
-	 {
-		 System.out.println("sono entrato in login android");
-		 
-		 return new Boolean(true);
-	 }
-
 }
