@@ -3,18 +3,27 @@ package ai.server.controller;
 import hibernate.Utente;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+
+
+
+
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.mobile.device.Device;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.mobile.device.Device;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,7 +81,7 @@ public class RegisterController {
 			return;
 		}
 		try{
-			dati.inserisciUtente(registration.getEmail(), registration.getUserName(), registration.getPassword(),new Date(),numerocasuale);
+			dati.inserisciUtente(registration.getEmail(), registration.getUserName(), registration.getPassword(), new Date(), numerocasuale);
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 			System.out.println(e.getStackTrace());
@@ -106,5 +115,5 @@ public class RegisterController {
 		return new ModelAndView("confirmregistration");
 		
 	}
-
+	
 }

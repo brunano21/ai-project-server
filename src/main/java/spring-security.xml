@@ -1,45 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/security"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:beans="http://www.springframework.org/schema/beans"
-    xmlns:sec="http://www.springframework.org/schema/security"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
                         http://www.springframework.org/schema/security
                         http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
-	
-	
-	
-	<http auto-config="true">
-		<sec:intercept-url pattern="/register" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-		<sec:intercept-url pattern="/registersuccess" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-		<sec:intercept-url pattern="/confirmregistration" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-		<sec:intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-		<sec:intercept-url pattern="/" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+
+	<sec:http create-session="stateless" auto-config="true" pattern="/android/**"  
+				authentication-manager-ref="MyAuthenticationManager" use-expressions="true">
+		<sec:intercept-url pattern="/android/register" access="permitAll"  />
+		<sec:intercept-url pattern="/android/**" access="isAuthenticated()" />
 		
-		<intercept-url pattern="/resources/**" access="ROLE_ANONYMOUS,ROLE_USER"/>
-		
-		<sec:intercept-url pattern="/**" access="ROLE_USER"/>
-		<sec:form-login 
-			always-use-default-target="true" 
-			login-page="/login" 
-			default-target-url="/welcome" 
+		<sec:http-basic entry-point-ref="MyBasicAuthenticationEntryPoint" />
+	</sec:http>
+
+	<beans:bean id="MyBasicAuthenticationEntryPoint" class="ai.server.controller.MyBasicAuthenticationEntryPoint">
+		<beans:property name="realmName" value="AndroidRealm"></beans:property>
+	</beans:bean>
+
+	<sec:authentication-manager alias="MyAuthenticationManager">
+		<sec:authentication-provider ref="MyRESTAuthenticationProvider" />
+	</sec:authentication-manager>
+
+	<beans:bean id="MyRESTAuthenticationProvider" class="ai.server.controller.MyRESTAuthenticationProvider"></beans:bean>
+
+	
+	
+	<http authentication-manager-ref="authenticationManagerFromBrowser"
+		auto-config="true">
+		<sec:intercept-url pattern="/register"
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<sec:intercept-url pattern="/registersuccess"
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<sec:intercept-url pattern="/confirmregistration"
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<sec:intercept-url pattern="/login"
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<sec:intercept-url pattern="/"
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+
+		<intercept-url pattern="/resources/**" access="ROLE_ANONYMOUS,ROLE_USER" />
+
+		<sec:intercept-url pattern="/**" access="ROLE_USER" />
+
+		<sec:form-login always-use-default-target="true"
+			login-page="/login" default-target-url="/welcome"
 			authentication-failure-url="/login?error=true" />
-		
-		
-		<sec:logout logout-success-url="/logout"/>
-		
+
+
+		<sec:logout delete-cookies="JSESSIONID" logout-success-url="/logout" />
+
 		<sec:session-management>
-			<sec:concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>
+			<sec:concurrency-control max-sessions="1"
+				error-if-maximum-exceeded="true" />
 		</sec:session-management>
 	</http>
-	
-	
-	<beans:bean id="customUserDetailService" class="ai.server.controller.CustomUserDetailsService"></beans:bean>
-          
-	<authentication-manager>
+
+
+	<beans:bean id="customUserDetailService"
+		class="ai.server.controller.CustomUserDetailsService"></beans:bean>
+
+	<authentication-manager alias="authenticationManagerFromBrowser">
 		<authentication-provider user-service-ref="customUserDetailService">
 		</authentication-provider>
 	</authentication-manager>
+
+
+
 </beans:beans>

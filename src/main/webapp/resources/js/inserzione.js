@@ -291,7 +291,7 @@ function initialize(){
 	
 	
 	var currentLocation;
-	geocoder.geocode({'address':"Italia"},function(results,status){
+	geocoder.geocode({'address':"Italia"}, function(results,status){
 		if(status == google.maps.GeocoderStatus.OK){
 			currentLocation = results[0].geometry.location;
 			map = new google.maps.Map(document.getElementById('map-canvas'),{

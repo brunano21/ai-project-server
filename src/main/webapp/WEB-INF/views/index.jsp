@@ -41,8 +41,8 @@
     google.load('search', '1');
 </script>
 
-<!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places"></script>
-<script src="https://www.google.com/jsapi" type="text/javascript"></script> -->
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places"></script>
+<script src="https://www.google.com/jsapi" type="text/javascript"></script>
 
 <!-- <link rel='stylesheet' id='orbit-css-css'  href='css/orbit.css' type='text/css' media='all' /> -->
 <!--<script type='text/javascript' src='js/orbit.min.js'></script>-->
@@ -126,7 +126,7 @@
 	        });
     };
 
-    function getInserzioneForm() {
+    function getInserzionePage() {
 		// controllare se l'inserzioneContainer non è gia presente. Se fosse cosi, devo solo mostralo e non fare la GET.
     	$.ajax({
         	url:"./inserzione", 
@@ -139,6 +139,19 @@
             }      
         });
     };
+
+    function getCercaPage() {};
+    function getValutaPage() {};
+
+    //function getLeTueListePage() {};
+    //function getInScadenzaPage() {};
+    
+    function getMiglioriAffariPage() {};
+    //function getModificaAccountPage() {};
+    //function getStatistichePage() {};
+    //function getPremiumPage() {};
+
+    function getAboutPage() {};
 </script>
 
 <script type="text/javascript">
@@ -314,7 +327,7 @@
                         <li class="menu-item">
                             <a href="#">Prodotti</a>
                             <ul class="sub-menu">
-                                <li class="menu-item"><a href="javascript:void(0);" onclick="getInserzioneForm();"">Inserisci</a></li>
+                                <li class="menu-item"><a href="javascript:void(0);" onclick="getInserzionePage();"">Inserisci</a></li>
                                 <li class="menu-item"><a href="#">Valuta</a></li>
                                 <li class="menu-item"><a href="#">Cerca</a></li>
                             </ul>

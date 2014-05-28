@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import dati.Dati;
+
 @Service("customUserDetailsService")
 public class CustomUserDetailsService implements UserDetailsService{
 
@@ -42,10 +43,9 @@ public class CustomUserDetailsService implements UserDetailsService{
 		
 		HashSet<GrantedAuthority> aut = new HashSet<GrantedAuthority>();
 		aut.add(new SimpleGrantedAuthority("ROLE_USER"));
+
 		System.out.println("loadUserByUsername");
 		return new User(utente.getMail(), utente.getPassword(), true, true, true, true, aut);
-		
-		// TODO Auto-generated method stub
 		
 	}
 

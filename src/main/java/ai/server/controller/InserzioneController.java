@@ -2,7 +2,6 @@ package ai.server.controller;
 
 import hibernate.Argomenti;
 import hibernate.Categoria;
-import hibernate.Inserzione;
 import hibernate.Prodotto;
 import hibernate.Sottocategoria;
 import hibernate.Supermercato;
@@ -23,7 +22,6 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.node.ArrayNode;
@@ -36,7 +34,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import dati.Dati;
@@ -165,7 +162,7 @@ public class InserzioneController {
 	}
 	
 	@RequestMapping(value="/inserzione",method= RequestMethod.POST)
-	public ModelAndView processInserzione(InserzioneForm inserzioneForm,BindingResult result,Principal principal){
+	public ModelAndView processInserzione(InserzioneForm inserzioneForm, BindingResult result,Principal principal){
 		boolean inserimentoSupermercato=false;
 		boolean inserimentoInserzione=false;
 		boolean inserimentoProdotto=false;
@@ -327,5 +324,5 @@ public class InserzioneController {
 	    return new Float(dist).floatValue();
 	 }
 	
-
+	
 }
