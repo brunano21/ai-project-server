@@ -18,6 +18,7 @@ import hibernate.Supermercato;
 import hibernate.Utente;
 import hibernate.ValutazioneInserzione;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -2220,5 +2221,50 @@ public class Dati {
 		HashMap<Integer,ValutazioneInserzione> valutazioni = new HashMap<Integer,ValutazioneInserzione>();
 		valutazioni.putAll(mappaValutazioneInserzione);
 		return valutazioni;
+	}
+	
+	public List getInserzioniDaValutare(String mailUtente, String lat, String lng) {
+		factory = buildSessionFactory();
+		Session session = factory.openSession();
+		Transaction tx = null;
+		List inserzioniDaValutareList;
+
+		session = factory.openSession();
+		try{
+			tx=session.beginTransaction();
+			
+			SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar cal = new GregorianCalendar();
+			
+			Query q = session.createSQLQuery(
+					"select ins.ID_Inserzione "  +
+					"from inserzione ins, " +
+					"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
+						"from supermercato " +
+						"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
+						") as supTmp " +
+					"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.DataInizio < :currDate and ins.DataFine > :currDate and ins.ID_Utente != :idUtente and ins.ID_Supermercato in (supTmp.ID_Supermercato) and " +
+					"ins.ID_Inserzione not in (select ID_Inserzione " +
+												"from valutazione_inserzione " +
+												"where ID_UtenteValutatore = :idUtente) " +
+					"order by supTmp.distanza ");
+			q.setParameter("latitudine", Float.valueOf(lat));
+			q.setParameter("longitudine", Float.valueOf(lng));
+			q.setParameter("raggioTerra", 6378.137);
+			q.setParameter("currDate", formato.format(cal.getTime()));
+			q.setParameter("idUtente", mappaUtente.get(mailUtente).getIdUtente());
+			q.setParameter("raggioUtente", 50);
+			inserzioniDaValutareList = q.list();
+			
+			tx.commit();
+			} catch(RuntimeException e) {
+				if(tx!=null)
+					tx.rollback();
+				throw e;
+			} finally {
+				if(session!=null && session.isOpen())
+					session.close();
+			}
+		return inserzioniDaValutareList;
 	}
 }
