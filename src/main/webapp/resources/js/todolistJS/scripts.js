@@ -64,6 +64,8 @@ function prepareList() {
             StrikeThrough(index + 1, $divId);
         }, 25);
     };
+    
+    /*
 
     var sendToServer = function(command, data) {
         jsonData = {};
@@ -99,7 +101,9 @@ function prepareList() {
                     'idElemento' : data[1]['ID_Elemento'],
                     'descrizione' : data[1]['testo'],
                     'quantita' : data[1]['quantita'],
-                    'acquistato' : false
+                    'acquistato' : false,
+                    'latitudine' : userPosition.coords.latitude,
+                    'longitudine' : userPosition.coords.longitude
                 };
                 break;
 
@@ -151,8 +155,16 @@ function prepareList() {
         
         });
         
-        request.done(function (response, textStatus, jqXHR){
-            // log a message to the console
+        request.done(function (response, textStatus, jqXHR) {
+    		var inserzioniDaSuggerireMap = JSON.stringify(response);
+    		
+    		console.log(inserzioniDaSuggerireMap['ID_ListaDesideri'] + " - " + inserzioniDaSuggerireMap['ID_Elemento']);
+    		
+    		
+    		// GESTIRE L'OGGETTO RITORNATO.........................................TODO
+    		
+        	
+        	// log a message to the console
             console.log("Hooray, it worked!");
         });
         
@@ -269,15 +281,25 @@ function prepareList() {
         // inviare richiesta al server per modificare la quantità dell'elemento
         sendToServer('editItemName', [todoMap[$(this).parent().parent().parent().attr('id')]["ID_ListaDB"], todoMap[$(this).parent().parent().parent().attr('id')]['Elementi'][$(this).parent().attr('id')]['ID_Elemento'], $(this).val()]);
     };
+    
+    
+    
+    */
+    
+    
 
     // Carica la/le todo list dal local storage
     var loadFromLocalStorage = function() {
         if (localStorage.getItem("todoMap") !== null) {
             
             todoMap = JSON.parse(localStorage.getItem('todoMap'));
+            console.log(todoMap);
             
             for(var index in todoMap) { // index == todoList0, todoList1, todoList2, ... 
                 // append the current todo list.
+            	
+            	console.log("Index: " + index + "\t Nome: " + todoMap[index]['Nome']);
+            	
                 $('#expList').append(
                     "<li id='" + index + "' class='singleTodoList collapsed'>" +
                         "<span class='todoListName'>" + todoMap[index]['Nome'] + "</span>" +
@@ -303,7 +325,7 @@ function prepareList() {
 
                 // appendo gli elenti alla lista in questione
                 for(var k in todoMap[index]['Elementi']) {
-                	console.log(k);
+                	console.log("\t\tElementi: " + k + "\t testo: " + todoMap[index]['Elementi'][k]['testo']);
                     var acquistato = todoMap[index]['Elementi'][k]['acquistato'];
                     
                     $("#"+index + " > ul").append(
@@ -531,6 +553,65 @@ function prepareList() {
 
 };
 
+var userPosition = null;
+function getUserGeoloc() {
+	console.log("getUserGeoloc called");
+	
+	navigator.geolocation.getCurrentPosition(
+		    gotPosition,
+		    errorGettingPosition,
+		    {'enableHighAccuracy':true,'timeout':10000,'maximumAge':0}
+		);
+};
+
+function gotPosition(pos) {
+	userPosition = pos;
+	
+	console.log( "latitude:"+ pos.coords.latitude +"\n"+ "longitude:"+ pos.coords.longitude);
+	
+	var jsonData = {
+            'latitudine' : pos.coords.latitude,
+            'longitudine' : pos.coords.longitude
+    };
+
+	$.ajax({type:"POST",
+		url: window.location.pathname+"todolist/userGeoloc",
+		data: jsonData,
+		dataType: "html",
+		success:function(data){
+			console.log(data);
+		}
+	});
+	/*
+    var outputStr =
+        "latitude:"+ pos.coords.latitude +"\n"+
+        "longitude:"+ pos.coords.longitude +"\n"+
+        "accuracy:"+ pos.coords.accuracy +"\n"+
+
+        "altitude:"+ pos.coords.altitude +"\n"+
+        "altitudeAccuracy:"+ pos.coords.altitudeAccuracy +"\n"+
+        "heading:"+ pos.coords.heading +"\n"+
+        "speed:"+ pos.coords.speed +"";
+    */
+};
+
+function errorGettingPosition(err) {
+	switch (err.code) {
+		case 1:
+			console.log("L'utente non ha autorizzato la geolocalizzazione");
+			break;
+		case 2:
+			console.log("Posizione non disponibile");
+			break;
+		case 3:
+			console.log("Timeout");
+			break;
+		default:
+			console.log("ERRORE:" + err.message);
+			break;
+	}
+};
+
 
 /**************************************************************/
 /* Functions to execute on loading the document               */
@@ -538,15 +619,17 @@ function prepareList() {
 $(document).ready( function() {
 	
 	$.ajax({type:"GET",
-		url: window.location.pathname+"/getTodoList",
+		url: window.location.pathname+"todolist/getTodoList",
 		contentType:"application/json",
 		success:function(data){
 			console.log(data);
+			console.log(JSON.stringify(data));
 			localStorage.setItem("todoMap", JSON.stringify(data));
 			prepareList();
+			
+			getUserGeoloc();
 		}
 	});
-
-	//prepareList();
+	
 });
 

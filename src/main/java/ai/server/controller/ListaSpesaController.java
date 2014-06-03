@@ -103,7 +103,7 @@ public class ListaSpesaController {
 				System.out.println(request.getParameter("descrizione"));
 				System.out.println(request.getParameter("quantita"));
 				System.out.println(request.getParameter("acquistato"));
-				dati.inserisciElementoListaDesideri(Integer.parseInt(request.getParameter("idListaDesideri")), Integer.parseInt(request.getParameter("idElemento")), request.getParameter("descrizione"), Integer.parseInt(request.getParameter("quantita")), Dati.getInstance().getUtenti().get(principal.getName()));
+				dati.inserisciElementoListaDesideri(Integer.parseInt(request.getParameter("idListaDesideri")), Integer.parseInt(request.getParameter("idElemento")), request.getParameter("descrizione"), Integer.parseInt(request.getParameter("quantita")), Dati.getInstance().getUtenti().get(principal.getName()), request.getParameter("idInserzione") != null ? Integer.parseInt(request.getParameter("idInserzione")) : -1);
 				break;
 			
 			case "modificaDescrizioneElemento":

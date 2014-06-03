@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 
 
 
-import org.bouncycastle.util.encoders.Base64;
+//import org.bouncycastle.util.encoders.Base64;
 import org.hibernate.Hibernate;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -85,7 +85,7 @@ public class AndroidInserzioneController {
 		
 		
 //		System.out.println(request.getParameter("foto"));
-		byte[] data = Base64.decode(request.getParameter("foto"));
+/*		byte[] data = Base64.decode(request.getParameter("foto"));
 		
 		
 				FileOutputStream fos = null;
@@ -98,7 +98,7 @@ public class AndroidInserzioneController {
 				} catch (IOException e) {
 					e.printStackTrace();
 				} 
-
+*/
 		JSONArray a = new JSONArray();
 		a.add(new Boolean(true));
 		return a;

@@ -50,13 +50,13 @@
             </key>
             <one-to-many class="hibernate.Inserzione" />
         </set>
-        <set name="profilos" table="profilo" inverse="true" lazy="true" fetch="select">
+        <set name="profilos" table="profilo" inverse="true" lazy="false" fetch="select">
             <key>
                 <column name="ID_Utente" not-null="true" unique="true" />
             </key>
             <one-to-many class="hibernate.Profilo" />
         </set>
-        <set name="listaDesideris" table="lista_desideri" inverse="true" lazy="true" fetch="select">
+        <set name="listaDesideris" table="lista_desideri" inverse="true" lazy="false" fetch="select">
             <key>
                 <column name="ID_Utente" not-null="true" />
             </key>

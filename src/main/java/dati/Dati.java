@@ -19,6 +19,7 @@ import hibernate.Utente;
 import hibernate.ValutazioneInserzione;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -742,8 +743,9 @@ public class Dati {
 	 * @param descrizione
 	 * @param quantita
 	 * @param utente
+	 * @param idInserzione
 	 */
-	public void inserisciElementoListaDesideri(int idListaDesideri, int idElemento, String descrizione, int quantita, Utente utente) {
+	public void inserisciElementoListaDesideri(int idListaDesideri, int idElemento, String descrizione, int quantita, Utente utente, Integer idInserzione) {
 		if(idListaDesideri == 0 || idElemento == 0 || descrizione == null || quantita <=0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
 		Session session = factory.getCurrentSession();
@@ -757,7 +759,7 @@ public class Dati {
 			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
 				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
 			//l'inserzione suggerita dal server è messa a null all'inizio, fare attenzione
-			ListaDesideriProdotti elemento = new ListaDesideriProdotti(new ListaDesideriProdottiId(idElemento, idListaDesideri),null, mappaListaDesideri.get(idListaDesideri), descrizione, quantita, null);
+			ListaDesideriProdotti elemento = new ListaDesideriProdotti(new ListaDesideriProdottiId(idElemento, idListaDesideri), mappaInserzioni.get(idInserzione), mappaListaDesideri.get(idListaDesideri), descrizione, quantita);
 			
 			mappaListaDesideriProdotti.put(new ListaDesideriProdottiId(idElemento, idListaDesideri), elemento);
 			session.save(elemento);
@@ -2265,5 +2267,49 @@ public class Dati {
 					session.close();
 			}
 		return inserzioniDaValutareList;
+	}
+	
+	public ArrayList<Integer> getSuggerimentiProdotto(String mailUtente, String lat, String lng, String descrizione) {
+		factory = buildSessionFactory();
+		Session session = factory.openSession();
+		Transaction tx = null;
+		ArrayList<Integer> inserzioniDaSuggerireList;
+
+		session = factory.openSession();
+		try{
+			tx=session.beginTransaction();
+			
+			SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar cal = new GregorianCalendar();
+			
+			System.out.println("Data Richiesta: " + formato.format(cal.getTime()) + " Stringa da ricercare: " + '%'+descrizione.replace(' ', '%')+'%');
+			
+			Query q = session.createSQLQuery("select ins.ID_Inserzione " +
+											"from inserzione ins, " +
+											"prodotto p, " +
+											"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
+												"from supermercato " +
+												"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
+												") as supTmp " +
+											"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.ID_Prodotto = p.ID_Prodotto and ins.DataInizio < :currDate and ins.DataFine > :currDate and ins.ID_Utente != :idUtente and p.Descrizione like :stringToMatch " +
+											"order by supTmp.distanza ");
+			q.setParameter("latitudine", Float.valueOf(lat));
+			q.setParameter("longitudine", Float.valueOf(lng));
+			q.setParameter("raggioTerra", 6378.137);
+			q.setParameter("currDate", formato.format(cal.getTime()));
+			q.setParameter("idUtente", mappaUtente.get(mailUtente).getIdUtente());
+			q.setParameter("stringToMatch", '%'+descrizione.replace(' ', '%')+'%');
+			inserzioniDaSuggerireList = new ArrayList<Integer>(q.list());
+			
+			tx.commit();
+			} catch(RuntimeException e) {
+				if(tx!=null)
+					tx.rollback();
+				throw e;
+			} finally {
+				if(session!=null && session.isOpen())
+					session.close();
+			}
+		return inserzioniDaSuggerireList;
 	}
 }

@@ -23,7 +23,7 @@
 <link rel="stylesheet" id="select-css" href="<c:url value="resources/css/select-theme-default.css" />" >
 <link rel="stylesheet" id="color-scheme-css" href="<c:url value="resources/css/color/green.css" />" media="all">
 <link rel="stylesheet" id="jquery-ui-css" href="<c:url value="resources/css/ui-lightness/jquery-ui-1.10.4.custom.min.css" />" media="all">
-
+<link rel="stylesheet" id="todolistStyle-css" href="<c:url value="resources/css/todolistStyle.css" />">
 
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-1.10.2.min.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-migrate.min.js" />" ></script>
@@ -34,7 +34,6 @@
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/hoverIntent.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/superfish.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/select.min.js" />" ></script>
-
 
 <script src="https://www.google.com/jsapi" type="text/javascript"></script>
 <script type="text/javascript">
@@ -143,7 +142,18 @@
     function getCercaPage() {};
     function getValutaPage() {};
 
-    //function getLeTueListePage() {};
+    function getLeTueListePage() {
+    	$.ajax({
+        	url:"./todolist", 
+            type: 'GET', 
+            async: false, 
+            success: function(returnedData, textStatus, jqXHR) {         
+            	//console.log(returnedData);
+				$(".post").children().hide();
+				$(".post").html(returnedData);
+            }      
+        });
+    };
     //function getInScadenzaPage() {};
     
     function getMiglioriAffariPage() {};
@@ -333,9 +343,7 @@
                             </ul>
                         </li>
 
-                        <li class="menu-item">
-                            <a href="#">Le tue liste</a>
-                        </li>
+                        <li class="menu-item"> <a href="javascript:void(0);" onclick="getLeTueListePage();">Le tue liste</a> </li>
                         <li class="menu-item">
                             <a href="#">In scadenza</a>
                         </li>
