@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 3, 2014 7:29:12 PM by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+    <class name="hibernate.Supermercato" table="supermercato" catalog="supermercati">
+        <id name="idSupermercato" type="java.lang.Integer">
+            <column name="ID_Supermercato" />
+            <generator class="identity" />
+        </id>
+        <property name="nome" type="string">
+            <column name="Nome" length="45" not-null="true" />
+        </property>
+        <property name="indirizzo" type="string">
+            <column name="Indirizzo" length="50" not-null="true" />
+        </property>
+        <property name="comune" type="string">
+            <column name="Comune" length="30" not-null="true" />
+        </property>
+        <property name="provincia" type="string">
+            <column name="Provincia" length="45" not-null="true" />
+        </property>
+        <property name="latitudine" type="float">
+            <column name="Latitudine" precision="12" scale="0" not-null="true" />
+        </property>
+        <property name="longitudine" type="float">
+            <column name="Longitudine" precision="12" scale="0" not-null="true" />
+        </property>
+        <set name="inserziones" table="inserzione" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="ID_Supermercato" />
+            </key>
+            <one-to-many class="hibernate.Inserzione" />
+        </set>
+    </class>
+</hibernate-mapping>

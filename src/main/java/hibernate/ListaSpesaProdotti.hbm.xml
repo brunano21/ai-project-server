@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 3, 2014 7:29:12 PM by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+    <class name="hibernate.ListaSpesaProdotti" table="lista_spesa_prodotti" catalog="supermercati">
+        <composite-id name="id" class="hibernate.ListaSpesaProdottiId">
+            <key-property name="idElemento" type="int">
+                <column name="ID_Elemento" />
+            </key-property>
+            <key-property name="idListaSpesa" type="int">
+                <column name="ID_ListaSpesa" />
+            </key-property>
+        </composite-id>
+        <many-to-one name="inserzione" class="hibernate.Inserzione" fetch="select">
+            <column name="ID_Inserzione" />
+        </many-to-one>
+        <many-to-one name="listaSpesa" class="hibernate.ListaSpesa" update="false" insert="false" fetch="select">
+            <column name="ID_ListaSpesa" not-null="true" />
+        </many-to-one>
+        <property name="descrizione" type="string">
+            <column name="Descrizione" length="45" not-null="true" />
+        </property>
+        <property name="dataAcquisto" type="date">
+            <column name="DataAcquisto" length="10" not-null="true" />
+        </property>
+        <property name="quantit&#224;" type="java.lang.Integer">
+            <column name="Quantit&#224;" />
+        </property>
+    </class>
+</hibernate-mapping>
