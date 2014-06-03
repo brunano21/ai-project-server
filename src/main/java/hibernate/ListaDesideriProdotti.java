@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated 10-mag-2014 10.34.39 by Hibernate Tools 4.0.0
+// Generated 2-giu-2014 22.11.49 by Hibernate Tools 3.4.0.CR1
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -20,6 +20,7 @@ import javax.persistence.Table;
 public class ListaDesideriProdotti implements java.io.Serializable {
 
 	private ListaDesideriProdottiId id;
+	private Inserzione inserzione;
 	private ListaDesideri listaDesideri;
 	private String descrizione;
 	private Integer quantità;
@@ -35,8 +36,10 @@ public class ListaDesideriProdotti implements java.io.Serializable {
 	}
 
 	public ListaDesideriProdotti(ListaDesideriProdottiId id,
-			ListaDesideri listaDesideri, String descrizione, Integer quantità) {
+			Inserzione inserzione, ListaDesideri listaDesideri,
+			String descrizione, Integer quantità) {
 		this.id = id;
+		this.inserzione = inserzione;
 		this.listaDesideri = listaDesideri;
 		this.descrizione = descrizione;
 		this.quantità = quantità;
@@ -52,6 +55,16 @@ public class ListaDesideriProdotti implements java.io.Serializable {
 
 	public void setId(ListaDesideriProdottiId id) {
 		this.id = id;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ID_Inserzione")
+	public Inserzione getInserzione() {
+		return this.inserzione;
+	}
+
+	public void setInserzione(Inserzione inserzione) {
+		this.inserzione = inserzione;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)

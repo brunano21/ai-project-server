@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 10-mag-2014 10.34.40 by Hibernate Tools 4.0.0 -->
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2-giu-2014 22.11.50 by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
     <class name="hibernate.Supermercato" table="supermercato" catalog="supermercati">
         <id name="idSupermercato" type="java.lang.Integer">
@@ -9,13 +9,22 @@
             <generator class="identity" />
         </id>
         <property name="nome" type="string">
-            <column name="Nome" length="45" />
+            <column name="Nome" length="45" not-null="true" />
         </property>
-        <property name="latitudine" type="java.lang.Float">
-            <column name="Latitudine" precision="12" scale="0" />
+        <property name="indirizzo" type="string">
+            <column name="Indirizzo" length="50" not-null="true" />
         </property>
-        <property name="longitudine" type="java.lang.Float">
-            <column name="Longitudine" precision="12" scale="0" />
+        <property name="comune" type="string">
+            <column name="Comune" length="30" not-null="true" />
+        </property>
+        <property name="provincia" type="string">
+            <column name="Provincia" length="45" not-null="true" />
+        </property>
+        <property name="latitudine" type="float">
+            <column name="Latitudine" precision="12" scale="0" not-null="true" />
+        </property>
+        <property name="longitudine" type="float">
+            <column name="Longitudine" precision="12" scale="0" not-null="true" />
         </property>
         <set name="inserziones" table="inserzione" inverse="true" lazy="true" fetch="select">
             <key>

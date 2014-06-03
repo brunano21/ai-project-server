@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated 10-mag-2014 10.34.39 by Hibernate Tools 4.0.0
+// Generated 2-giu-2014 22.11.49 by Hibernate Tools 3.4.0.CR1
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,16 +22,33 @@ public class Supermercato implements java.io.Serializable {
 
 	private Integer idSupermercato;
 	private String nome;
-	private Float latitudine;
-	private Float longitudine;
+	private String indirizzo;
+	private String comune;
+	private String provincia;
+	private float latitudine;
+	private float longitudine;
 	private Set inserziones = new HashSet(0);
 
 	public Supermercato() {
 	}
 
-	public Supermercato(String nome, Float latitudine, Float longitudine,
+	public Supermercato(String nome, String indirizzo, String comune,
+			String provincia, float latitudine, float longitudine) {
+		this.nome = nome;
+		this.indirizzo = indirizzo;
+		this.comune = comune;
+		this.provincia = provincia;
+		this.latitudine = latitudine;
+		this.longitudine = longitudine;
+	}
+
+	public Supermercato(String nome, String indirizzo, String comune,
+			String provincia, float latitudine, float longitudine,
 			Set inserziones) {
 		this.nome = nome;
+		this.indirizzo = indirizzo;
+		this.comune = comune;
+		this.provincia = provincia;
 		this.latitudine = latitudine;
 		this.longitudine = longitudine;
 		this.inserziones = inserziones;
@@ -48,7 +65,7 @@ public class Supermercato implements java.io.Serializable {
 		this.idSupermercato = idSupermercato;
 	}
 
-	@Column(name = "Nome", length = 45)
+	@Column(name = "Nome", nullable = false, length = 45)
 	public String getNome() {
 		return this.nome;
 	}
@@ -57,21 +74,48 @@ public class Supermercato implements java.io.Serializable {
 		this.nome = nome;
 	}
 
-	@Column(name = "Latitudine", precision = 12, scale = 0)
-	public Float getLatitudine() {
+	@Column(name = "Indirizzo", nullable = false, length = 50)
+	public String getIndirizzo() {
+		return this.indirizzo;
+	}
+
+	public void setIndirizzo(String indirizzo) {
+		this.indirizzo = indirizzo;
+	}
+
+	@Column(name = "Comune", nullable = false, length = 30)
+	public String getComune() {
+		return this.comune;
+	}
+
+	public void setComune(String comune) {
+		this.comune = comune;
+	}
+
+	@Column(name = "Provincia", nullable = false, length = 45)
+	public String getProvincia() {
+		return this.provincia;
+	}
+
+	public void setProvincia(String provincia) {
+		this.provincia = provincia;
+	}
+
+	@Column(name = "Latitudine", nullable = false, precision = 12, scale = 0)
+	public float getLatitudine() {
 		return this.latitudine;
 	}
 
-	public void setLatitudine(Float latitudine) {
+	public void setLatitudine(float latitudine) {
 		this.latitudine = latitudine;
 	}
 
-	@Column(name = "Longitudine", precision = 12, scale = 0)
-	public Float getLongitudine() {
+	@Column(name = "Longitudine", nullable = false, precision = 12, scale = 0)
+	public float getLongitudine() {
 		return this.longitudine;
 	}
 
-	public void setLongitudine(Float longitudine) {
+	public void setLongitudine(float longitudine) {
 		this.longitudine = longitudine;
 	}
 

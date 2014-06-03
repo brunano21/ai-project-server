@@ -69,8 +69,8 @@ public class InserzioneValidation {
 					// data identica
 					if(i.getUtente().getMail().equals(principal.getName()) &&
 							i.getDataInizio().equals(sdf.parse(inserzione.getDataInizio()))&&
-							i.getSupermercato().getLatitudine().intValue()==(int)inserzione.getLat()&&
-							i.getSupermercato().getLongitudine().intValue()==(int)inserzione.getLng()){
+							(int)i.getSupermercato().getLatitudine()==(int)inserzione.getLat()&&
+							(int)i.getSupermercato().getLongitudine()==(int)inserzione.getLng()){
 						errors.rejectValue("dataInizio", "invalidDate.InserzioneForm.dataInizio", 
 								"è gia presente una tua inserzione con la stessa data");
 						break;

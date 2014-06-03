@@ -383,8 +383,7 @@ public class Dati {
 		try {
 			
 			tx=session.beginTransaction();	
-			
-			Inserzione inserzione = new Inserzione(utente, supermercato, prodotto, prezzo, dataInizio, dataFine, descrizione, foto,0,(float)0.0,new HashSet<ValutazioneInserzione>(),new HashSet<ArgomentiInserzione>());
+			Inserzione inserzione = new Inserzione(utente, supermercato, prodotto, prezzo, dataInizio, dataFine, descrizione, foto,0,(float)0.0,new HashSet<ListaDesideriProdotti>(),new HashSet<ListaSpesaProdotti>(),new HashSet<ValutazioneInserzione>(),new HashSet<ArgomentiInserzione>());
 			idInserzione=(Integer)session.save(inserzione);
 			Iterator<Argomenti> itArgomenti = argomenti.iterator();
 			Iterator<String> itValori = valori.iterator();
@@ -440,6 +439,7 @@ public class Dati {
 	 * @param foto
 	 * @param valutazioni
 	 * @param argomenti gli argomenti usati per quella inserzione
+	 * @param valori - valori degli argomenti
 	 */
 	public void modificaInserzione(int idInserzione,Utente utente,Supermercato supermercato,Prodotto prodotto,float prezzo,Date dataInizio,Date dataFine,String descrizione,String foto,Set<Argomenti> argomenti,List<String> valori){
 		Session session = factory.getCurrentSession();
@@ -468,9 +468,9 @@ public class Dati {
 			valore = itValori.next();
 			ArgomentiInserzioneId id = new ArgomentiInserzioneId(idInserzione, a.getArgomento());
 			ArgomentiInserzione ai = new ArgomentiInserzione(id, inserzioneVecchia, a,new Float(valore));			
-		}		
+		}	
 		
-		Inserzione inserzione = new Inserzione(utente, supermercato, prodotto, prezzo, dataInizio, dataFine, descrizione, foto,0,(float)0.0,inserzioneVecchia.getValutazioneInserziones(),argomenti);
+		Inserzione inserzione = new Inserzione(utente, supermercato, prodotto, prezzo, dataInizio, dataFine, descrizione, foto,0,(float)0.0,inserzioneVecchia.getListaDesideriProdottis(),inserzioneVecchia.getListaSpesaProdottis(),inserzioneVecchia.getValutazioneInserziones(),argomenti);
 		inserzione.setIdInserzione(idInserzione);
 		
 		try{
@@ -755,8 +755,8 @@ public class Dati {
 			
 			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
 				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
-			
-			ListaDesideriProdotti elemento = new ListaDesideriProdotti(new ListaDesideriProdottiId(idElemento, idListaDesideri), mappaListaDesideri.get(idListaDesideri), descrizione, quantita);
+			//l'inserzione suggerita dal server è messa a null all'inizio, fare attenzione
+			ListaDesideriProdotti elemento = new ListaDesideriProdotti(new ListaDesideriProdottiId(idElemento, idListaDesideri),null, mappaListaDesideri.get(idListaDesideri), descrizione, quantita);
 			
 			mappaListaDesideriProdotti.put(new ListaDesideriProdottiId(idElemento, idListaDesideri), elemento);
 			session.save(elemento);
@@ -945,7 +945,7 @@ public class Dati {
 					mappaUtente.get(utente.getMail()).getListaSpesas().add(listaSpesa);
 				}
 				
-				ListaSpesaProdotti prodottoSpesa = new ListaSpesaProdotti(new ListaSpesaProdottiId(idElemento, idListaDesideri), mappaListaSpesa.get(idListaDesideri), prodotto.getDescrizione(), new Date(), prodotto.getQuantità());
+				ListaSpesaProdotti prodottoSpesa = new ListaSpesaProdotti(new ListaSpesaProdottiId(idElemento, idListaDesideri),prodotto.getInserzione(), mappaListaSpesa.get(idListaDesideri), prodotto.getDescrizione(), new Date(), prodotto.getQuantità());
 				
 				mappaListaSpesaProdotti.put(new ListaSpesaProdottiId(idElemento, idListaDesideri), prodottoSpesa);
 				session.save(prodottoSpesa);
@@ -969,7 +969,7 @@ public class Dati {
 					Lista
 				}*/
 				
-				ListaDesideriProdotti prodotto = new ListaDesideriProdotti(new ListaDesideriProdottiId(idElemento, idListaDesideri), mappaListaDesideri.get(idListaDesideri), prodottoSpesa.getDescrizione(), prodottoSpesa.getQuantità());
+				ListaDesideriProdotti prodotto = new ListaDesideriProdotti(new ListaDesideriProdottiId(idElemento, idListaDesideri), prodottoSpesa.getInserzione(), mappaListaDesideri.get(idListaDesideri),prodottoSpesa.getDescrizione(), prodottoSpesa.getQuantità());
 				mappaListaDesideriProdotti.put(new ListaDesideriProdottiId(idElemento, idListaDesideri), prodotto);
 				
 				mappaListaSpesaProdotti.remove(prodottoSpesa);
@@ -1830,13 +1830,12 @@ public class Dati {
 	 * @param longitudine
 	 * @return
 	 */
-	public int inserisciSupermercato(String nome,float latitudine,float longitudine){
+	public int inserisciSupermercato(String nome,String indirizzo, String comune, String provincia, float latitudine,float longitudine){
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		if(nome == null )
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-
-		Supermercato supermercato = new Supermercato(nome, latitudine, longitudine, new HashSet<Inserzione>());
+		Supermercato supermercato = new Supermercato(nome, indirizzo, comune, provincia, latitudine, longitudine, new HashSet<Inserzione>());
 		Integer idSuperMercato ;
 
 		try{
@@ -1865,7 +1864,7 @@ public class Dati {
 	 * @param latitudine
 	 * @param longitudine
 	 */
-	public void modificaSupermercato(int idSuperMercato,String nome,float latitudine,float longitudine){
+	public void modificaSupermercato(int idSuperMercato,String nome,String indirizzo, String comune, String provincia, float latitudine,float longitudine){
 		if(idSuperMercato <=0 || nome == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
 		
@@ -1876,7 +1875,7 @@ public class Dati {
 		if(superMercatoVecchio==null)
 			throw new RuntimeException("elemento non trovato");
 
-		Supermercato superMercato = new Supermercato(nome, latitudine, longitudine, new HashSet<Inserzione>());
+		Supermercato superMercato = new Supermercato(nome, indirizzo, comune, provincia, latitudine, longitudine, new HashSet<Inserzione>());
 		superMercato.setIdSupermercato(idSuperMercato);
 		superMercato.getInserziones().addAll(superMercatoVecchio.getInserziones());
 

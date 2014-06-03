@@ -105,7 +105,7 @@ public class AndroidInserzioneController {
 		List<JSONObject> jsonObjList = new ArrayList<JSONObject>();
 		float massimaDistanza = 50000; // distanza = 3 km!
 		for(Map.Entry<String, Supermercato> s : dati.getSupermercati().entrySet()) {
-			float distanza = distFrom(lat, lng, s.getValue().getLatitudine().floatValue(), s.getValue().getLongitudine().floatValue());
+			float distanza = distFrom(lat, lng,(int) s.getValue().getLatitudine(),(int) s.getValue().getLongitudine());
 			if( distanza <= massimaDistanza) {
 				JSONObject jsonObj = new JSONObject();
 				jsonObj.put("id", s.getKey());

@@ -16,6 +16,28 @@ public class InserzioneForm {
 	
 	private long codiceBarre;
 	
+	public String getComune() {
+		return comune;
+	}
+
+	public void setComune(String comune) {
+		this.comune = comune;
+	}
+
+	public String getProvincia() {
+		return provincia;
+	}
+
+	public void setProvincia(String provincia) {
+		this.provincia = provincia;
+	}
+	@NotEmpty
+	@Size(min = 1,max = 30)
+	private String comune;
+	@NotEmpty
+	@Size(min = 1,max = 30)
+	private String provincia;
+	
 	private CommonsMultipartFile file;	
 
 	public CommonsMultipartFile getFile() {
@@ -55,6 +77,7 @@ public class InserzioneForm {
 	}
 
 	@NotEmpty
+	@Size(min = 5, max = 50)
 	private String indirizzo;
 	
 	private float lat,lng;

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 10-mag-2014 10.34.40 by Hibernate Tools 4.0.0 -->
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2-giu-2014 22.11.50 by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
     <class name="hibernate.ListaSpesaProdotti" table="lista_spesa_prodotti" catalog="supermercati">
         <composite-id name="id" class="hibernate.ListaSpesaProdottiId">
@@ -12,6 +12,9 @@
                 <column name="ID_ListaSpesa" />
             </key-property>
         </composite-id>
+        <many-to-one name="inserzione" class="hibernate.Inserzione" fetch="select">
+            <column name="ID_Inserzione" />
+        </many-to-one>
         <many-to-one name="listaSpesa" class="hibernate.ListaSpesa" update="false" insert="false" fetch="select">
             <column name="ID_ListaSpesa" not-null="true" />
         </many-to-one>

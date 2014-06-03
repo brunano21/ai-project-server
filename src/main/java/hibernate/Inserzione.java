@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated 10-mag-2014 10.34.39 by Hibernate Tools 4.0.0
+// Generated 2-giu-2014 22.11.49 by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
 import java.util.HashSet;
@@ -36,6 +36,8 @@ public class Inserzione implements java.io.Serializable {
 	private String foto;
 	private Integer numeroValutazioni;
 	private Float totaleVoti;
+	private Set listaDesideriProdottis = new HashSet(0);
+	private Set listaSpesaProdottis = new HashSet(0);
 	private Set valutazioneInserziones = new HashSet(0);
 	private Set argomentiInserziones = new HashSet(0);
 
@@ -45,7 +47,8 @@ public class Inserzione implements java.io.Serializable {
 	public Inserzione(Utente utente, Supermercato supermercato,
 			Prodotto prodotto, Float prezzo, Date dataInizio, Date dataFine,
 			String descrizione, String foto, Integer numeroValutazioni,
-			Float totaleVoti, Set valutazioneInserziones,
+			Float totaleVoti, Set listaDesideriProdottis,
+			Set listaSpesaProdottis, Set valutazioneInserziones,
 			Set argomentiInserziones) {
 		this.utente = utente;
 		this.supermercato = supermercato;
@@ -57,6 +60,8 @@ public class Inserzione implements java.io.Serializable {
 		this.foto = foto;
 		this.numeroValutazioni = numeroValutazioni;
 		this.totaleVoti = totaleVoti;
+		this.listaDesideriProdottis = listaDesideriProdottis;
+		this.listaSpesaProdottis = listaSpesaProdottis;
 		this.valutazioneInserziones = valutazioneInserziones;
 		this.argomentiInserziones = argomentiInserziones;
 	}
@@ -165,6 +170,24 @@ public class Inserzione implements java.io.Serializable {
 
 	public void setTotaleVoti(Float totaleVoti) {
 		this.totaleVoti = totaleVoti;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "inserzione")
+	public Set getListaDesideriProdottis() {
+		return this.listaDesideriProdottis;
+	}
+
+	public void setListaDesideriProdottis(Set listaDesideriProdottis) {
+		this.listaDesideriProdottis = listaDesideriProdottis;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "inserzione")
+	public Set getListaSpesaProdottis() {
+		return this.listaSpesaProdottis;
+	}
+
+	public void setListaSpesaProdottis(Set listaSpesaProdottis) {
+		this.listaSpesaProdottis = listaSpesaProdottis;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "inserzione")
