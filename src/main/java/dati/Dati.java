@@ -2099,7 +2099,7 @@ public class Dati {
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 
-		if(inserzionista == null || valutatore == null || valutazione<0 || data == null)
+		if(inserzionista == null || valutatore == null || data == null)
 			throw new RuntimeException("parametri non corretti");
 		
 		ValutazioneInserzione valutazioneInserzione = new ValutazioneInserzione(inserzione,inserzionista, valutatore, valutazione, data);
