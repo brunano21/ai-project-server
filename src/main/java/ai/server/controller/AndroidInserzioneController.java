@@ -4,6 +4,11 @@ import hibernate.Categoria;
 import hibernate.Sottocategoria;
 import hibernate.Supermercato;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +20,14 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+
+
+
+
+
+
+import org.bouncycastle.util.encoders.Base64;
+import org.hibernate.Hibernate;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +59,49 @@ public class AndroidInserzioneController {
 	@RequestMapping(value="/android/inserzione", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONArray elaboraInserzione(HttpServletRequest request, Principal principal) {
-		System.out.println("Called: /android/inserzione");
 		
-		System.out.println(principal.getName());
-		return null;
+		if(! dati.getProdotti().containsKey(Long.valueOf(request.getParameter("codiceBarre")))){
+			// prodotto non presente nel sistema
+			dati.inserisciProdotto(
+					dati.getSottocategorie().get(request.getParameter("sottocategoria")), 
+					Long.valueOf(request.getParameter("codiceBarre")),
+					request.getParameter("descrizione"));
+		}
+		else {
+			// prodotto presente nel sistema
+			
+		}
+			
+		
+		System.out.println("Called: /android/inserzione");
+		System.out.println(request.getParameter("descrizione"));
+		System.out.println(request.getParameter("codiceBarre"));
+		System.out.println(request.getParameter("categoria"));
+		System.out.println(request.getParameter("sottocategoria"));
+		System.out.println(request.getParameter("data_inizio"));
+		System.out.println(request.getParameter("data_fine"));
+		System.out.println(request.getParameter("supermercato"));
+		System.out.println(request.getParameter("prezzo"));
+		
+		
+//		System.out.println(request.getParameter("foto"));
+		byte[] data = Base64.decode(request.getParameter("foto"));
+		
+		
+				FileOutputStream fos = null;
+				try {
+					fos = new FileOutputStream(new File("C:\\abc.jpg"));
+					fos.write(data); 
+					fos.close();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
+
+		JSONArray a = new JSONArray();
+		a.add(new Boolean(true));
+		return a;
 	}
 	
 	
@@ -75,6 +127,8 @@ public class AndroidInserzioneController {
 		
 		if(dati.getProdotti().containsKey(barcode)) {
 			jsonObj.put("descrizione", dati.getProdotti().get(barcode).getDescrizione());
+			jsonObj.put("categoria", dati.getProdotti().get(barcode).getSottocategoria().getCategoria().getNome());
+			jsonObj.put("sottocategoria", dati.getProdotti().get(barcode).getSottocategoria().getNome());
 			jsonObj.put("trovato", true);
 		}
 		else
@@ -97,7 +151,7 @@ public class AndroidInserzioneController {
 		return response;
 	}
 	
-	@RequestMapping(value="/android/inserzione/getSupermercati")
+	@RequestMapping(value="/android/inserzione/getSupermercati", method = RequestMethod.GET)
 	@ResponseBody 
 	public JSONArray getSupermercatiAndroid(float lat, float lng){
 		System.out.println("Called: /android/inserzione/getSupermercati " + lat + " - " + lng);
@@ -108,12 +162,10 @@ public class AndroidInserzioneController {
 			float distanza = distFrom(lat, lng,(int) s.getValue().getLatitudine(),(int) s.getValue().getLongitudine());
 			if( distanza <= massimaDistanza) {
 				JSONObject jsonObj = new JSONObject();
-				jsonObj.put("id", s.getKey());
+				jsonObj.put("id", s.getValue().getIdSupermercato());
 				jsonObj.put("nome", s.getValue().getNome());
 				jsonObj.put("distanza", distanza);
-				jsonObj.put("provincia", "prov");
-				jsonObj.put("comune", "com");
-				jsonObj.put("via", "via");
+				jsonObj.put("indirizzo", "via" + "," + " comune" +  ", " + "prov");
 				jsonObjList.add(jsonObj);
 			}
 		}
