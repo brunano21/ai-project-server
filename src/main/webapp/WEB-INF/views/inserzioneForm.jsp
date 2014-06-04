@@ -2,17 +2,21 @@
     pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<script src="https://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript">    
+    google.load('search', '1');
+    </script>
 
 <div id="inserzione" class="inserzioneContainer" >
     <h2>INSERZIONE</h2>
-    <form id="inserzioneForm" class="inserzioneForm">
+    <form id="inserzioneForm" class="inserzioneForm" name="inserzioneForm" enctype="multipart/form-data">
         <div id="prodottoBox">
             <div class="col-3-5">
                 <div class="descrizione">
                     <label for="descrizioneInput">Descrizione Prodotto</label>
                     <div class="input-group">
                         <span class="input-icon"><i class="fa fa-shopping-cart fa-fw"></i></span>
-                        <input id="descrizioneInput"class="input-control" type="text" placeholder="Descrizione Prodotto">
+                        <input id="descrizioneInput"class="input-control" name="descrizione" type="text" placeholder="Descrizione Prodotto">
                     </div>
                 </div>
                 
@@ -20,13 +24,13 @@
                     <label for="codiceBarreInput">Codice a Barre</label>
                     <div class="input-group">
                         <span class="input-icon"><i class="fa fa-barcode fa-fw"></i></span>
-                        <input id="codiceBarreInput"class="input-control" type="text" placeholder="Bar code">
+                        <input id="codiceBarreInput"class="input-control" name="codiceBarre" type="text" placeholder="Bar code">
                     </div>
                 </div>
                 <div class="categoria">
                     <label for="categoriaInput">Categoria</label>
                     <div>
-                        <select id="categoriaInput">
+                        <select id="categoriaInput" name="categoria">
 							<c:forEach items="${categoria}" var="cat">
 						        <option>${cat}</option>
 							</c:forEach>	                            
@@ -36,7 +40,7 @@
                 <div class="sottocategoria">    
                     <label for="sottocategoriaInput">Sottocategoria</label>
                     <div>
-                        <select id="sottocategoriaInput">
+                        <select id="sottocategoriaInput" name="sottoCategoria">
                             <option value="Scegli">Seleziona la categoria</option>
                         </select>
                     </div>
@@ -45,7 +49,6 @@
             <div class="col-2-5 inserzioneImgBox" >
                 <div class="suggerimentoImg">
                     <img id="suggerimentoImgInput"></img>
-                    <div><i class="fa fa-spinner fa-spin fa-4x"></i></div>
                 </div>
                 <div class="prossimaImg">
                     Immagine trovata? <a>Successiva</a>
@@ -54,7 +57,7 @@
                     
                     <label for="imgInput">No? Caricala tu!</label>
                     <div id="imgInput" class="fileinputs">
-                        <input type="file" class="file" accept="image/*" />
+                        <input type="file" class="file" />
                         <div class="fakefile">
                             <span><i class="uploadIcon fa fa-upload"></i></span>
                             <input disabled/>
@@ -71,11 +74,10 @@
             <div class="col-1-2 descrizionedettaglio">
                 <label for="descrizioneDettaglioInput">Dettaglio</label>
                 <div>
-                    <select id="descrizioneDettaglioInput">
-                        <option value="volvo">prezzo/litro</option>
-                        <option value="saab">prezzo/kg</option>
-                        <option value="opel">prezzo/unità</option>
-                        <option value="audi">prezzo</option>
+                    <select id="descrizioneDettaglioInput" name="argomento[0]" class="argomenti">                    
+                   		<c:forEach items="${argomenti}" var="arg">
+					        <option>${arg}</option>
+						</c:forEach>
                     </select>
                 </div>
             </div>
@@ -83,7 +85,7 @@
                 <label for="quantitaDettaglioInput">Quantità</label>
                 <div class="input-group">
                     <span class="input-icon"><i class="fa fa-plus fa-fw"></i></span>
-                    <input id="quantitaDettaglioInput" class="input-control" type="text" placeholder="Quantità">
+                    <input id="quantitaDettaglioInput" name="arg_corpo[0]" class="input-control" type="text" placeholder="Quantità">
                 </div>
             </div>
         </div>
@@ -96,21 +98,21 @@
                 <label for="dataInizioInput">Data Inizio</label>
                 <div class="input-group">
                     <span class="input-icon"><i class="fa fa-calendar fa-fw"></i></span>
-                    <input id="dataInizioInput" class="input-control" type="text" placeholder="Inizio offerta">
+                    <input id="dataInizioInput" name="dataInizio" class="input-control" type="text" placeholder="Inizio offerta">
                 </div>
             </div>
             <div class="col-1-3 dataFine">
                 <label for="dataFineInput">Data Fine</label>
                 <div class="input-group">
                     <span class="input-icon"><i class="fa fa-calendar fa-fw"></i></span>
-                    <input id="dataFineInput" class="input-control" type="text" placeholder="Fine offerta">
+                    <input id="dataFineInput" name="dataFine" class="input-control" type="text" placeholder="Fine offerta">
                 </div>
             </div>
             <div class="col-1-3 prezzo">
                 <label for="prezzoInput">Prezzo</label>
                 <div class="input-group">
                     <span class="input-icon"><i class="fa fa-eur fa-fw"></i></span>
-                    <input id="prezzoInput" class="input-control" type="text" placeholder="Prezzo">
+                    <input id="prezzoInput" name="prezzo" class="input-control" type="text" placeholder="Prezzo">
                 </div>
             </div>
         </div>
@@ -123,12 +125,12 @@
                 <label for="supermercatoInput">Supermercato</label>
                 <div class="input-group">
                     <span class="input-icon"><i class="fa fa-map-marker fa-fw"></i></span>
-                    <input id="supermercatoInput" class="input-control" type="text" placeholder="Supermercato">
+                    <input id="supermercatoInput" name="supermercato" class="input-control" type="text" placeholder="Supermercato">
                 </div>
                 <label for="indirizzoInput">Indirizzo</label>
                 <div class="input-group">
                     <span class="input-icon"><i class="fa fa-map-marker fa-fw"></i></span>
-                    <input id="indirizzoInput" class="input-control" type="text" placeholder="Indirizzo">
+                    <input id="indirizzoInput" name="indirizzo" class="input-control" type="text" placeholder="Indirizzo">
                 </div>
             </div>
             <div class="col-3-4" id="map-canvas"></div>
@@ -147,13 +149,6 @@
 </div>
 
 <script type="text/javascript">
-
-	var geocoder = new google.maps.Geocoder();
-	var infowindow = new google.maps.InfoWindow();
-	var currentLocation;
-	var supermercati_markers = [];
-
-
     var fromDate = $("#dataInizioInput").datepicker($.datepicker.regional[ "it" ], {
         defaultDate: "+1w",
         changeMonth: true,
@@ -173,7 +168,9 @@
         numberOfMonths: 1
     });
 
-    var sottocategoriaInputSelect = new Select({el: $('#sottocategoriaInput')[0]});
+    //Select.init({selector : "select#categoriaInput, #sottocategoriaInput, #descrizioneDettaglioInput"});
+    //Select.init(); 
+	var sottocategoriaInputSelect = new Select({el: $('#sottocategoriaInput')[0]});
     var categoriaInputSelect = new Select({el: $('#categoriaInput')[0]});
 
     $('#categoriaInput').change(function(){
@@ -217,25 +214,19 @@
 
     var imgIndex = 0;
     var imgResults = [];
-    
-    var descrizioneTimerHandle;
+    var typingTimer;
     var descrizioneInterval = 2500;
 
-    var indirizzoTimerHandle;
-   	var indirizzoInterval = 2500;
-
     $("#descrizioneInput").keyup(function(){
-    	if($("#descrizioneInput").val() == "") 
-        	return;
-        $(".suggerimentoImg > img").attr("src", "");
-		$(".suggerimentoImg > div").show();
-		descrizioneTimerHandle = setTimeout(searchImage, descrizioneInterval);
+        // TODO gestire spinner -- avviarlo!
+
+        typingTimer = setTimeout(searchImage, descrizioneInterval);
     });
 
     $('#descrizioneInput').keydown(function(){
-        clearTimeout(descrizioneTimerHandle);
+        clearTimeout(typingTimer);
     });
-	/*
+
 	$("#descrizioneInput").autocomplete({
 		source: function(request, response){
 			var risp = [];
@@ -243,7 +234,7 @@
 				url : window.location.pathname+"inserzione/getSuggerimenti/prodotti",
 				contentType : "application/json",
 				data : {"term": request.term},
-				success : function(data) {
+				success : function(data){
 					codici_prodotti=data;
 				}				
 			});
@@ -266,7 +257,7 @@
 				
 			});
 		}
-	});*/
+	});
 
     function searchImage(){
         // TODO - nascondere lo spinner
@@ -280,13 +271,15 @@
             var searcher = imageSearch;
             if (searcher.results && searcher.results.length > 0) {
                 imgResults = searcher.results;
-                $('.suggerimentoImg > div').hide();
-                $('.suggerimentoImg > img').attr("src", searcher.results[imgIndex].tbUrl);
+                $('#suggerimentoImgInput').attr("src", searcher.results[imgIndex].tbUrl);
+                //settare visibile il form per la selezione dell'immagine successiva
                 $('.prossimaImg > a').unbind("click").click(function(){
                     imgIndex++;
-                    if(imgIndex < 64 && imgIndex <= imgResults.length)
+                    if(imgIndex < 64 && imgIndex <= imgResults.length){
                         $('#suggerimentoImgInput').attr("src", imgResults[imgIndex].tbUrl);   
-                    else console.log(imgResults);
+                    }else{ console.log(imgResults);
+						$(this).html("Suggerimenti esauriti");
+                    }
                 });            
             }
         }, 
@@ -304,125 +297,138 @@
             $('#supermercatoInput').val(strs[0]);
             $('#indirizzoInput').val(strs[1]);
             //TODO to check!!
-            //$('#indirizzoInput').trigger("keyup");
+            $('#indirizzoInput').trigger("keyup");
             //event.preventDefault();
         }
     });
 
 
+    var currentLocation;
+    var infowindow ;
+    var geocoder ;
+
     
+    
+    function mapInitializer(){
+    	infowindow = new google.maps.InfoWindow();
+        geocoder = new google.maps.Geocoder();
+		geocoder.geocode({'address':"Italia"},function(results,status){
+			if(status == google.maps.GeocoderStatus.OK){
+				currentLocation = results[0].geometry.location;
+				map = new google.maps.Map(document.getElementById('map-canvas'),{
+					center: currentLocation,
+					zoom: 15,
+				});
+				google.maps.event.addListener(map, 'tilesloaded', function(){
+					var latLng = map.getCenter();
+					var path = window.location.pathname;
+					//TODO sistemare quà
+					if( path[path.length - 1] == '/'){
+						path = path.slice(path.length - 1, path.length - 1);
+						alert(path);
+					}
+					$.ajax({type:"GET",
+						url: path+"/getSupermercati",
+						contentType:"application/json",
+						data:{"lat":latLng.lat(),"lng":latLng.lng()},
+						success:function(data){
+							for(var i=0;i<supermercati_markers.length;i++){
+								supermercati_markers[i].setMap(null);
+							}
+							$.each(data,function(index,value){
+								var latLng = new google.maps.LatLng(value.lat,value.lng);
+								var marker = new google.maps.Marker({
+								    map: map,
+								    position: latLng,
+								});	
+								
+								google.maps.event.addListener(marker, 'click', function() {
+									var string = "<a class ='infowindow' id='Si'>Si</a> o <a class ='infowindow' id='No'>No</a>";
+									infowindow.setContent("<div class='infowindow 'id='nome'>"+value.nome+"</div>\n<div class='infowindow' id='domanda'> E' questo?\n"+string+"</div>");
+									infowindow.open(map,this);
+									$('a.infowindow').click(function(){
+										if($(this).attr('id')=="Si"){
+											var strs = $('#nome.infowindow').text().split(/\s-\s/);
+											$('#supermercato').val(strs[0]);
+											$('#indirizzo').val(strs[1]);
+											$('#domanda.infowindow').empty();
+											$('#nome.infowindow').after("risposta ricevuta");
+										}else{
+											$('#domanda.infowindow').empty();
+											$('#nome.infowindow').after("risposta ricevuta");
+										}
+									}).css({'cursor':'pointer',
+						    			'background-color':'skyblue',
+						    			'color':'blue',
+						    		});
+								});
+								supermercati_markers.push(marker);
+							});
+						}				
+					});
+					if(navigator.geolocation){
+						if(!localStorage.getItem("lat")){
+							navigator.geolocation.getCurrentPosition(function(position){
+								currentLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+								map.setCenter(currentLocation);
+								localStorage.setItem("lat", position.coords.latitude);
+								localStorage.setItem("lng", position.coords.longitude);
+							}, function(){
+								alert('consenti di sapere la tua posizione se vuoi essere localizzato error: ');			
+							},null);
+						}else{
+							currentLocation = new google.maps.LatLng(localStorage.getItem("lat"),localStorage.getItem("lng"));
+							map.setCenter(currentLocation);
+						}
+					}
+				});
+				
+			}else{
+				alert("geocoder non funziona");
+			};
+		});
+    };
+
+    (function loadScript() {
+		var script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places&' +
+		    'callback=mapInitializer';
+		document.body.appendChild(script);
+   	})();
+    var typingTimer;
+    var doneTypingInterval = 5000;
+
     $('#indirizzoInput').keyup(function(){
-    	indirizzoTimerHandle = setTimeout(indirizzoTypingDone, indirizzoInterval);
+		typingTimer = setTimeout(cercaSupermercato(), doneTypingInterval);
 	});
 
 	$('#indirizzoInput').keydown(function(){
-		clearTimeout(indirizzoTimerHandle);
+		clearTimeout(typingTimer);
 	});
-
+   	
 	
-	function indirizzoTypingDone(){
-		var geocoder = new google.maps.Geocoder();
-		geocoder.geocode(
-			{'address' : $("#indirizzoInput").val()},
-			function(results, status){
-			if(status == google.maps.GeocoderStatus.OK){
-				for(var i=0;i<markers.length;i++){
-					markers[i].setMap(null);
-				}
-				var marker = new google.maps.Marker({
-				    map: map,
-				    position: results[0].geometry.location,
-				  });
-				map.setCenter(marker.getPosition());
-				infowindow.setContent($('#supermercato').val()+" "+$('#indirizzo').val());
-			    infowindow.open(map, marker);
-				markers.push(marker);
-			}else{
-				alert("errore nell'indirizzo");
-			}
-		});
-	};
+    var markers = [];
+	var map;
+    function cercaSupermercato(){
+    	var geocoder = new google.maps.Geocoder();
+    	geocoder.geocode({'address':$("#indirizzoInput").val()},function(results,status){
+    		if(status == google.maps.GeocoderStatus.OK){
+    			for(var i=0;i<markers.length;i++){
+    				markers[i].setMap(null);
+    			}
+    			var marker = new google.maps.Marker({
+    			    map: map,
+    			    position: results[0].geometry.location,
+    			  });
+    			map.setCenter(marker.getPosition());
+    			infowindow.setContent($('#supermercatoInput').val()+" "+$('#indirizzoInput').val());
+    		    infowindow.open(map, marker);
+    			markers.push(marker);
+    		}else{
+    			alert("errore nell'indirizzo");
+    		}
+    	});
+    }
 
-
-	geocoder.geocode({'address':"Italia"}, function(results, status){
-		if(status != google.maps.GeocoderStatus.OK) {
-			console.log("Geocoder non funziona!");
-			return;
-		}
-		currentLocation = results[0].geometry.location;
-		map = new google.maps.Map(document.getElementById('map-canvas'), { 
-			center : currentLocation, 
-			zoom : 15 
-		});
-
-		google.maps.event.addListener(map, 'tilesloaded', function(){
-			var latLng = map.getCenter();
-			$.ajax({
-				type : "GET",
-				url : window.location.pathname+"inserzione/getSupermercati",
-				contentType : "application/json",
-				data : {
-					"lat" : latLng.lat(),
-					"lng" : latLng.lng()
-					},
-				success : function(data){
-					for(var i = 0; i < supermercati_markers.length; i++){
-						console.log(i);
-						supermercati_markers[i].setMap(null);
-					}
-					
-					$.each(data,function(index,value){
-						var latLng = new google.maps.LatLng(value.lat,value.lng);
-						var marker = new google.maps.Marker({
-						    map: map,
-						    position: latLng,
-						});	
-							
-						google.maps.event.addListener(marker, 'click', function() {
-							var string = "<a class ='infowindow' id='Si'>Si</a> o <a class ='infowindow' id='No'>No</a>";
-							infowindow.setContent("<div class='infowindow 'id='nome'>"+value.nome+"</div>\n<div class='infowindow' id='domanda'> E' questo?\n"+string+"</div>");
-							infowindow.open(map,this);
-							$('a.infowindow').click(function(){
-								if($(this).attr('id')=="Si"){
-									var strs = $('#nome.infowindow').text().split(/\s-\s/);
-									$('#supermercato').val(strs[0]);
-									$('#indirizzo').val(strs[1]);
-									$('#domanda.infowindow').empty();
-									$('#nome.infowindow').after("risposta ricevuta");
-								}else{
-									$('#domanda.infowindow').empty();
-									$('#nome.infowindow').after("risposta ricevuta");
-								}
-							}).css({'cursor':'pointer',
-				    			'background-color':'skyblue',
-				    			'color':'blue',
-				    		});
-						});
-							supermercati_markers.push(marker);
-						});
-					}				
-				});
-				if(navigator.geolocation) {
-					if(!localStorage.getItem("lat")){
-						navigator.geolocation.getCurrentPosition(
-								function(position) {
-									currentLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-									map.setCenter(currentLocation);
-									localStorage.setItem("lat", position.coords.latitude);
-									localStorage.setItem("lng", position.coords.longitude);
-								},
-								function() {
-									alert('consenti di sapere la tua posizione se vuoi essere localizzato error: ');			
-								},
-								null);
-					} else {
-						currentLocation = new google.maps.LatLng(localStorage.getItem("lat"), localStorage.getItem("lng"));
-						map.setCenter(currentLocation);
-					}
-				}
-			});
-			
-		
-	});
 </script>
-
