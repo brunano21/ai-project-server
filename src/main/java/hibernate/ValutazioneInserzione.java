@@ -53,7 +53,7 @@ public class ValutazioneInserzione implements java.io.Serializable {
 		this.idValutazioneInserzione = idValutazioneInserzione;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_Inserzione")
 	public Inserzione getInserzione() {
 		return this.inserzione;
@@ -63,7 +63,7 @@ public class ValutazioneInserzione implements java.io.Serializable {
 		this.inserzione = inserzione;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_UtenteValutatore")
 	public Utente getUtenteByIdUtenteValutatore() {
 		return this.utenteByIdUtenteValutatore;
@@ -73,7 +73,7 @@ public class ValutazioneInserzione implements java.io.Serializable {
 		this.utenteByIdUtenteValutatore = utenteByIdUtenteValutatore;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_UtenteInserzionista")
 	public Utente getUtenteByIdUtenteInserzionista() {
 		return this.utenteByIdUtenteInserzionista;

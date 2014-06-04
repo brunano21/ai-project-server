@@ -57,7 +57,7 @@ public class ListaDesideriProdotti implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_Inserzione")
 	public Inserzione getInserzione() {
 		return this.inserzione;
@@ -67,7 +67,7 @@ public class ListaDesideriProdotti implements java.io.Serializable {
 		this.inserzione = inserzione;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_ListaDesideri", nullable = false, insertable = false, updatable = false)
 	public ListaDesideri getListaDesideri() {
 		return this.listaDesideri;

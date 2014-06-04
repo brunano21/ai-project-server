@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
+
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
@@ -34,6 +36,13 @@ public class ValutazioneController {
 	
 	public void setDati(Dati dati){
 		this.dati=dati;
+	}
+	
+	@Autowired
+	private ServletContext context;
+	
+	public void setServletContext(ServletContext context){
+		this.context=context;
 	}
 	
 	private Map<Integer,Inserzione> inserzioni;
@@ -160,8 +169,8 @@ public class ValutazioneController {
 	@RequestMapping(value = "/valutazione/pictures/{idInserzione}")
 	@ResponseBody
 	public byte[] getImage(@PathVariable Integer idInserzione)  {
-		
-		File image = new File(inserzioni.get(idInserzione).getFoto());
+		String path = context.getRealPath("/")+"resources\\images"+File.separator+inserzioni.get(idInserzione).getFoto();
+		File image = new File(path);
 		
 		try {
 			return FileUtils.readFileToByteArray(image);

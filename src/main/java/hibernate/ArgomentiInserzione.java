@@ -54,7 +54,7 @@ public class ArgomentiInserzione implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_Inserzione", nullable = false, insertable = false, updatable = false)
 	public Inserzione getInserzione() {
 		return this.inserzione;
@@ -64,7 +64,7 @@ public class ArgomentiInserzione implements java.io.Serializable {
 		this.inserzione = inserzione;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "Argomento", nullable = false, insertable = false, updatable = false)
 	public Argomenti getArgomenti() {
 		return this.argomenti;

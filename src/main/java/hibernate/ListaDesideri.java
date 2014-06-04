@@ -53,7 +53,7 @@ public class ListaDesideri implements java.io.Serializable {
 		this.idListaDesideri = idListaDesideri;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_Utente", nullable = false)
 	public Utente getUtente() {
 		return this.utente;
@@ -72,7 +72,7 @@ public class ListaDesideri implements java.io.Serializable {
 		this.nomeListaDesideri = nomeListaDesideri;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "listaDesideri")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "listaDesideri")
 	public Set getListaDesideriProdottis() {
 		return this.listaDesideriProdottis;
 	}

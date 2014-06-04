@@ -52,7 +52,7 @@ public class ListaSpesa implements java.io.Serializable {
 		this.idSpesa = idSpesa;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_Utente", nullable = false)
 	public Utente getUtente() {
 		return this.utente;
@@ -71,7 +71,7 @@ public class ListaSpesa implements java.io.Serializable {
 		this.nomeListaSpesa = nomeListaSpesa;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "listaSpesa")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "listaSpesa")
 	public Set getListaSpesaProdottis() {
 		return this.listaSpesaProdottis;
 	}
