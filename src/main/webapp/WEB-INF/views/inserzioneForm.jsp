@@ -149,6 +149,7 @@
 </div>
 
 <script type="text/javascript">
+	var supermercati_markers = [];
     var fromDate = $("#dataInizioInput").datepicker($.datepicker.regional[ "it" ], {
         defaultDate: "+1w",
         changeMonth: true,
@@ -307,8 +308,50 @@
     var infowindow ;
     var geocoder ;
 
-    
-    
+    function loadMarkers(map,path,latLng){
+    	$.ajax({type:"GET",
+			url: path+"/getSupermercati",
+			contentType:"application/json",
+			data:{"lat":latLng.lat(),"lng":latLng.lng()},
+			success:function(data){
+				for(var i=0;i<supermercati_markers.length;i++){
+					supermercati_markers[i].setMap(null);
+				}
+				$.each(data,function(index,value){
+					var latLng = new google.maps.LatLng(value.lat,value.lng);
+					var marker = new google.maps.Marker({
+					    map: map,
+					    position: latLng,
+					});	
+					
+					google.maps.event.addListener(marker, 'click', function() {
+						var string = "<a class ='infowindow' id='Si'>Si</a> o <a class ='infowindow' id='No'>No</a>";
+						infowindow.setContent("<div class='infowindow 'id='nome'>"+value.nome+"</div>\n<div class='infowindow' id='domanda'> E' questo?\n"+string+"</div>");
+						infowindow.open(map,this);
+						$('a.infowindow').click(function(){
+							if($(this).attr('id')=="Si"){
+								var strs = $('#nome.infowindow').text().split(/\s-\s/);
+								$('#supermercato').val(strs[0]);
+								$('#indirizzo').val(strs[1]);
+								$('#domanda.infowindow').empty();
+								$('#nome.infowindow').after("risposta ricevuta");
+							}else{
+								$('#domanda.infowindow').empty();
+								$('#nome.infowindow').after("risposta ricevuta");
+							}
+						}).css({'cursor':'pointer',
+			    			'background-color':'skyblue',
+			    			'color':'blue',
+			    		});
+					});
+					supermercati_markers.push(marker);
+				});
+			}				
+		});
+
+	}
+    var mapInitialized = false;
+    var latLng = null;
     function mapInitializer(){
     	infowindow = new google.maps.InfoWindow();
         geocoder = new google.maps.Geocoder();
@@ -320,66 +363,34 @@
 					zoom: 15,
 				});
 				google.maps.event.addListener(map, 'tilesloaded', function(){
-					var latLng = map.getCenter();
-					var path = window.location.pathname;
-					//TODO sistemare quà
-					if( path[path.length - 1] == '/'){
-						path = path.slice(path.length - 1, path.length - 1);
-						alert(path);
-					}
-					$.ajax({type:"GET",
-						url: path+"/getSupermercati",
-						contentType:"application/json",
-						data:{"lat":latLng.lat(),"lng":latLng.lng()},
-						success:function(data){
-							for(var i=0;i<supermercati_markers.length;i++){
-								supermercati_markers[i].setMap(null);
-							}
-							$.each(data,function(index,value){
-								var latLng = new google.maps.LatLng(value.lat,value.lng);
-								var marker = new google.maps.Marker({
-								    map: map,
-								    position: latLng,
-								});	
-								
-								google.maps.event.addListener(marker, 'click', function() {
-									var string = "<a class ='infowindow' id='Si'>Si</a> o <a class ='infowindow' id='No'>No</a>";
-									infowindow.setContent("<div class='infowindow 'id='nome'>"+value.nome+"</div>\n<div class='infowindow' id='domanda'> E' questo?\n"+string+"</div>");
-									infowindow.open(map,this);
-									$('a.infowindow').click(function(){
-										if($(this).attr('id')=="Si"){
-											var strs = $('#nome.infowindow').text().split(/\s-\s/);
-											$('#supermercato').val(strs[0]);
-											$('#indirizzo').val(strs[1]);
-											$('#domanda.infowindow').empty();
-											$('#nome.infowindow').after("risposta ricevuta");
-										}else{
-											$('#domanda.infowindow').empty();
-											$('#nome.infowindow').after("risposta ricevuta");
-										}
-									}).css({'cursor':'pointer',
-						    			'background-color':'skyblue',
-						    			'color':'blue',
-						    		});
-								});
-								supermercati_markers.push(marker);
-							});
-						}				
-					});
-					if(navigator.geolocation){
-						if(!localStorage.getItem("lat")){
-							navigator.geolocation.getCurrentPosition(function(position){
-								currentLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-								map.setCenter(currentLocation);
-								localStorage.setItem("lat", position.coords.latitude);
-								localStorage.setItem("lng", position.coords.longitude);
-							}, function(){
-								alert('consenti di sapere la tua posizione se vuoi essere localizzato error: ');			
-							},null);
-						}else{
-							currentLocation = new google.maps.LatLng(localStorage.getItem("lat"),localStorage.getItem("lng"));
-							map.setCenter(currentLocation);
+					if(!mapInitialized){
+						latLng = map.getCenter();
+						var path = window.location.pathname;
+						//TODO sistemare quà
+						if( path[path.length - 1] == '/'){
+							path = path.slice(0, path.length - 1);
 						}
+						path = path+"/inserzione";
+						if(navigator.geolocation){
+							if(!localStorage.getItem("lat")){
+								navigator.geolocation.getCurrentPosition(function(position){
+									currentLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+									map.setCenter(currentLocation);
+									localStorage.setItem("lat", position.coords.latitude);
+									localStorage.setItem("lng", position.coords.longitude);
+									latLng = map.getCenter();
+									loadMarkers(map,path,latLng);									
+								}, function(){
+									alert('consenti di sapere la tua posizione se vuoi essere localizzato error: ');	
+									loadMarkers(map,path,latLng);		
+								},null);
+							}else{
+								currentLocation = new google.maps.LatLng(localStorage.getItem("lat"),localStorage.getItem("lng"));
+								map.setCenter(currentLocation);
+								
+							}
+						}						
+						mapInitialized = true;
 					}
 				});
 				
