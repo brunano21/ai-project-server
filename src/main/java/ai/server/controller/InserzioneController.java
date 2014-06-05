@@ -121,9 +121,11 @@ public class InserzioneController {
 		JsonNodeFactory factory = JsonNodeFactory.instance;
 		ArrayNode results = factory.arrayNode();
 		ObjectNode obj;
-		for(Map.Entry<String, Supermercato> s : dati.getSupermercati().entrySet()){
+		for(Map.Entry<Integer, Supermercato> s : dati.getSupermercati().entrySet()){
 			System.out.println(s.getValue().getNome()+" "+distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(int) s.getValue().getLatitudine(),(int) s.getValue().getLongitudine()));
 
+		
+		for(Map.Entry<Integer, Supermercato> s : dati.getSupermercati().entrySet()){
 			if(distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(int) s.getValue().getLatitudine(),(int) s.getValue().getLongitudine()) < 3){
 				obj=factory.objectNode();
 				obj.put("nome", s.getValue().getNome());
@@ -152,7 +154,7 @@ public class InserzioneController {
 			}
 		}
 		if(name.equals("supermercati")){
-			for(Map.Entry<String, Supermercato> s : dati.getSupermercati().entrySet()){
+			for(Map.Entry<Integer, Supermercato> s : dati.getSupermercati().entrySet()){
 				if(s.getValue().getNome().toLowerCase().contains(term.toLowerCase())){	
 					results.add(s.getValue().getNome());
 				}
@@ -215,7 +217,7 @@ public class InserzioneController {
 				FileUtils.writeByteArrayToFile(file, inserzioneForm.getFile().getBytes());
 				System.out.println("file salvato in : "+path);
 			}
-		
+			//TODO bisogna modificare il criterio di uguaglianza, ed effettuare una query
 			supermercato = dati.getSupermercati().get(inserzioneForm.getSupermercato());
 			
 			if(supermercato == null){
@@ -228,7 +230,6 @@ public class InserzioneController {
 			
 			boolean trovato = false;
 			Prodotto prodotto = dati.getProdotti().get(inserzioneForm.getCodiceBarre());
-			//TODO Bisogna ancora inserire gli argomenti usati
 			List<Argomenti> argomenti = new LinkedList<Argomenti>();
 			Argomenti argomento = null;
 			for(String nomeArgomento : inserzioneForm.getArgomento()){
