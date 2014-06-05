@@ -121,11 +121,9 @@ public class InserzioneController {
 		JsonNodeFactory factory = JsonNodeFactory.instance;
 		ArrayNode results = factory.arrayNode();
 		ObjectNode obj;
-		for(Map.Entry<Integer, Supermercato> s : dati.getSupermercati().entrySet()){
-			System.out.println(s.getValue().getNome()+" "+distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(int) s.getValue().getLatitudine(),(int) s.getValue().getLongitudine()));
-
 		
 		for(Map.Entry<Integer, Supermercato> s : dati.getSupermercati().entrySet()){
+			System.out.println(s.getValue().getNome()+" "+distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(int) s.getValue().getLatitudine(),(int) s.getValue().getLongitudine()));
 			if(distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(int) s.getValue().getLatitudine(),(int) s.getValue().getLongitudine()) < 3){
 				obj=factory.objectNode();
 				obj.put("nome", s.getValue().getNome());
