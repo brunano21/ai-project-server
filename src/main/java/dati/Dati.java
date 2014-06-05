@@ -69,7 +69,7 @@ public class Dati {
 	private volatile Map<Long,Prodotto> mappaProdotti = new ConcurrentHashMap<Long, Prodotto>();
 	private volatile Map<Integer,Profilo> mappaProfili = new ConcurrentHashMap<Integer, Profilo>();
 	private volatile Map<String,Sottocategoria> mappaSottocategorie = new ConcurrentHashMap<String, Sottocategoria>();
-	private volatile Map<String,Supermercato> mappaSupermercati = new ConcurrentHashMap<String, Supermercato>();
+	private volatile Map<Integer,Supermercato> mappaSupermercati = new ConcurrentHashMap<Integer, Supermercato>();
 	private volatile Map<Integer,ValutazioneInserzione> mappaValutazioneInserzione = new ConcurrentHashMap<Integer, ValutazioneInserzione>();
 
 	/***
@@ -155,7 +155,7 @@ public class Dati {
 			
 			for(Supermercato s : (List<Supermercato>)session.createQuery("from Supermercato").list())
 			{
-				mappaSupermercati.put(s.getNome(), s);
+				mappaSupermercati.put(s.getIdSupermercato(), s);
 			}
 			for(ValutazioneInserzione vi : (List<ValutazioneInserzione>)session.createQuery("from ValutazioneInserzione").list())
 			{
@@ -1844,7 +1844,7 @@ public class Dati {
 		try{
 			tx=session.beginTransaction();
 			idSuperMercato = (Integer)session.save(supermercato);
-			mappaSupermercati.put(nome,supermercato);
+			mappaSupermercati.put(idSuperMercato,supermercato);
 
 			tx.commit();
 		}catch(Throwable ex){
@@ -1886,7 +1886,7 @@ public class Dati {
 			tx=session.beginTransaction();			
 			session.update(superMercato);
 			mappaSupermercati.remove(idSuperMercato);
-			mappaSupermercati.put(nome,superMercato);
+			mappaSupermercati.put(idSuperMercato,superMercato);
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx!=null)
@@ -1940,8 +1940,8 @@ public class Dati {
 	/**Metodo get della mappa dei Supermercati
 	 * @return
 	 */
-	public Map<String,Supermercato> getSupermercati(){
-		Map<String,Supermercato> supermercati = new HashMap<String,Supermercato>();
+	public Map<Integer,Supermercato> getSupermercati(){
+		Map<Integer,Supermercato> supermercati = new HashMap<Integer,Supermercato>();
 		supermercati.putAll(mappaSupermercati);			
 		return supermercati;
 	}
