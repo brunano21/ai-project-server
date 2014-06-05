@@ -407,7 +407,7 @@ public class Dati {
 			session.update(inserzione);
 			mappaInserzioni.put(idInserzione,inserzione);			
 			mappaUtente.get(utente.getMail()).getInserziones().add(inserzione);
-			mappaSupermercati.get(supermercato.getNome()).getInserziones().add(inserzione);
+			mappaSupermercati.get(supermercato.getIdSupermercato()).getInserziones().add(inserzione);
 			mappaProdotti.get(prodotto.getCodiceBarre()).getInserziones().add(inserzione);
 			tx.commit();
 		}catch(Throwable ex){
@@ -509,8 +509,8 @@ public class Dati {
 			}
 			if(!supermercato.equals(inserzioneVecchia.getSupermercato())){				
 				inserzioneVecchia.setSupermercato(supermercato);
-				mappaSupermercati.get(inserzioneVecchia.getSupermercato().getNome()).getInserziones().remove(inserzioneVecchia);
-				mappaSupermercati.get(supermercato.getNome()).getInserziones().add(inserzioneVecchia);
+				mappaSupermercati.get(inserzioneVecchia.getSupermercato().getIdSupermercato()).getInserziones().remove(inserzioneVecchia);
+				mappaSupermercati.get(supermercato.getIdSupermercato()).getInserziones().add(inserzioneVecchia);
 			}
 			if(!prodotto.equals(inserzioneVecchia.getProdotto())){
 				inserzioneVecchia.setProdotto(prodotto);
@@ -586,7 +586,7 @@ public class Dati {
 			}
 			
 			mappaUtente.get(inserzioneDaEliminare.getUtente().getMail()).getInserziones().remove(inserzioneDaEliminare);
-			mappaSupermercati.get(inserzioneDaEliminare.getSupermercato().getNome()).getInserziones().remove(inserzioneDaEliminare);
+			mappaSupermercati.get(inserzioneDaEliminare.getSupermercato().getIdSupermercato()).getInserziones().remove(inserzioneDaEliminare);
 			mappaProdotti.get(inserzioneDaEliminare.getProdotto().getCodiceBarre()).getInserziones().remove(inserzioneDaEliminare);
 			mappaInserzioni.remove(IdInserzione);
 			tx.commit();
@@ -1905,11 +1905,11 @@ public class Dati {
 	/**Eliminazione di un Supermercato
 	 * @param nomeSuperMercato
 	 */
-	public void eliminaSupermercato(String nomeSuperMercato){
+	public void eliminaSupermercato(Integer idSupermercato){
 
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
-		Supermercato superMercatoVecchio = mappaSupermercati.get(nomeSuperMercato);		
+		Supermercato superMercatoVecchio = mappaSupermercati.get(idSupermercato);		
 
 		if(superMercatoVecchio==null)
 			throw new RuntimeException("elemento non trovato");

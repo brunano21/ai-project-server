@@ -276,6 +276,7 @@ public class InserzioneController {
 			}
 		}catch(Exception e){
 			System.out.println(inserimentoInserzione+" "+inserimentoProdotto+" "+inserimentoSupermercato);
+			
 			if(inserimentoInserzione){
 				dati.eliminaInserzione(idInsererzione);
 			}
@@ -283,7 +284,7 @@ public class InserzioneController {
 				dati.eliminaProdotto(inserzioneForm.getCodiceBarre());
 			}
 			if(inserimentoSupermercato){
-				dati.eliminaSupermercato(inserzioneForm.getSupermercato());
+				dati.eliminaSupermercato(idSupermercato);
 			}
 			e.printStackTrace();
 			
