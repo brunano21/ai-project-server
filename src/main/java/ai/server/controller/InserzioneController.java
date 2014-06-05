@@ -27,6 +27,9 @@ import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -216,6 +219,23 @@ public class InserzioneController {
 				System.out.println("file salvato in : "+path);
 			}
 			//TODO bisogna modificare il criterio di uguaglianza, ed effettuare una query
+			Session session = null;
+			Transaction tx = null;
+			session = Dati.factory.openSession();
+			try {
+				tx=session.beginTransaction();			
+				Query q = session.createSQLQuery("select s.ID_Supermercato "+
+				"from supermercato s"+
+						"where s.");
+				tx.commit();
+			} catch(RuntimeException e) {
+				if(tx!=null)
+					tx.rollback();
+				throw e;
+			} finally {
+				if(session!=null && session.isOpen())
+					session.close();
+			}
 			supermercato = dati.getSupermercati().get(inserzioneForm.getSupermercato());
 			
 			if(supermercato == null){
