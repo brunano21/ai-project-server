@@ -123,7 +123,7 @@ public class InserzioneController {
 		ObjectNode obj;
 		
 		for(Map.Entry<Integer, Supermercato> s : dati.getSupermercati().entrySet()){
-			if(distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(int) s.getValue().getLatitudine(),(int) s.getValue().getLongitudine()) < 3){
+			if(distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(float) s.getValue().getLatitudine(),(float) s.getValue().getLongitudine()) < 3){
 				obj=factory.objectNode();
 				obj.put("nome", s.getValue().getNome());
 				obj.put("lat", s.getValue().getLatitudine());
@@ -275,6 +275,7 @@ public class InserzioneController {
 			}
 		}catch(Exception e){
 			System.out.println(inserimentoInserzione+" "+inserimentoProdotto+" "+inserimentoSupermercato);
+			
 			if(inserimentoInserzione){
 				dati.eliminaInserzione(idInsererzione);
 			}
@@ -282,7 +283,7 @@ public class InserzioneController {
 				dati.eliminaProdotto(inserzioneForm.getCodiceBarre());
 			}
 			if(inserimentoSupermercato){
-				dati.eliminaSupermercato(inserzioneForm.getSupermercato());
+				dati.eliminaSupermercato(idSupermercato);
 			}
 			e.printStackTrace();
 			
