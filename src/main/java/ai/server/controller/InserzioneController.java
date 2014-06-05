@@ -123,8 +123,8 @@ public class InserzioneController {
 		ObjectNode obj;
 		
 		for(Map.Entry<Integer, Supermercato> s : dati.getSupermercati().entrySet()){
-			System.out.println(s.getValue().getNome()+" "+distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(int) s.getValue().getLatitudine(),(int) s.getValue().getLongitudine()));
-			if(distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(int) s.getValue().getLatitudine(),(int) s.getValue().getLongitudine()) < 3){
+			System.out.println(s.getValue().getNome()+" "+distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(float) s.getValue().getLatitudine(),(float) s.getValue().getLongitudine()));
+			if(distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(float) s.getValue().getLatitudine(),(float) s.getValue().getLongitudine()) < 3){
 				obj=factory.objectNode();
 				obj.put("nome", s.getValue().getNome());
 				obj.put("lat", s.getValue().getLatitudine());
