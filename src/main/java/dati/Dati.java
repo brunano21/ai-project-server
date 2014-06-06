@@ -69,7 +69,7 @@ public class Dati {
 	private volatile Map<Long,Prodotto> mappaProdotti = new ConcurrentHashMap<Long, Prodotto>();
 	private volatile Map<Integer,Profilo> mappaProfili = new ConcurrentHashMap<Integer, Profilo>();
 	private volatile Map<String,Sottocategoria> mappaSottocategorie = new ConcurrentHashMap<String, Sottocategoria>();
-	private volatile Map<String,Supermercato> mappaSupermercati = new ConcurrentHashMap<String, Supermercato>();
+	private volatile Map<Integer,Supermercato> mappaSupermercati = new ConcurrentHashMap<Integer, Supermercato>();
 	private volatile Map<Integer,ValutazioneInserzione> mappaValutazioneInserzione = new ConcurrentHashMap<Integer, ValutazioneInserzione>();
 
 	/***
@@ -155,7 +155,7 @@ public class Dati {
 			
 			for(Supermercato s : (List<Supermercato>)session.createQuery("from Supermercato").list())
 			{
-				mappaSupermercati.put(s.getNome(), s);
+				mappaSupermercati.put(s.getIdSupermercato(), s);
 			}
 			for(ValutazioneInserzione vi : (List<ValutazioneInserzione>)session.createQuery("from ValutazioneInserzione").list())
 			{
@@ -407,7 +407,7 @@ public class Dati {
 			session.update(inserzione);
 			mappaInserzioni.put(idInserzione,inserzione);			
 			mappaUtente.get(utente.getMail()).getInserziones().add(inserzione);
-			mappaSupermercati.get(supermercato.getNome()).getInserziones().add(inserzione);
+			mappaSupermercati.get(supermercato.getIdSupermercato()).getInserziones().add(inserzione);
 			mappaProdotti.get(prodotto.getCodiceBarre()).getInserziones().add(inserzione);
 			tx.commit();
 		}catch(Throwable ex){
@@ -509,8 +509,8 @@ public class Dati {
 			}
 			if(!supermercato.equals(inserzioneVecchia.getSupermercato())){				
 				inserzioneVecchia.setSupermercato(supermercato);
-				mappaSupermercati.get(inserzioneVecchia.getSupermercato().getNome()).getInserziones().remove(inserzioneVecchia);
-				mappaSupermercati.get(supermercato.getNome()).getInserziones().add(inserzioneVecchia);
+				mappaSupermercati.get(inserzioneVecchia.getSupermercato().getIdSupermercato()).getInserziones().remove(inserzioneVecchia);
+				mappaSupermercati.get(supermercato.getIdSupermercato()).getInserziones().add(inserzioneVecchia);
 			}
 			if(!prodotto.equals(inserzioneVecchia.getProdotto())){
 				inserzioneVecchia.setProdotto(prodotto);
@@ -586,7 +586,7 @@ public class Dati {
 			}
 			
 			mappaUtente.get(inserzioneDaEliminare.getUtente().getMail()).getInserziones().remove(inserzioneDaEliminare);
-			mappaSupermercati.get(inserzioneDaEliminare.getSupermercato().getNome()).getInserziones().remove(inserzioneDaEliminare);
+			mappaSupermercati.get(inserzioneDaEliminare.getSupermercato().getIdSupermercato()).getInserziones().remove(inserzioneDaEliminare);
 			mappaProdotti.get(inserzioneDaEliminare.getProdotto().getCodiceBarre()).getInserziones().remove(inserzioneDaEliminare);
 			mappaInserzioni.remove(IdInserzione);
 			tx.commit();
@@ -1844,7 +1844,7 @@ public class Dati {
 		try{
 			tx=session.beginTransaction();
 			idSuperMercato = (Integer)session.save(supermercato);
-			mappaSupermercati.put(nome,supermercato);
+			mappaSupermercati.put(idSuperMercato,supermercato);
 
 			tx.commit();
 		}catch(Throwable ex){
@@ -1886,7 +1886,7 @@ public class Dati {
 			tx=session.beginTransaction();			
 			session.update(superMercato);
 			mappaSupermercati.remove(idSuperMercato);
-			mappaSupermercati.put(nome,superMercato);
+			mappaSupermercati.put(idSuperMercato,superMercato);
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx!=null)
@@ -1905,11 +1905,11 @@ public class Dati {
 	/**Eliminazione di un Supermercato
 	 * @param nomeSuperMercato
 	 */
-	public void eliminaSupermercato(String nomeSuperMercato){
+	public void eliminaSupermercato(Integer idSupermercato){
 
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
-		Supermercato superMercatoVecchio = mappaSupermercati.get(nomeSuperMercato);		
+		Supermercato superMercatoVecchio = mappaSupermercati.get(idSupermercato);		
 
 		if(superMercatoVecchio==null)
 			throw new RuntimeException("elemento non trovato");
@@ -1940,8 +1940,8 @@ public class Dati {
 	/**Metodo get della mappa dei Supermercati
 	 * @return
 	 */
-	public Map<String,Supermercato> getSupermercati(){
-		Map<String,Supermercato> supermercati = new HashMap<String,Supermercato>();
+	public Map<Integer,Supermercato> getSupermercati(){
+		Map<Integer,Supermercato> supermercati = new HashMap<Integer,Supermercato>();
 		supermercati.putAll(mappaSupermercati);			
 		return supermercati;
 	}
