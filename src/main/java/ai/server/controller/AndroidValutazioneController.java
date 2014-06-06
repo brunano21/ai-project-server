@@ -2,12 +2,20 @@ package ai.server.controller;
 
 import hibernate.Inserzione;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.codec.binary.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +45,8 @@ public class AndroidValutazioneController {
 
 		JSONArray response = new JSONArray();
 		List idInserzioni = dati.getInserzioniDaValutare(principal.getName(), request.getParameter("lat"), request.getParameter("lng"));
-
 		response.addAll(idInserzioni);
-		System.out.println("JSONARRAY " + response.size());
+		System.out.println("JSONARRAY: " + response.size());
 		return response;
 	}
 
@@ -47,7 +54,7 @@ public class AndroidValutazioneController {
 	@ResponseBody
 	public JSONArray getIdInserzioneById(HttpServletRequest request, Principal principal) {
 		String idInserzioneListString = request.getParameter("idInserzioneList");
-		System.out.println("Called: /android/valutazione/getIdInserzioneById - " + idInserzioneListString);
+		System.out.println("Called: /android/valutazione/getInserzioneById - " + idInserzioneListString);
 		JSONArray response = new JSONArray();
 
 		for (String id : idInserzioneListString.split(",")) {
@@ -64,6 +71,23 @@ public class AndroidValutazioneController {
 			jsonObj.put("supermercato", inserzione.getSupermercato().getNome());
 			jsonObj.put("supermercato_indirizzo", inserzione.getSupermercato().getNome());
 
+			String imageDataString = null; 
+			try {
+				BufferedImage originalImage = ImageIO.read(new File(inserzione.getFoto()));
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ImageIO.write( originalImage, "jpg", baos);
+				baos.flush();
+				byte[] imageInByte = baos.toByteArray();
+				imageDataString = new String(Base64.encodeBase64(imageInByte));
+				baos.close();
+				
+				
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			jsonObj.put("foto", imageDataString);
 			response.add(jsonObj);
 		}
 		System.out.println("JSONARRAY " + response.size());
@@ -77,18 +101,18 @@ public class AndroidValutazioneController {
 		System.out.println(request.getParameter("risultato"));
 		Integer idInserzione = Integer.valueOf(request.getParameter("idInserzione"));
 		String risultato = request.getParameter("risultato");
-		
-		
+
+
 		System.out.println("Called: /android/valutazione/aggiungiValutazione - ID_INSERZIONE: " + idInserzione + " - RISULTATO: " + risultato);
 		JSONArray response = new JSONArray();
-		
+
 		dati.inserimentoValutazioneInserzione(
 				dati.getInserzioni().get(idInserzione),
-				dati.getInserzioni().get(idInserzione).getUtente(),
 				dati.getUtenti().get(principal.getName()),
+				dati.getInserzioni().get(idInserzione).getUtente(),
 				Integer.valueOf(risultato),
 				new Date());
-		
+
 		response.add(idInserzione);
 		response.add(request.getParameter("posizione"));
 		System.out.println(response.toString());

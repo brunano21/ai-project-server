@@ -56,7 +56,7 @@ public class AndroidInserzioneController {
 		this.dati = dati;
 	}
 	
-	@RequestMapping(value="/android/inserzione", method = RequestMethod.POST)
+	@RequestMapping(value="/android/inserzione/aggiungi", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONArray elaboraInserzione(HttpServletRequest request, Principal principal) {
 		System.out.println("Called: /android/inserzione");
@@ -74,7 +74,7 @@ public class AndroidInserzioneController {
 
 		int hashcode = new Long(request.getParameter("codiceBarre")).hashCode()*principal.getName().hashCode()*request.getParameter("data_inizio").hashCode()*request.getParameter("data_fine").hashCode();
 		String percorsoFoto = context.getRealPath("/")+"resources\\images"+File.separator+Integer.toString(hashcode)+".png";
-
+		System.out.println(percorsoFoto);
 		// eventuale inserimento del prodotto, se non presente nel sistema.
 		if(! dati.getProdotti().containsKey(Long.valueOf(request.getParameter("codiceBarre")))) {
 			// prodotto non presente nel sistema
@@ -88,15 +88,15 @@ public class AndroidInserzioneController {
 		// inserimento dell'inserzione
 		try {
 			dati.inserisciInserzione(dati.getUtenti().get(principal.getName()),
-					dati.getSupermercati().get(request.getParameter("supermercato")), 
-					dati.getProdotti().get(request.getParameter("codiceBarre")),
+					dati.getSupermercati().get(Integer.valueOf(request.getParameter("supermercato"))), 
+					dati.getProdotti().get(Long.valueOf(request.getParameter("codiceBarre"))),
 					Float.parseFloat(request.getParameter("prezzo")), 
 					new SimpleDateFormat("dd/MM/yyyy").parse(request.getParameter("data_inizio")), 
 					new SimpleDateFormat("dd/MM/yyyy").parse(request.getParameter("data_fine")), 
 					request.getParameter("descrizione"), 
 					percorsoFoto, 
-					new ArrayList<Argomenti>(Arrays.asList(new Argomenti(request.getParameter("argomento")))),
-					new ArrayList<String>(Arrays.asList(request.getParameter("valore_argomento"))));
+					(request.getParameter("argomento") != null) ? new ArrayList<Argomenti>(Arrays.asList(new Argomenti(request.getParameter("argomento")))) : null,
+					(request.getParameter("valore_argomento") != null) ? new ArrayList<String>(Arrays.asList(request.getParameter("valore_argomento"))) : null);
 		} catch (NumberFormatException | ParseException e1) {
 			e1.printStackTrace();
 		}

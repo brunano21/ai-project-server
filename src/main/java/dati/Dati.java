@@ -56,7 +56,7 @@ import org.springframework.stereotype.Service;
 public class Dati {
 
 	private static volatile Dati istanza;
-	
+
 	private volatile Map<String,Utente> mappaUtente = new ConcurrentHashMap<String, Utente>();
 	private volatile Map<Integer,ArgomentiInserzione> mappaArgomentiInserzione = new ConcurrentHashMap<Integer, ArgomentiInserzione>();
 	private volatile Map<Integer,Categoria> mappaCategorie = new ConcurrentHashMap<Integer, Categoria>();
@@ -79,7 +79,7 @@ public class Dati {
 	public int a;
 	private TimerSistemaCrediti timerSC;
 	private Timer timer;
-	
+
 	public static SessionFactory buildSessionFactory(){
 		try{
 			Configuration configuration = new Configuration().configure("hibernate.cfg.xml");		
@@ -112,7 +112,7 @@ public class Dati {
 			{
 				mappaCategorie.put(c.getIdCategoria(), c);
 			}
-			
+
 			for(ListaSpesaProdotti lsp : (List<ListaSpesaProdotti>)session.createQuery("from ListaSpesaProdotti").list())
 			{
 				mappaListaSpesaProdotti.put(lsp.getId(), lsp);
@@ -125,17 +125,17 @@ public class Dati {
 			{
 				mappaArgomenti.put(a.getArgomento(), a);
 			}
-			
+
 			for(Inserzione i : (List<Inserzione>)session.createQuery("from Inserzione").list())
 			{
 				mappaInserzioni.put(i.getIdInserzione(), i);
 			}
-			
+
 			for(ListaDesideri ld :(List<ListaDesideri>)session.createQuery("from ListaDesideri").list())
 			{
 				mappaListaDesideri.put(ld.getIdListaDesideri(), ld);
 			}
-			
+
 			for(ListaSpesa ls : (List<ListaSpesa>)session.createQuery("from ListaSpesa").list())
 			{
 				mappaListaSpesa.put(ls.getIdSpesa(), ls);
@@ -152,7 +152,7 @@ public class Dati {
 			{
 				mappaSottocategorie.put(s.getNome(), s);
 			}
-			
+
 			for(Supermercato s : (List<Supermercato>)session.createQuery("from Supermercato").list())
 			{
 				mappaSupermercati.put(s.getIdSupermercato(), s);
@@ -161,7 +161,7 @@ public class Dati {
 			{
 				mappaValutazioneInserzione.put(vi.getIdValutazioneInserzione(), vi);
 			}
-			
+
 			tx.commit();
 		}catch(RuntimeException e){
 			if(tx!=null)
@@ -171,11 +171,11 @@ public class Dati {
 			if(session!=null && session.isOpen())
 				session.close();
 		}
-		
+
 		// Inizializzazione Timer per Sistema a Crediti
 		setTimerSistemaCrediti();
 	}
-	
+
 	/***
 	 * Questo metodo inizializza il timer che scatterà per la prima volta alla mezzanotte del giorno in cui viene lanciato
 	 * e successivamente ogni 24 ore. Inoltre inizializza un oggetto della classe TimerSistemaCrediti che contiene il metodo (run) che
@@ -184,19 +184,19 @@ public class Dati {
 	public void setTimerSistemaCrediti() {
 		timerSC = new TimerSistemaCrediti();
 		timer = new Timer();
-		
+
 		Calendar cal = new GregorianCalendar();
 		System.out.println("#1: " + cal.getTime());
-		
+
 		cal.set(Calendar.HOUR, 11);
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 59);
-		
+
 		System.out.println("#2: " + cal.getTime());
 		System.out.println("#3: " + TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
-		
+
 		timer.schedule(timerSC, cal.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
-		
+
 		// SOLO TEST, fa scattare il timer un minuto dopo essere stato inizializzato e poi ogni 100 secondi
 		//cal.add(Calendar.MINUTE, +1);
 		//timer.schedule(timerSC, cal.getTime(), 100*1000);
@@ -209,35 +209,35 @@ public class Dati {
 		return istanza; 
 	}
 
-	
+
 	/**metodo get per ottenere tutti i vari argomenti delle inserzioni 
 	 * Es : litri, grammi etc etc
 	 * @return
 	 */
 	public Map<String,Argomenti> getArgomenti(){
-		
+
 		HashMap<String,Argomenti> argomenti = new HashMap<String, Argomenti>();
-		
+
 		argomenti.putAll(mappaArgomenti);
-		
+
 		return argomenti;
 	}
 
-	
-	
+
+
 	/**Inserimento di un argomento
 	 * @param arg1 nome dell'argomento
 	 */
 	public void inserisciArgomento (String arg1) {
 		if(arg1 == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
 			tx=session.beginTransaction();			
 			Argomenti arg = new Argomenti(arg1,new HashSet<ArgomentiInserzione>());
-			
+
 			mappaArgomenti.put(arg1, arg);
 
 			tx.commit();
@@ -264,14 +264,14 @@ public class Dati {
 		Argomenti argomento = null;
 
 		argomento = mappaArgomenti.get(nomeArgomento);
-		
+
 		if(argomento == null)
 			throw new RuntimeException("Elemento non trovato");
-		
+
 		return argomento;
 	}
-	
-	
+
+
 	/**modifica dell'argomento
 	 * @param idArgomento
 	 * @param nomeArgomentoNuovo
@@ -282,15 +282,15 @@ public class Dati {
 		Transaction tx = null;
 		if(nomeArgomento != null || nomeArgomentoNuovo == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Argomenti argomentoVecchio = null;
 		argomentoVecchio = mappaArgomenti.get(nomeArgomento);		
-		
+
 		if(argomentoVecchio==null)
 			throw new RuntimeException("elemento non trovato");
-		
+
 		Argomenti argomento = new Argomenti(nomeArgomentoNuovo,argomentoVecchio.getArgomentiInserziones());
-		
+
 		try{
 			tx=session.beginTransaction();			
 			session.update(argomento);
@@ -299,7 +299,7 @@ public class Dati {
 		}catch(Throwable ex){			
 			if(tx!=null)
 				tx.rollback();
-			
+
 			throw new RuntimeException(ex);			
 		}finally{
 			if(session!=null && session.isOpen()){
@@ -320,20 +320,20 @@ public class Dati {
 	public void inserisciCategoria(String nome,Set<Sottocategoria> sottocategorie,Set<Prodotto> prodotti){
 		if(nome == null || sottocategorie == null || prodotti == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try{
 			tx=session.beginTransaction();
-			
+
 			Categoria categoria = new Categoria(nome, sottocategorie);
 
 			Integer idCategoria= (Integer)session.save(categoria);
 
 
 			mappaCategorie.put(idCategoria, categoria);
-			
-			
+
+
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx!=null)
@@ -353,9 +353,9 @@ public class Dati {
 	 * @return
 	 */
 	public Map<Integer,Categoria> getCategorie(){
-		
+
 		HashMap<Integer, Categoria> categorie = new HashMap<Integer, Categoria>();
-		
+
 		categorie.putAll(mappaCategorie);
 
 		return categorie;
@@ -376,32 +376,37 @@ public class Dati {
 	public int inserisciInserzione(Utente utente,Supermercato supermercato,Prodotto prodotto,float prezzo,Date dataInizio,Date dataFine,String descrizione,String foto,List<Argomenti> argomenti,List<String> valori) {
 		if(utente == null || supermercato == null || prodotto == null || prezzo <= 0 || dataInizio == null )
 			throw new RuntimeException("errore nell'immissione dei parametri");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		int idInserzione = -1;
 		boolean salvataggioArgomentiInserzione = false;
 		Set<ArgomentiInserzione> argomentiInserzioneSalvati = new HashSet<ArgomentiInserzione>();
 		try {
-			
+
 			tx=session.beginTransaction();	
 			Inserzione inserzione = new Inserzione(utente, supermercato, prodotto, prezzo, dataInizio, dataFine, descrizione, foto,0,(float)0.0,new HashSet<ListaDesideriProdotti>(),new HashSet<ListaSpesaProdotti>(),new HashSet<ValutazioneInserzione>(),new HashSet<ArgomentiInserzione>());
 			idInserzione=(Integer)session.save(inserzione);
-			Iterator<Argomenti> itArgomenti = argomenti.iterator();
-			Iterator<String> itValori = valori.iterator();
-			Argomenti a = null;
-			String valore = null;
-			while(itArgomenti.hasNext() && itValori.hasNext()){
-				a = itArgomenti.next();
-				valore = itValori.next();
-				ArgomentiInserzioneId id = new ArgomentiInserzioneId(idInserzione, a.getArgomento());
-				ArgomentiInserzione ai = new ArgomentiInserzione(id, inserzione, a,new Float(valore));
-				session.save(ai);
-				mappaArgomentiInserzione.put(id.hashCode(), ai);
-				mappaArgomenti.get(ai.getArgomenti().getArgomento()).getArgomentiInserziones().add(a);
-				argomentiInserzioneSalvati.add(ai);
-				if(!salvataggioArgomentiInserzione)
-					salvataggioArgomentiInserzione = true;
+
+			if(argomenti != null && valori != null) {
+
+				Iterator<Argomenti> itArgomenti = argomenti.iterator();
+				Iterator<String> itValori = valori.iterator();
+				Argomenti a = null;
+				String valore = null;
+
+				while(itArgomenti.hasNext() && itValori.hasNext()){
+					a = itArgomenti.next();
+					valore = itValori.next();
+					ArgomentiInserzioneId id = new ArgomentiInserzioneId(idInserzione, a.getArgomento());
+					ArgomentiInserzione ai = new ArgomentiInserzione(id, inserzione, a,new Float(valore));
+					session.save(ai);
+					mappaArgomentiInserzione.put(id.hashCode(), ai);
+					mappaArgomenti.get(ai.getArgomenti().getArgomento()).getArgomentiInserziones().add(a);
+					argomentiInserzioneSalvati.add(ai);
+					if(!salvataggioArgomentiInserzione)
+						salvataggioArgomentiInserzione = true;
+				}
 			}
 			inserzione.setArgomentiInserziones(argomentiInserzioneSalvati);
 			session.update(inserzione);
@@ -428,7 +433,7 @@ public class Dati {
 		}
 		return idInserzione;
 	}
-	
+
 	/**modifica di un'inserzione
 	 * @param idInserzione
 	 * @param utente
@@ -448,10 +453,10 @@ public class Dati {
 		Transaction tx = null;
 		boolean eliminazioneArgomentiInserzione = false;
 		boolean inserimentoArgomentiInserzione = false;
-		
+
 		if(idInserzione <= 0 || utente == null || supermercato == null || prodotto == null || prezzo <= 0 || dataInizio == null || dataFine == null || descrizione == null || foto == null || argomenti == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Inserzione inserzioneVecchia = null;
 		inserzioneVecchia=mappaInserzioni.get(idInserzione);
 		if(inserzioneVecchia == null)
@@ -459,26 +464,26 @@ public class Dati {
 		Set<ArgomentiInserzione> argomentiInserzione = new HashSet<ArgomentiInserzione>();
 		Set<ArgomentiInserzione> argomentiInserzioneEliminati = new HashSet<ArgomentiInserzione>();
 		Set<ArgomentiInserzione> argomentiInserzioneInseriti = new HashSet<ArgomentiInserzione>();
-		
+
 		Iterator<Argomenti> itArgomenti = argomenti.iterator();
 		Iterator<String> itValori = valori.iterator();
 		Argomenti a = null;
 		String valore = null;
-		
+
 		while(itArgomenti.hasNext() && itValori.hasNext()){
 			a = itArgomenti.next();
 			valore = itValori.next();
 			ArgomentiInserzioneId id = new ArgomentiInserzioneId(idInserzione, a.getArgomento());
 			ArgomentiInserzione ai = new ArgomentiInserzione(id, inserzioneVecchia, a,new Float(valore));			
 		}	
-		
+
 		Inserzione inserzione = new Inserzione(utente, supermercato, prodotto, prezzo, dataInizio, dataFine, descrizione, foto,0,(float)0.0,inserzioneVecchia.getListaDesideriProdottis(),inserzioneVecchia.getListaSpesaProdottis(),inserzioneVecchia.getValutazioneInserziones(),argomenti);
 		inserzione.setIdInserzione(idInserzione);
-		
+
 		try{
 			tx=session.beginTransaction();
 			session.update(inserzione);			
-			
+
 			for(ArgomentiInserzione ai : (Set<ArgomentiInserzione>)inserzioneVecchia.getArgomentiInserziones()){
 				if(!argomentiInserzione.contains(ai)){
 					session.delete(ai);
@@ -489,7 +494,7 @@ public class Dati {
 						eliminazioneArgomentiInserzione = true;
 				}
 			}
-			
+
 			for(ArgomentiInserzione ai : argomentiInserzione){				
 				ai.setInserzione(inserzioneVecchia);
 				if(!inserzioneVecchia.getArgomentiInserziones().contains(ai)){
@@ -499,7 +504,7 @@ public class Dati {
 					argomentiInserzioneInseriti.add(ai);
 					if(!inserimentoArgomentiInserzione)
 						inserimentoArgomentiInserzione = true;
-					
+
 				}
 			}
 			if(!utente.equals(inserzioneVecchia.getUtente())){
@@ -517,7 +522,7 @@ public class Dati {
 				mappaProdotti.get(inserzioneVecchia.getProdotto().getCodiceBarre()).getInserziones().remove(inserzioneVecchia);
 				mappaProdotti.get(prodotto.getCodiceBarre()).getInserziones().add(inserzioneVecchia);		
 			}
-			
+
 
 			tx.commit();
 		}catch(Throwable ex){
@@ -561,11 +566,11 @@ public class Dati {
 			throw new RuntimeException("elemento non trovato nelle inserzioni");
 		Set<ValutazioneInserzione> valutazioniEliminate = new HashSet<ValutazioneInserzione>();
 		Set<ArgomentiInserzione> argomentiInserzioneEliminati = new HashSet<ArgomentiInserzione>();
-		
+
 		try{
 			tx=session.beginTransaction();
 			session.delete(inserzioneDaEliminare);
-			
+
 			for(ValutazioneInserzione v : (Set<ValutazioneInserzione>)inserzioneDaEliminare.getValutazioneInserziones()){
 				session.delete(v);
 				mappaValutazioneInserzione.remove(v.getIdValutazioneInserzione());
@@ -573,18 +578,18 @@ public class Dati {
 				if(!eliminazioneValutazioneInserzione)
 					eliminazioneValutazioneInserzione = true;
 			}
-			
+
 			for(ArgomentiInserzione ai : (Set<ArgomentiInserzione>)inserzioneDaEliminare.getArgomentiInserziones()){
-				
+
 				session.delete(ai);
 				mappaArgomentiInserzione.remove(ai.getId().hashCode());
 				mappaArgomenti.get(ai.getArgomenti().getArgomento()).getArgomentiInserziones().remove(ai);
 				argomentiInserzioneEliminati.add(ai);
 				if(!eliminazioneArgomentiInserzione)
 					eliminazioneArgomentiInserzione = true;
-				
+
 			}
-			
+
 			mappaUtente.get(inserzioneDaEliminare.getUtente().getMail()).getInserziones().remove(inserzioneDaEliminare);
 			mappaSupermercati.get(inserzioneDaEliminare.getSupermercato().getIdSupermercato()).getInserziones().remove(inserzioneDaEliminare);
 			mappaProdotti.get(inserzioneDaEliminare.getProdotto().getCodiceBarre()).getInserziones().remove(inserzioneDaEliminare);
@@ -629,7 +634,7 @@ public class Dati {
 		Transaction tx = null;
 		try {
 			tx=session.beginTransaction();		
-			
+
 			ListaDesideri listaDesideri = new ListaDesideri(idListaDesideri, utente, nomeListaDesideri);
 			session.save(listaDesideri);
 			mappaListaDesideri.put(idListaDesideri, listaDesideri);
@@ -646,7 +651,7 @@ public class Dati {
 			session=null;
 		}
 	}
-	
+
 	/**
 	 * Modifica il nome di una lista desideri
 	 * @param idListaDesideri
@@ -660,21 +665,21 @@ public class Dati {
 		Transaction tx = null;
 		try {
 			tx=session.beginTransaction();		
-			
+
 			if(!mappaListaDesideri.containsKey(idListaDesideri))
 				throw new RuntimeException("Id lista desideri non trovato: " + idListaDesideri);
-			
+
 			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
 				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
-			
-			
+
+
 			ListaDesideri tmpListaDesideri = mappaListaDesideri.get(idListaDesideri);
-			
+
 			tmpListaDesideri.setNomeListaDesideri(nuovoNomeListaDesideri);
 			session.update(tmpListaDesideri);
-			
+
 			mappaListaDesideri.put(idListaDesideri, tmpListaDesideri);
-			
+
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx != null) {
@@ -687,7 +692,7 @@ public class Dati {
 			session=null;
 		}
 	}
-	
+
 	/**
 	 * Elimina una lista dei desideri dal database, con i relativi elementi eventualmente inseriti
 	 * @param idListaDesideri
@@ -700,27 +705,27 @@ public class Dati {
 		Transaction tx = null;
 		try {
 			tx=session.beginTransaction();		
-			
+
 			if(!mappaListaDesideri.containsKey(idListaDesideri))
 				throw new RuntimeException("Id lista desideri non trovato: " + idListaDesideri);
-			
+
 			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
 				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
-			
-			
+
+
 			//rimozione anche dalla lista_desideri_prodotti
 			Query query = session.createQuery("FROM ListaDesideriProdotti WHERE ID_ListaDesideri = :id");
 			query.setParameter("id", idListaDesideri);
 			List prodotti = query.list();
-			
+
 			for (Iterator iterator = prodotti.iterator(); iterator.hasNext();) {
 				ListaDesideriProdotti prodotto = (ListaDesideriProdotti) iterator.next();
 				mappaListaDesideriProdotti.remove(prodotto.getId());
 				session.delete(prodotto);
 			}
-			
+
 			session.delete(mappaListaDesideri.get(idListaDesideri));
-			
+
 			mappaUtente.get(utente.getMail()).getListaDesideris().remove(mappaListaDesideri.get(idListaDesideri));
 			mappaListaDesideri.remove(idListaDesideri);
 			tx.commit();
@@ -735,7 +740,7 @@ public class Dati {
 			session=null;
 		}
 	}
-	
+
 	/**
 	 * Inserisci un elemento all'interno di una lista dei desideri.
 	 * @param idListaDesideri
@@ -752,20 +757,20 @@ public class Dati {
 		Transaction tx = null;
 		try {
 			tx=session.beginTransaction();		
-			
+
 			if(!mappaListaDesideri.containsKey(idListaDesideri))
 				throw new RuntimeException("Id lista desideri non trovato: " + idListaDesideri);
-			
+
 			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
 				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
 			//l'inserzione suggerita dal server è messa a null all'inizio, fare attenzione
 			ListaDesideriProdotti elemento = new ListaDesideriProdotti(new ListaDesideriProdottiId(idElemento, idListaDesideri), mappaInserzioni.get(idInserzione), mappaListaDesideri.get(idListaDesideri), descrizione, quantita);
-			
+
 			mappaListaDesideriProdotti.put(new ListaDesideriProdottiId(idElemento, idListaDesideri), elemento);
 			session.save(elemento);
-			
+
 			// vedere inoltre se aggiornare il set ListaDesideri dell'utente
-			
+
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx != null) {
@@ -793,24 +798,24 @@ public class Dati {
 		Transaction tx = null;
 		try {
 			tx=session.beginTransaction();		
-			
+
 			if(!mappaListaDesideri.containsKey(idListaDesideri))
 				throw new RuntimeException("Id lista desideri non trovato: " + idListaDesideri);
-			
+
 			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
 				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
-						
+
 			if(!mappaListaDesideriProdotti.containsKey(new ListaDesideriProdottiId(idElemento, idListaDesideri)))
 				throw new RuntimeException("Id elemento non trovato: " + idElemento);
-			
+
 			ListaDesideriProdotti elemento = (ListaDesideriProdotti) mappaListaDesideriProdotti.get(new ListaDesideriProdottiId(idElemento, idListaDesideri));
-			
+
 			elemento.setDescrizione(descrizione);
-			
+
 			session.update(elemento);
-			
+
 			// vedere inoltre se aggiornare il set ListaDesideri dell'utente
-			
+
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx != null) {
@@ -823,7 +828,7 @@ public class Dati {
 			session=null;
 		}
 	}
-	
+
 	/**
 	 * * Modifica la quantità di un elemento della lista dei desideri
 	 * @param idListaDesideri
@@ -838,22 +843,22 @@ public class Dati {
 		Transaction tx = null;
 		try {
 			tx=session.beginTransaction();		
-			
+
 			if(!mappaListaDesideri.containsKey(idListaDesideri))
 				throw new RuntimeException("Id lista desideri non trovato: " + idListaDesideri);
-			
+
 			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
 				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
-			
+
 			if(!mappaListaDesideriProdotti.containsKey(new ListaDesideriProdottiId(idElemento, idListaDesideri)))
 				throw new RuntimeException("Id elemento non trovato: " + idElemento);
-			
+
 			ListaDesideriProdotti elemento = (ListaDesideriProdotti) mappaListaDesideriProdotti.get(new ListaDesideriProdottiId(idElemento, idListaDesideri));
-			
+
 			elemento.setQuantità(quantita);
-			
+
 			session.update(elemento);
-			
+
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx != null) {
@@ -866,7 +871,7 @@ public class Dati {
 			session=null;
 		}
 	}
-	
+
 	/**
 	 * Elimina un elemento all'interno della lista dei desideri
 	 * @param idListaDesideri
@@ -880,21 +885,21 @@ public class Dati {
 		Transaction tx = null;
 		try {
 			tx=session.beginTransaction();		
-			
+
 			if(!mappaListaDesideri.containsKey(idListaDesideri))
 				throw new RuntimeException("Id lista desideri non trovato: " + idListaDesideri);
-			
+
 			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
 				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
-			
+
 			if(!mappaListaDesideriProdotti.containsKey(new ListaDesideriProdottiId(idElemento, idListaDesideri)))
 				throw new RuntimeException("Id elemento non trovato: " + idElemento);
-			
+
 			ListaDesideriProdotti elemento = (ListaDesideriProdotti) mappaListaDesideriProdotti.get(new ListaDesideriProdottiId(idElemento, idListaDesideri));
-			
+
 			session.delete(elemento);
 			mappaListaDesideriProdotti.remove(new ListaDesideriProdottiId(idElemento, idListaDesideri));
-			
+
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx != null) {
@@ -907,7 +912,7 @@ public class Dati {
 			session=null;
 		}
 	}
-	
+
 	/**
 	 * A seconda del valore acquistato, questa funzione contrassegna come acquistato o no. In particolare se acquistato = true, allora la tupla relativa all'elemento viene spostato dalla tabella lista_desideri alla tabella lista_spesa, aggiungendo anche un time stamp. Se il parametro acquistato = false allora viene eseguito il processo inverso, scartando ovviamente il timestamp. 
 	 * @param idListaDesideri
@@ -921,25 +926,25 @@ public class Dati {
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
-					
-			
+
+
 			if(!mappaListaDesideri.containsKey(idListaDesideri))
 				throw new RuntimeException("Id lista desideri non trovato: " + idListaDesideri);
-			
+
 			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
 				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
-			
+
 			if(acquistato) {
 				tx=session.beginTransaction();
 				// sposto la tupla dalla lista desideri alla lista spesa
-				
+
 				ListaDesideriProdottiId prodottoId =  new ListaDesideriProdottiId(idElemento, idListaDesideri);
-				
+
 				if(!mappaListaDesideriProdotti.containsKey(prodottoId))
 					throw new RuntimeException("Id elemento non trovato: " + idElemento);
-				
+
 				ListaDesideriProdotti prodotto = (ListaDesideriProdotti) mappaListaDesideriProdotti.get(prodottoId);
-				
+
 				if(!mappaListaSpesa.containsKey(idListaDesideri)) {
 					ListaDesideri listaDesideri = (ListaDesideri) mappaListaDesideri.get(idListaDesideri);
 					ListaSpesa listaSpesa = new ListaSpesa(idListaDesideri, utente, listaDesideri.getNomeListaDesideri());
@@ -947,9 +952,9 @@ public class Dati {
 					mappaListaSpesa.put(idListaDesideri, listaSpesa);
 					mappaUtente.get(utente.getMail()).getListaSpesas().add(listaSpesa);
 				}
-				
+
 				ListaSpesaProdotti prodottoSpesa = new ListaSpesaProdotti(new ListaSpesaProdottiId(idElemento, idListaDesideri),prodotto.getInserzione(), mappaListaSpesa.get(idListaDesideri), prodotto.getDescrizione(), new Date(), prodotto.getQuantità());
-				
+
 				mappaListaSpesaProdotti.put(new ListaSpesaProdottiId(idElemento, idListaDesideri), prodottoSpesa);
 				session.save(prodottoSpesa);
 				mappaListaDesideriProdotti.remove(prodotto);
@@ -959,29 +964,29 @@ public class Dati {
 			else { 
 				tx=session.beginTransaction();
 				// sposto la tupla dalla lista spesa alla lista desideri
-				
+
 				ListaSpesaProdottiId prodottoId =  new ListaSpesaProdottiId(idElemento, idListaDesideri);
-				
+
 				if(!mappaListaSpesaProdotti.containsKey(prodottoId))
 					throw new RuntimeException("Id elemento non trovato: " + idElemento);
-				
+
 				ListaSpesaProdotti prodottoSpesa = (ListaSpesaProdotti) mappaListaSpesaProdotti.get(prodottoId);
-				
+
 				/*if(!mappaListaDesideri.containsKey(idListaDesideri)) {
 					ListaSpesa listaSpesa = (ListaSpesa) mappaListaSpesa.get(idListaDesideri);
 					Lista
 				}*/
-				
+
 				ListaDesideriProdotti prodotto = new ListaDesideriProdotti(new ListaDesideriProdottiId(idElemento, idListaDesideri), prodottoSpesa.getInserzione(), mappaListaDesideri.get(idListaDesideri),prodottoSpesa.getDescrizione(), prodottoSpesa.getQuantità());
 				mappaListaDesideriProdotti.put(new ListaDesideriProdottiId(idElemento, idListaDesideri), prodotto);
-				
+
 				mappaListaSpesaProdotti.remove(prodottoSpesa);
 				session.delete(prodottoSpesa);
 				session.save(prodotto);
 				tx.commit();
 			}
-			
-			
+
+
 		}catch(Throwable ex){
 			if(tx != null) {
 				tx.rollback();
@@ -993,9 +998,9 @@ public class Dati {
 			session=null;
 		}
 	}
-	
-	
-	
+
+
+
 	/**Inserimento di una lista desideri
 	 * @param utente
 	 * @param listaElementi 
@@ -1003,7 +1008,7 @@ public class Dati {
 	 * @param nomeListaDesideri
 	 * @param descrizione
 	 */
-	
+
 	/*
 	public void inserisciListaDesideri(int idListaDesideri,Utente utente,Set<ListaDesideriProdotti> listaElementi,String nomeListaDesideri,String descrizione){
 		if(utente == null || listaElementi == null || nomeListaDesideri == null || descrizione == null)
@@ -1014,20 +1019,20 @@ public class Dati {
 		Set<ListaDesideriProdotti> listaDesideriProdottiAggiunti = new HashSet<ListaDesideriProdotti>();
 		try {
 			tx=session.beginTransaction();		
-			
+
 			ListaDesideri listaDesideri = new ListaDesideri(idListaDesideri,utente, nomeListaDesideri, new HashSet<ListaDesideriProdotti>());
 			session.save(listaDesideri);
-			
+
 			for(ListaDesideriProdotti listaDesideriProdotto : listaElementi){
 				listaDesideri.getListaDesideriProdottis().add(listaDesideriProdotto);
 				session.save(listaDesideriProdotto);
 				mappaListaDesideriProdotti.put(listaDesideriProdotto.getId(), listaDesideriProdotto);
 				listaDesideriProdottiAggiunti.add(listaDesideriProdotto);
-				
+
 				if(!salvataggioListaDesideriProdotti)
 					salvataggioListaDesideriProdotti=true;
 			}
-					
+
 			mappaListaDesideri.put(idListaDesideri,listaDesideri);
 			mappaUtente.get(utente.getMail()).getListaDesideris().add(listaDesideri);
 			tx.commit();
@@ -1039,7 +1044,7 @@ public class Dati {
 					mappaListaDesideriProdotti.remove(ldp.getId());
 				}
 			}
-				
+
 			throw new RuntimeException(ex);
 		}finally{
 			if(session!=null && session.isOpen()){
@@ -1048,8 +1053,8 @@ public class Dati {
 			session=null;
 		}
 	}
-	*/
-	
+	 */
+
 	/**modifica di una lista desideri
 	 * @param idListaDesideri 
 	 * id della listadesideri vecchia da modificare
@@ -1066,7 +1071,7 @@ public class Dati {
 		Transaction tx = null;
 		if(idListaDesideri <= 0 || utente == null || nomeListaDesideri == null || listaDesideriElementi == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		ListaDesideri listaDesideri = new ListaDesideri(idListaDesideri,utente, nomeListaDesideri,new HashSet<ListaDesideriProdotti>());
 		boolean salvataggioListaDesideriProdotti = false;
 		boolean eliminazioneListaDesideriProdotti = false;
@@ -1080,7 +1085,7 @@ public class Dati {
 		try {
 			tx=session.beginTransaction();
 			session.update(listaDesideri);		
-			
+
 			for(ListaDesideriProdotti ldp : (Set<ListaDesideriProdotti>) listaDesideriVecchia.getListaDesideriProdottis()){
 				if(!listaDesideriElementi.contains(ldp)){
 					session.delete(ldp);
@@ -1102,35 +1107,35 @@ public class Dati {
 			}
 			mappaListaDesideri.remove(idListaDesideri);
 			mappaListaDesideri.put(idListaDesideri, listaDesideri);
-			
+
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx!=null)
 				tx.rollback();			
-			
+
 			if(eliminazioneListaDesideriProdotti && !salvataggioListaDesideriProdotti) {
-								
+
 				for(ListaDesideriProdotti ldp : listaDesideriProdottiRimossi){					
 					mappaListaDesideriProdotti.put(ldp.getId(),ldp);
 				}
 			}
-			
+
 			if(salvataggioListaDesideriProdotti && !eliminazioneListaDesideriProdotti){
-				
-				
+
+
 				for(ListaDesideriProdotti ldp : listaDesideriProdottiAggiunti){
 					mappaListaDesideriProdotti.remove(ldp.getId());
 				}
-				
+
 			}
-			
+
 			if(salvataggioListaDesideriProdotti && eliminazioneListaDesideriProdotti){
-				
-				
+
+
 				for(ListaDesideriProdotti ldp : listaDesideriProdottiAggiunti){
 					mappaListaDesideriProdotti.remove(ldp.getId());
 				}
-				
+
 				for(ListaDesideriProdotti ldp : listaDesideriProdottiRimossi){					
 					mappaListaDesideriProdotti.put(ldp.getId(),ldp);
 				}				
@@ -1143,12 +1148,12 @@ public class Dati {
 			session=null;
 		}
 	}
-	*/
-	
+	 */
+
 	/**Eliminazione di una lista desideri
 	 * @param idListaDesideri
 	 */
-	
+
 	/*
 	public void eliminaListaDesideri(int idListaDesideri) {
 		if(idListaDesideri <= 0)
@@ -1163,20 +1168,20 @@ public class Dati {
 			throw new RuntimeException("elemento non trovato");
 		try {
 			tx=session.beginTransaction();			
-				
+
 			for(ListaDesideriProdotti ldp : (Set<ListaDesideriProdotti>)listaDesideri.getListaDesideriProdottis()) {					
 				session.delete(ldp);
 				mappaListaDesideriProdotti.remove(ldp.getId());
 				listaDesideriProdotti.add(ldp);
-				
+
 				if(!eliminazioneListaDesideriProdotti)
 					eliminazioneListaDesideriProdotti = true;
 			}
-			
+
 			session.delete(listaDesideri);
 			mappaListaDesideri.remove(listaDesideri.getIdListaDesideri());
 			mappaUtente.get(listaDesideri.getUtente().getMail()).getListaDesideris().remove(listaDesideri);			
-			
+
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx!=null)
@@ -1199,9 +1204,9 @@ public class Dati {
 	 * @param idListaDesideri
 	 * @return
 	 */
-	
+
 	public ListaDesideri getListaDesideri(int idListaDesideri){
-	
+
 		ListaDesideri ld = mappaListaDesideri.get(idListaDesideri);
 		if(ld==null)
 			throw new RuntimeException("elemento non trovato");
@@ -1225,10 +1230,10 @@ public class Dati {
 		boolean salvataggioListaSpesaProdotti = false;
 		try{
 			tx=session.beginTransaction();			
-			
+
 			ListaSpesa listaspesa = new ListaSpesa(idSpesa,utente, nomeListaSpesa);
 			session.save(listaspesa);
-			
+
 			for(ListaSpesaProdotti listaSpesaProdotto : prodottiQuantita){
 				session.save(listaSpesaProdotto);
 				mappaListaSpesaProdotti.put(listaSpesaProdotto.getId(), listaSpesaProdotto);
@@ -1236,10 +1241,10 @@ public class Dati {
 				if(!salvataggioListaSpesaProdotti)
 					salvataggioListaSpesaProdotti=true;
 			}
-		
+
 			mappaListaSpesa.put(idSpesa,listaspesa);
 			mappaUtente.get(utente.getMail()).getListaSpesas().add(listaspesa);
-			
+
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx!=null)
@@ -1257,7 +1262,7 @@ public class Dati {
 			session=null;
 		}
 	}
-	*/
+	 */
 	/**Modifica di una ListaSpesa
 	 * @param idSpesa
 	 * @param utente
@@ -1269,10 +1274,10 @@ public class Dati {
 	public void modificaListaSpesa(int idSpesa,Utente utente,String nomeListaSpesa,Set<ListaSpesaProdotti> prodottiQuantita){
 		if(utente == null || prodottiQuantita == null || nomeListaSpesa == null )
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
-				
+
 		Set<ListaSpesaProdotti> listaSpesaProdottiVecchia = new HashSet<ListaSpesaProdotti>();
 		Set<ListaSpesaProdotti> listaSpesaProdottiInseriti = new HashSet<ListaSpesaProdotti>();
 		Set<ListaSpesaProdotti> listaSpesaProdottiRimossi = new HashSet<ListaSpesaProdotti>();
@@ -1280,10 +1285,10 @@ public class Dati {
 		boolean eliminazioneListaSpesaProdottiVecchia = false;
 		ListaSpesa listaSpesa = new ListaSpesa(idSpesa,utente, nomeListaSpesa, new HashSet<ListaSpesaProdotti>());
 		ListaSpesa listaSpesaVecchia = mappaListaSpesa.get(idSpesa);		
-		
+
 		if(listaSpesaVecchia == null)
 			throw new RuntimeException("elemento non trovato");
-		
+
 		listaSpesaProdottiVecchia.addAll(listaSpesaVecchia.getListaSpesaProdottis());
 
 		try{
@@ -1291,7 +1296,7 @@ public class Dati {
 			session.update(listaSpesa);					
 			for(ListaSpesaProdotti listaSpesaProdotto : prodottiQuantita){
 				if(!listaSpesaProdottiVecchia.contains(listaSpesaProdotto)){
-				
+
 					session.save(listaSpesaProdotto);
 					listaSpesaProdottiInseriti.add(listaSpesaProdotto);
 					mappaListaSpesaProdotti.put(listaSpesaProdotto.getId(), listaSpesaProdotto);
@@ -1300,7 +1305,7 @@ public class Dati {
 				}
 				listaSpesa.getListaSpesaProdottis().add(listaSpesaProdotto);	
 			}
-			
+
 			for(ListaSpesaProdotti lsp :(Set<ListaSpesaProdotti>) listaSpesaVecchia.getListaSpesaProdottis()){
 				if(!prodottiQuantita.contains(lsp)){
 					session.delete(lsp);
@@ -1312,40 +1317,40 @@ public class Dati {
 			}
 			mappaListaSpesa.remove(idSpesa);
 			mappaListaSpesa.put(listaSpesa.getIdSpesa(), listaSpesa);
-			
+
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx!=null)
 				tx.rollback();
 			if(eliminazioneListaSpesaProdottiVecchia && !salvataggioListaSpesaProdotti){
-				
+
 				for(ListaSpesaProdotti lsp : listaSpesaProdottiRimossi){
 					mappaListaSpesaProdotti.put(lsp.getId(), lsp);
 				}
 			}
 			if(salvataggioListaSpesaProdotti && !eliminazioneListaSpesaProdottiVecchia){
-				
+
 
 				for(ListaSpesaProdotti lsp : listaSpesaProdottiInseriti){
 					mappaListaSpesaProdotti.remove(lsp.getId());
 				}
-				
+
 				for(ListaSpesaProdotti lsp : listaSpesaProdottiRimossi){
 					mappaListaSpesaProdotti.put(lsp.getId(), lsp);
 				}
-				
+
 			}
 			if(salvataggioListaSpesaProdotti && eliminazioneListaSpesaProdottiVecchia){
-				
+
 
 				for(ListaSpesaProdotti lsp : listaSpesaProdottiInseriti){
 					mappaListaSpesaProdotti.remove(lsp.getId());
 				}
-				
+
 				for(ListaSpesaProdotti lsp : listaSpesaProdottiRimossi){
 					mappaListaSpesaProdotti.put(lsp.getId(), lsp);
 				}
-				
+
 			}
 			throw new RuntimeException(ex);
 		}finally{
@@ -1355,7 +1360,7 @@ public class Dati {
 			session=null;
 		}
 	}
-	*/
+	 */
 	/**eliminazione di una ListaSpesa
 	 * @param idSpesa
 	 */
@@ -1363,20 +1368,20 @@ public class Dati {
 	public void eliminaListaSpesa(int idSpesa){
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
-		
+
 		if(idSpesa<=0)
 			throw new RuntimeException("id non valido");
-		
+
 		ListaSpesa listaSpesaDaEliminare = mappaListaSpesa.get(idSpesa);
-		
+
 		if(listaSpesaDaEliminare == null)
 			throw new RuntimeException("elemento non trovato");
-		
+
 		Set<ListaSpesaProdotti> listaSpesaProdotti = new HashSet<ListaSpesaProdotti>();
 		boolean eliminazioneListaSpesaProdotti = false;
 		try{
 			tx=session.beginTransaction();
-			
+
 			session.delete(listaSpesaDaEliminare);
 			mappaListaSpesa.remove(listaSpesaDaEliminare);
 
@@ -1389,13 +1394,13 @@ public class Dati {
 			}
 
 			mappaUtente.get(listaSpesaDaEliminare.getUtente().getMail()).getListaSpesas().remove(listaSpesaDaEliminare);
-			
+
 			tx.commit();
 		}catch(Throwable ex){
-			
+
 			if(tx!=null)
 				tx.rollback();
-			
+
 			if(eliminazioneListaSpesaProdotti){
 				mappaListaSpesa.put(listaSpesaDaEliminare.getIdSpesa(), listaSpesaDaEliminare);
 				for(ListaSpesaProdotti lsp : listaSpesaProdotti){
@@ -1410,18 +1415,18 @@ public class Dati {
 			session=null;
 		}
 	}
-	*/
+	 */
 	/**metodo get per una listaSpesa
 	 * @param idSpesa
 	 * @return
 	 */
-	
+
 	public ListaSpesa getListaSpesa(int idSpesa){
 		ListaSpesa listaSpesa = mappaListaSpesa.get(idSpesa);
-		
+
 		if(listaSpesa==null)
 			throw new RuntimeException("elemento non trovato");
-		
+
 		return listaSpesa;
 	}
 
@@ -1432,7 +1437,7 @@ public class Dati {
 	 * @return
 	 */
 	public int inserisciProdotto(Sottocategoria sottoCategoria,long codiceBarre,String descrizione){
-		
+
 		if(codiceBarre <=0 || descrizione == null )
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
 
@@ -1468,22 +1473,22 @@ public class Dati {
 	 */
 	public void modificaProdotto(Sottocategoria sottoCategoria,int idProdotto,long codiceBarre,String descrizione){
 		Prodotto prodottoVecchio = mappaProdotti.get(codiceBarre);
-		
+
 		if(prodottoVecchio == null)
 			throw new RuntimeException("elemento non trovato");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
-		
+
 		if(idProdotto <= 0 || codiceBarre<=0 || descrizione == null)
 			throw new RuntimeException("tutti gli argomenti devono essere immessi");
-		
+
 		long codiceBarreVecchio = prodottoVecchio.getCodiceBarre();
 		Sottocategoria sottoCategoriaVecchia = prodottoVecchio.getSottocategoria();
 		String descrizioneVecchia = prodottoVecchio.getDescrizione();
 		Prodotto prodotto = new Prodotto(sottoCategoria, codiceBarre, descrizione, prodottoVecchio.getInserziones());
 		prodotto.setIdProdotto(idProdotto);
-		
+
 		try{
 			tx=session.beginTransaction();
 			session.update(prodotto);	
@@ -1526,12 +1531,12 @@ public class Dati {
 			try{
 				tx=session.beginTransaction();
 				session.delete(prodotto);
-				
+
 				for(Inserzione i : (Set<Inserzione>)prodotto.getInserziones()){
 					session.delete(i);
 					mappaInserzioni.remove(i.getIdInserzione());
 					inserzioni.add(i);
-					
+
 					if(!eliminazioneInserzione)
 						eliminazioneInserzione = true;
 				}				
@@ -1545,7 +1550,7 @@ public class Dati {
 						mappaInserzioni.put(i.getIdInserzione(),i);
 					}
 				}				
-				
+
 				throw new RuntimeException(ex);
 			}finally{
 				if(session!=null && session.isOpen()){
@@ -1566,7 +1571,7 @@ public class Dati {
 
 		HashMap<Long,Prodotto> prodotti = new HashMap<Long,Prodotto>();
 		prodotti.putAll(mappaProdotti);
-		
+
 		return prodotti;
 	}
 
@@ -1575,9 +1580,9 @@ public class Dati {
 	 */
 	public Map<Integer,Inserzione> getInserzioni(){
 		Map<Integer,Inserzione> inserzioni = new HashMap<Integer,Inserzione>();
-		
+
 		inserzioni.putAll(mappaInserzioni);
-		
+
 		return inserzioni;
 	}
 
@@ -1586,7 +1591,7 @@ public class Dati {
 	 */
 	public Map<Integer,Profilo> getProfili(){
 		HashMap<Integer,Profilo> profili = new HashMap<Integer,Profilo>();
-		
+
 		profili.putAll(mappaProfili);
 
 		return profili;
@@ -1604,7 +1609,7 @@ public class Dati {
 	public void inserisciProfilo(Utente utente,int creditiAcquisiti,int creditiPendenti,int reputazione,boolean premium,int contatoreInfrazioni){
 		if(utente == null || creditiAcquisiti<0 || creditiPendenti<0  || contatoreInfrazioni<0)
 			throw new RuntimeException("parametro/i non validi");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		Profilo profilo = new Profilo(utente, creditiAcquisiti, creditiPendenti, reputazione, premium, contatoreInfrazioni,0,0,0,0);
@@ -1642,7 +1647,7 @@ public class Dati {
 	public void modificaProfilo(int idProfilo,int creditiAcquisiti,int creditiPendenti,int reputazione,boolean premium,int contatoreInfrazioni, int numInserzioniPositive, int numInserzioniTotali, int numValutazioniPositive, int numValutazioniTotali){
 		if(idProfilo <0 || creditiAcquisiti<0 || creditiPendenti<0 ||  contatoreInfrazioni<0 || numInserzioniPositive<0 || numInserzioniTotali<0 || numValutazioniPositive<0 || numValutazioniTotali<0)
 			throw new RuntimeException("parametro/i non validi");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		Profilo profiloVecchio = mappaProfili.get(idProfilo);
@@ -1686,7 +1691,7 @@ public class Dati {
 	public void eliminaProfilo(int idProfilo){
 		if(idProfilo < 0)
 			throw new RuntimeException("id non valido");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		Profilo profiloVecchio = mappaProfili.get(idProfilo);
@@ -1721,7 +1726,7 @@ public class Dati {
 	public void inserisciSottocategoria(Categoria categoria,String nome){
 		if(categoria == null || nome == null)
 			throw new RuntimeException("tutti i parametri devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		Sottocategoria sottoCategoria = new Sottocategoria(categoria, nome,new HashSet<Prodotto>());
@@ -1752,14 +1757,14 @@ public class Dati {
 	public void modificaSottocategoria(int idSottoCategoria,Categoria categoria,String nome){
 		if(idSottoCategoria <=0 || categoria == null || nome == null)
 			throw new RuntimeException("parametri non corretti");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		Sottocategoria sottoCategoriaVecchia = mappaSottocategorie.get(idSottoCategoria);
-		
+
 		if(sottoCategoriaVecchia == null)
 			throw new RuntimeException("elemento non trovato");
-		
+
 		Sottocategoria sottoCategoria = new Sottocategoria(categoria, nome,sottoCategoriaVecchia.getProdottos());
 		sottoCategoria.setIdSottocategoria(idSottoCategoria);
 
@@ -1789,7 +1794,7 @@ public class Dati {
 	public void eliminaSottocategoria(int idSottoCategoria){
 		if(idSottoCategoria<=0)
 			throw new RuntimeException("id non valido");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		Sottocategoria sottoCategoriaVecchia = mappaSottocategorie.get(idSottoCategoria);	
@@ -1870,7 +1875,7 @@ public class Dati {
 	public void modificaSupermercato(int idSuperMercato,String nome,String indirizzo, String comune, String provincia, float latitudine,float longitudine){
 		if(idSuperMercato <=0 || nome == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		Supermercato superMercatoVecchio = mappaSupermercati.get(idSuperMercato);			
@@ -1917,11 +1922,11 @@ public class Dati {
 		try{
 			tx=session.beginTransaction();
 			session.delete(superMercatoVecchio);
-			
+
 			for(Inserzione i : (Set<Inserzione>)superMercatoVecchio.getInserziones()){
 				eliminaInserzione(i.getIdInserzione());
 			}
-			
+
 			mappaSupermercati.remove(superMercatoVecchio);
 			tx.commit();
 		}catch(Throwable ex){
@@ -1949,7 +1954,7 @@ public class Dati {
 	public int inserisciUtente(String email,String nickname,String password,Date dataRegistrazione,String numeroCasuale){
 		if(email == null || nickname == null || password == null || dataRegistrazione == null || numeroCasuale == null)
 			throw new RuntimeException("i parametri devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;	
 		Utente utente = new Utente(email, nickname, password, dataRegistrazione,false,numeroCasuale,new HashSet<ValutazioneInserzione>(), new HashSet<ValutazioneInserzione>(), new HashSet<ListaSpesa>(), new HashSet<Inserzione>(), new HashSet<Profilo>(), new HashSet<ListaDesideri>());		
@@ -1959,7 +1964,7 @@ public class Dati {
 			idUtente = (Integer)session.save(utente);
 			mappaUtente.put(email,utente);
 			tx.commit();
-			
+
 			inserisciProfilo(utente, 0, 0, 0, false, 0);
 		}catch(Throwable ex){
 			System.out.println("error" + ex.getMessage() + " - " + ex.getStackTrace());
@@ -1987,7 +1992,7 @@ public class Dati {
 	public void modificaUtente(int idUtente,String email,String nickname,String password,Date dataRegistrazione,boolean confermato,String numeroCasuale){
 		if(email == null || nickname == null || password == null || dataRegistrazione == null || numeroCasuale == null)
 			throw new RuntimeException("i parametri devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		Utente utenteVecchio = mappaUtente.get(email);
@@ -2001,7 +2006,7 @@ public class Dati {
 				utenteVecchio.getListaSpesas(), utenteVecchio.getInserziones(), 
 				utenteVecchio.getProfilos(), utenteVecchio.getListaDesideris());
 		utente.setIdUtente(idUtente);
-		
+
 		try{
 			tx=session.beginTransaction();
 			session.update(utente);
@@ -2033,7 +2038,7 @@ public class Dati {
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		Utente utenteVecchio = mappaUtente.get(idUtente);
-		
+
 		if(utenteVecchio==null)
 			throw new RuntimeException("elemento non trovato");
 
@@ -2048,7 +2053,7 @@ public class Dati {
 			for(ValutazioneInserzione v : (Set<ValutazioneInserzione>) utenteVecchio.getValutazioneInserzionesForIdUtenteInserzionista()){
 				v.setUtenteByIdUtenteInserzionista(null);
 			}
-			
+
 			for(ValutazioneInserzione v : (Set<ValutazioneInserzione>) utenteVecchio.getValutazioneInserzionesForIdUtenteValutatore()){
 				v.setUtenteByIdUtenteValutatore(null);
 			}
@@ -2088,7 +2093,7 @@ public class Dati {
 		utenti.putAll(mappaUtente);
 		return utenti;
 	}
-	
+
 	/** inserimento di una valutazione di un'inserzione
 	 * @param inserzione
 	 * @param inserzionista
@@ -2102,7 +2107,7 @@ public class Dati {
 
 		if(inserzionista == null || valutatore == null || data == null)
 			throw new RuntimeException("parametri non corretti");
-		
+
 		ValutazioneInserzione valutazioneInserzione = new ValutazioneInserzione(inserzione,inserzionista, valutatore, valutazione, data);
 		try{
 			tx=session.beginTransaction();
@@ -2123,7 +2128,7 @@ public class Dati {
 			session=null;
 		}
 	}
-	
+
 
 	/**modifica di una valutazione di una inserzione
 	 * @param idValutazione
@@ -2154,7 +2159,7 @@ public class Dati {
 				mappaUtente.get(valutazioneInserzioneVecchia.getUtenteByIdUtenteInserzionista().getMail()).getValutazioneInserzionesForIdUtenteInserzionista().remove(valutazioneInserzioneVecchia);
 				mappaUtente.get(inserzionista.getMail()).getValutazioneInserzionesForIdUtenteInserzionista().add(valutazioneInserzioneVecchia);
 			}
-			
+
 			if(!valutatore.equals(valutazioneInserzioneVecchia.getUtenteByIdUtenteValutatore())){
 				mappaUtente.get(valutazioneInserzioneVecchia.getUtenteByIdUtenteValutatore().getMail()).getValutazioneInserzionesForIdUtenteValutatore().remove(valutazioneInserzioneVecchia);
 				mappaUtente.get(valutatore.getMail()).getValutazioneInserzionesForIdUtenteValutatore().add(valutazioneInserzioneVecchia);
@@ -2164,7 +2169,7 @@ public class Dati {
 				mappaInserzioni.get(valutazioneInserzioneVecchia.getInserzione().getIdInserzione()).getValutazioneInserziones().remove(valutazioneInserzioneVecchia);
 				mappaInserzioni.get(inserzione.getIdInserzione()).getValutazioneInserziones().add(valutazioneInserzioneVecchia);
 			}
-			
+
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx!=null)
@@ -2223,7 +2228,7 @@ public class Dati {
 		valutazioni.putAll(mappaValutazioneInserzione);
 		return valutazioni;
 	}
-	
+
 	public List getInserzioniDaValutare(String mailUtente, String lat, String lng) {
 		factory = buildSessionFactory();
 		Session session = factory.openSession();
@@ -2233,42 +2238,42 @@ public class Dati {
 		session = factory.openSession();
 		try{
 			tx=session.beginTransaction();
-			
+
 			SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar cal = new GregorianCalendar();
-			
+
 			Query q = session.createSQLQuery(
 					"select ins.ID_Inserzione "  +
-					"from inserzione ins, " +
-					"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
-						"from supermercato " +
-						"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
-						") as supTmp " +
-					"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.DataInizio < :currDate and ins.DataFine > :currDate and ins.ID_Utente != :idUtente and ins.ID_Supermercato in (supTmp.ID_Supermercato) and " +
-					"ins.ID_Inserzione not in (select ID_Inserzione " +
-												"from valutazione_inserzione " +
-												"where ID_UtenteValutatore = :idUtente) " +
+							"from inserzione ins, " +
+							"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
+							"from supermercato " +
+							"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) < :raggioUtente " +
+							") as supTmp " +
+							"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.DataInizio <= :currDate and ins.DataFine > :currDate and ins.ID_Utente != :idUtente and ins.ID_Supermercato in (supTmp.ID_Supermercato) and " +
+							"ins.ID_Inserzione not in (select ID_Inserzione " +
+							"from valutazione_inserzione " +
+							"where ID_UtenteValutatore = :idUtente) " +
 					"order by supTmp.distanza ");
 			q.setParameter("latitudine", Float.valueOf(lat));
 			q.setParameter("longitudine", Float.valueOf(lng));
-			q.setParameter("raggioTerra", 6378.137);
+			q.setParameter("raggioTerra", 6378.137);	// km
 			q.setParameter("currDate", formato.format(cal.getTime()));
 			q.setParameter("idUtente", mappaUtente.get(mailUtente).getIdUtente());
-			q.setParameter("raggioUtente", 50);
+			q.setParameter("raggioUtente", 50000);  // km
 			inserzioniDaValutareList = q.list();
-			
+
 			tx.commit();
-			} catch(RuntimeException e) {
-				if(tx!=null)
-					tx.rollback();
-				throw e;
-			} finally {
-				if(session!=null && session.isOpen())
-					session.close();
-			}
+		} catch(RuntimeException e) {
+			if(tx!=null)
+				tx.rollback();
+			throw e;
+		} finally {
+			if(session!=null && session.isOpen())
+				session.close();
+		}
 		return inserzioniDaValutareList;
 	}
-	
+
 	public ArrayList<Integer> getSuggerimentiProdotto(String mailUtente, String lat, String lng, String descrizione) {
 		factory = buildSessionFactory();
 		Session session = factory.openSession();
@@ -2278,21 +2283,21 @@ public class Dati {
 		session = factory.openSession();
 		try{
 			tx=session.beginTransaction();
-			
+
 			SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar cal = new GregorianCalendar();
-			
+
 			System.out.println("Data Richiesta: " + formato.format(cal.getTime()) + " Stringa da ricercare: " + '%'+descrizione.replace(' ', '%')+'%');
-			
+
 			Query q = session.createSQLQuery("select ins.ID_Inserzione " +
-											"from inserzione ins, " +
-											"prodotto p, " +
-											"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
-												"from supermercato " +
-												"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
-												") as supTmp " +
-											"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.ID_Prodotto = p.ID_Prodotto and ins.DataInizio < :currDate and ins.DataFine > :currDate and ins.ID_Utente != :idUtente and p.Descrizione like :stringToMatch " +
-											"order by supTmp.distanza ");
+					"from inserzione ins, " +
+					"prodotto p, " +
+					"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
+					"from supermercato " +
+					"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
+					") as supTmp " +
+					"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.ID_Prodotto = p.ID_Prodotto and ins.DataInizio < :currDate and ins.DataFine > :currDate and ins.ID_Utente != :idUtente and p.Descrizione like :stringToMatch " +
+					"order by supTmp.distanza ");
 			q.setParameter("latitudine", Float.valueOf(lat));
 			q.setParameter("longitudine", Float.valueOf(lng));
 			q.setParameter("raggioTerra", 6378.137);
@@ -2300,16 +2305,16 @@ public class Dati {
 			q.setParameter("idUtente", mappaUtente.get(mailUtente).getIdUtente());
 			q.setParameter("stringToMatch", '%'+descrizione.replace(' ', '%')+'%');
 			inserzioniDaSuggerireList = new ArrayList<Integer>(q.list());
-			
+
 			tx.commit();
-			} catch(RuntimeException e) {
-				if(tx!=null)
-					tx.rollback();
-				throw e;
-			} finally {
-				if(session!=null && session.isOpen())
-					session.close();
-			}
+		} catch(RuntimeException e) {
+			if(tx!=null)
+				tx.rollback();
+			throw e;
+		} finally {
+			if(session!=null && session.isOpen())
+				session.close();
+		}
 		return inserzioniDaSuggerireList;
 	}
 }
