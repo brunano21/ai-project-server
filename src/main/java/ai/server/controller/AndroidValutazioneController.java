@@ -58,6 +58,7 @@ public class AndroidValutazioneController {
 		JSONArray response = new JSONArray();
 
 		for (String id : idInserzioneListString.split(",")) {
+			System.out.println(id);
 			JSONObject jsonObj = new JSONObject();
 			Inserzione inserzione = dati.getInserzioni().get(Integer.valueOf(id));
 			jsonObj.put("id", inserzione.getIdInserzione());
@@ -69,10 +70,11 @@ public class AndroidValutazioneController {
 			jsonObj.put("prezzo", inserzione.getPrezzo());
 			jsonObj.put("codiceBarre", inserzione.getProdotto().getCodiceBarre());
 			jsonObj.put("supermercato", inserzione.getSupermercato().getNome());
-			jsonObj.put("supermercato_indirizzo", inserzione.getSupermercato().getNome());
+			jsonObj.put("supermercato_indirizzo", inserzione.getSupermercato().getIndirizzo() + ", " + inserzione.getSupermercato().getComune() + " (" + inserzione.getSupermercato().getProvincia() + ")");
 
 			String imageDataString = null; 
 			try {
+				
 				BufferedImage originalImage = ImageIO.read(new File(inserzione.getFoto()));
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				ImageIO.write( originalImage, "jpg", baos);
@@ -85,6 +87,7 @@ public class AndroidValutazioneController {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
+				System.out.println(inserzione.getIdInserzione()+ "--" + inserzione.getFoto());
 				e.printStackTrace();
 			}
 			jsonObj.put("foto", imageDataString);

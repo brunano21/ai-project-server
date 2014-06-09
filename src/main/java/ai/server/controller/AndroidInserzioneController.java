@@ -180,7 +180,7 @@ public class AndroidInserzioneController {
 				jsonObj.put("id", s.getValue().getIdSupermercato());
 				jsonObj.put("nome", s.getValue().getNome());
 				jsonObj.put("distanza", distanza);
-				jsonObj.put("indirizzo", "via" + "," + " comune" +  ", " + "prov");
+				jsonObj.put("indirizzo", s.getValue().getIndirizzo() + ", " + s.getValue().getComune() +  "(" + s.getValue().getProvincia() + ")");
 				jsonObjList.add(jsonObj);
 			}
 		}
