@@ -1,18 +1,21 @@
 package ai.server.controller;
 
 import hibernate.Inserzione;
+import hibernate.ListaDesideri;
+import hibernate.ListaDesideriProdotti;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
@@ -27,35 +30,42 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import dati.Dati;
 
 @Controller
-public class AndroidValutazioneController {
-
+public class AndroidInScadenzaController {
+	
+	@Autowired
+	private ServletContext context;
+	
+	public void setServletContext(ServletContext context){
+		this.context = context;
+	}
+	
 	@Autowired
 	private Dati dati;
-
-	public void setDati(Dati dati) {
+	
+	public void setDati(Dati dati){
 		this.dati = dati;
 	}
-
-	@RequestMapping(value="/android/valutazione/getIdInserzioni", method = RequestMethod.GET)
+	
+	@RequestMapping(value="/android/inscadenza/getIdInserzioni", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONArray getIdInserzioni(HttpServletRequest request, Principal principal) {
 		float lat = Float.valueOf(request.getParameter("lat"));
 		float lng = Float.valueOf(request.getParameter("lng"));
-		System.out.println("Called: /android/valutazione/getIdInserzioni - LAT: " + request.getParameter("lat") + " LNG: " + request.getParameter("lng"));
+		System.out.println("Called: /android/inscadenza/getIdInserzioni - LAT: " + request.getParameter("lat") + " LNG: " + request.getParameter("lng"));
 
 		JSONArray response = new JSONArray();
-		List idInserzioni = dati.getInserzioniDaValutare(principal.getName(), request.getParameter("lat"), request.getParameter("lng"));
-		response.addAll(idInserzioni);
-		System.out.println("idInserzioniList.size(): " + idInserzioni.size());
+		List idInserzioniInScadenza = dati.getInserzioniInScadenza(principal.getName(), request.getParameter("lat"), request.getParameter("lng"));
+		response.addAll(idInserzioniInScadenza);
+		System.out.println("idInserzioniList.size(): " + idInserzioniInScadenza.size());
 		System.out.println(response.toString());
 		return response;
 	}
-
-	@RequestMapping(value="/android/valutazione/getInserzioneById", method = RequestMethod.GET)
+	
+	@RequestMapping(value="/android/inscadenza/getInserzioneById", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONArray getIdInserzioneById(HttpServletRequest request, Principal principal) {
 		String idInserzioneListString = request.getParameter("idInserzioneList");
-		System.out.println("Called: /android/valutazione/getInserzioneById - " + idInserzioneListString);
+		System.out.println("Called: /android/inscadenza/getInserzioneById - " + idInserzioneListString);
 		JSONArray response = new JSONArray();
 
 //		try {
@@ -88,13 +98,9 @@ public class AndroidValutazioneController {
 			}
 
 			jsonObj.put("id", inserzione.getIdInserzione());
-			jsonObj.put("categoria", inserzione.getProdotto().getSottocategoria().getCategoria().getNome());
-			jsonObj.put("sottocategoria", inserzione.getProdotto().getSottocategoria().getNome());
-			jsonObj.put("data_inizio", inserzione.getDataInizio().toString());
+			jsonObj.put("prezzo", inserzione.getPrezzo());
 			jsonObj.put("data_fine", inserzione.getDataFine().toString());
 			jsonObj.put("descrizione", inserzione.getProdotto().getDescrizione());
-			jsonObj.put("prezzo", inserzione.getPrezzo());
-			jsonObj.put("codiceBarre", inserzione.getProdotto().getCodiceBarre());
 			jsonObj.put("supermercato", inserzione.getSupermercato().getNome());
 			jsonObj.put("supermercato_indirizzo", inserzione.getSupermercato().getIndirizzo() + ", " + inserzione.getSupermercato().getComune() + " (" + inserzione.getSupermercato().getProvincia() + ")");
 			jsonObj.put("foto", imageDataString);
@@ -103,29 +109,41 @@ public class AndroidValutazioneController {
 		System.out.println("JSONARRAY " + response.size());
 		return response;
 	}
-
-	@RequestMapping(value="/android/valutazione/aggiungiValutazione", method = RequestMethod.POST)
+	
+	@RequestMapping(value="/android/inscadenza/getTodoLists", method = RequestMethod.GET)
 	@ResponseBody
-	public JSONArray aggiungiValutazione(HttpServletRequest request, Principal principal) {
-		//System.out.println(request.getParameter("idInserzione"));
-		System.out.println(request.getParameter("risultato"));
-		Integer idInserzione = Integer.valueOf(request.getParameter("idInserzione"));
-		String risultato = request.getParameter("risultato");
-
-
-		System.out.println("Called: /android/valutazione/aggiungiValutazione - ID_INSERZIONE: " + idInserzione + " - RISULTATO: " + risultato);
+	public JSONArray getTodoLists(HttpServletRequest request, Principal principal) {
+		System.out.println("Called: /android/inscadenza/getTodolists");
 		JSONArray response = new JSONArray();
-
-		dati.inserimentoValutazioneInserzione(
-				dati.getInserzioni().get(idInserzione),
-				dati.getUtenti().get(principal.getName()),
-				dati.getInserzioni().get(idInserzione).getUtente(),
-				Integer.valueOf(risultato),
-				new Date());
-
-		response.add(idInserzione);
-		response.add(request.getParameter("posizione"));
-		System.out.println(response.toString());
+		
+		for(Iterator<ListaDesideri> iter = dati.getUtenti().get(principal.getName()).getListaDesideris().iterator(); iter.hasNext(); ) {
+			ListaDesideri ld = iter.next();
+			JSONObject jsonObj = new JSONObject();
+			jsonObj.put("nomeLista", ld.getNomeListaDesideri());
+			jsonObj.put("idLista", ld.getIdListaDesideri());
+			response.add(jsonObj);
+		}
+		return response;
+	}
+	
+	@RequestMapping(value="/android/inscadenza/aggiungiElemento", method = RequestMethod.POST)
+	@ResponseBody
+	public JSONArray setElementoAllaTodoList(HttpServletRequest request, Principal principal) {
+		System.out.println("Called: /android/inscadenza/aggiungiElemento");
+		Integer idInserzione = Integer.valueOf(request.getParameter("idInserzione"));
+		Integer idListaDesideri = Integer.valueOf(request.getParameter("idListaDesideri"));
+		System.out.println("idInserzione " + idInserzione + " --- idListaDesideri "+ idListaDesideri);
+		JSONArray response = new JSONArray();
+		int idElemento = new Date().hashCode();
+		System.out.println(dati.getInserzioni().get(idListaDesideri));
+		System.out.println(dati.getUtenti().get(principal.getName()));
+		dati.inserisciElementoListaDesideri(idListaDesideri, idElemento, dati.getInserzioni().get(idInserzione).getDescrizione() , 1, dati.getUtenti().get(principal.getName()), idInserzione);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("posizione", request.getParameter("posizione"));
+		response.add(jsonObj);
+		// fare un controllo se non si è verificata alcuna eccezione.
+		
 		return response;
 	}
 }
