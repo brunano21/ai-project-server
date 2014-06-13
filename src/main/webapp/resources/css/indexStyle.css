@@ -57,7 +57,7 @@ a:hover{ color:#2980b9; }
 
 .post {
 	background: #FFFFFF;
-	margin-bottom: 40px;
+	/*margin-bottom: 40px;*/
 	}
 
 /*
@@ -116,14 +116,14 @@ a:hover{ color:#2980b9; }
 
 /* Sidebar */
 .widget-container{ background:#FFFFFF; margin-bottom:30px; padding-bottom:20px; }
-.widget-title{
+.widget-title {
 	padding:20px;
 	padding-bottom:20px;
 	font-size:14px;
 	color:#343434;
 	border-bottom:1px solid #EEEEEE;
 	margin-bottom:20px;
-	}
+}
 
 .widget-container ul{ margin-left:20px; margin-right:20px; font-size:16px; }
 .widget-container li{ border-bottom:1px solid #EEEEEE; padding-bottom:10px; padding-top:10px; }
@@ -259,28 +259,45 @@ a:hover{ color:#2980b9; }
 
 
 
+/* Carousel list and item */
+#carousel-user-container { height: 820px }
 
-
-#carousel-list {
-	width: 233px;       
-    height: 740px;      
+#carousel-user-evaluation-container { height: 270px; }
+#carousel-user-evaluation-container h5 { text-align: center; }
+#carousel-list-evaluation {
     overflow: hidden;
-	padding: 2px;
 	float: right;
+	/*height: 250px;*/
 }
 
-.carousel-item{
-background: #FFFFFF;
-margin: 8px;
-margin-bottom: 12px;
-border: 1px solid;
-display: block;
-border-color: #C0BEBE; }
+#carousel-user-suggestion-container { height: 520px; }
+#carousel-user-suggestion-container h5 { text-align: center; }
+#carousel-list-suggestion {
+    overflow: hidden;
+	float: right;
+	height: 500px;
+}
 
-.carousel-item .post-margin{ padding-left:10%; padding-right:10%; padding-top:2%; padding-bottom:2%; }
-.carousel-item .featured-image{ margin-bottom: 5px; padding: 4px; }
-.carousel-item h6 a{ font-size:16px; color:#444444 }
-.carousel-item h6 a:hover{ color:#2980b9; }
+#carousel-list {
+    overflow: hidden;
+	float: right;
+	height: 750px;
+}
+
+.carousel-item {
+	background: #FFFFFF;
+	margin: 8px;
+	margin-bottom: 12px;
+	border: 1px solid;
+	display: block;
+	border-color: #C0BEBE;
+	height: 250px;
+}
+.carousel-item .post-margin { padding-left:10%; padding-right:10%; padding-top:2%; padding-bottom:2%; font-size: smaller; }
+.carousel-item .featured-image { margin-bottom: 5px; padding: 4px; height: 125px; width: 200px; }
+.carousel-item .featured-image .featured-image-img { max-width: 100%; max-height: 100%; margin: auto; display: block; }
+.carousel-item h6 a { font-size:16px; color:#444444; }
+.carousel-item h6 a:hover { color:#2980b9; }
 
 
 /* Featured Carousel */

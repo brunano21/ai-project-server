@@ -868,6 +868,51 @@ public class Dati {
 	}
 	
 	/**
+	 * * Modifica la quantità di un elemento della lista dei desideri
+	 * @param idListaDesideri
+	 * @param idElemento
+	 * @param quantita
+	 * @param utente
+	 */
+	public void modificaIDInserzioneElementoListaDesideri(int idListaDesideri, int idElemento, int idInserzione, Utente utente) {
+		if(idListaDesideri == 0 || idElemento == 0 || idInserzione == 0 || utente == null)
+			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
+		Session session = factory.getCurrentSession();
+		Transaction tx = null;
+		try {
+			tx=session.beginTransaction();		
+			
+			if(!mappaListaDesideri.containsKey(idListaDesideri))
+				throw new RuntimeException("Id lista desideri non trovato: " + idListaDesideri);
+			
+			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
+				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
+			
+			if(!mappaListaDesideriProdotti.containsKey(new ListaDesideriProdottiId(idElemento, idListaDesideri)))
+				throw new RuntimeException("Id elemento non trovato: " + idElemento);
+			
+			if(!mappaInserzioni.containsKey(idInserzione))
+				throw new RuntimeException("Id Inserzione non trovato: " + idInserzione);
+			
+			ListaDesideriProdotti elemento = (ListaDesideriProdotti) mappaListaDesideriProdotti.get(new ListaDesideriProdottiId(idElemento, idListaDesideri));
+			elemento.setInserzione(mappaInserzioni.get(idInserzione));
+			
+			session.update(elemento);
+			
+			tx.commit();
+		}catch(Throwable ex){
+			if(tx != null) {
+				tx.rollback();
+				throw new RuntimeException(ex);
+			}
+		}finally{
+			if(session!=null && session.isOpen()) 
+				session.close();
+			session=null;
+		}
+	}
+	
+	/**
 	 * Elimina un elemento all'interno della lista dei desideri
 	 * @param idListaDesideri
 	 * @param idElemento
@@ -2244,7 +2289,7 @@ public class Dati {
 						"from supermercato " +
 						"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
 						") as supTmp " +
-					"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.DataInizio < :currDate and ins.DataFine > :currDate and ins.ID_Utente != :idUtente and ins.ID_Supermercato in (supTmp.ID_Supermercato) and " +
+					"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.DataInizio <= :currDate and ins.DataFine > :currDate and ins.ID_Utente != :idUtente and ins.ID_Supermercato in (supTmp.ID_Supermercato) and " +
 					"ins.ID_Inserzione not in (select ID_Inserzione " +
 												"from valutazione_inserzione " +
 												"where ID_UtenteValutatore = :idUtente) " +
@@ -2269,11 +2314,56 @@ public class Dati {
 		return inserzioniDaValutareList;
 	}
 	
+	public List getInserzioniInScadenza(String mailUtente, String lat, String lng) {
+		factory = buildSessionFactory();
+		Session session = factory.openSession();
+		Transaction tx = null;
+		List inserzioniInScadenzaList;
+
+		session = factory.openSession();
+		try{
+			tx=session.beginTransaction();
+			
+			SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar cal = new GregorianCalendar();
+			
+			Query q = session.createSQLQuery(
+					"select ins.ID_Inserzione " +
+					"from inserzione ins, " +
+					"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
+						"from supermercato " +
+						"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
+						") as supTmp " +
+					"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.DataInizio <= :currDate and ins.DataFine > :currDate and DATEDIFF(ins.DataFine, :currDate) <= 2 and ins.ID_Utente != :idUtente and ins.ID_Supermercato in (supTmp.ID_Supermercato) and " +
+					"ins.ID_Inserzione not in (select ID_Inserzione " +
+												"from valutazione_inserzione " +
+												"where ID_UtenteValutatore = :idUtente) " +
+					"order by supTmp.distanza, DATEDIFF(ins.DataFine, :currDate) ");
+			q.setParameter("latitudine", Float.valueOf(lat));
+			q.setParameter("longitudine", Float.valueOf(lng));
+			q.setParameter("raggioTerra", 6378.137);
+			q.setParameter("currDate", formato.format(cal.getTime()));
+			q.setParameter("idUtente", mappaUtente.get(mailUtente).getIdUtente());
+			q.setParameter("raggioUtente", 50);
+			inserzioniInScadenzaList = q.list();
+			
+			tx.commit();
+			} catch(RuntimeException e) {
+				if(tx!=null)
+					tx.rollback();
+				throw e;
+			} finally {
+				if(session!=null && session.isOpen())
+					session.close();
+			}
+		return inserzioniInScadenzaList;
+	}
+	
 	public ArrayList<Integer> getSuggerimentiProdotto(String mailUtente, String lat, String lng, String descrizione) {
 		factory = buildSessionFactory();
 		Session session = factory.openSession();
 		Transaction tx = null;
-		ArrayList<Integer> inserzioniDaSuggerireList;
+		ArrayList<Integer> inserzioniDaSuggerireList = null;
 
 		session = factory.openSession();
 		try{
@@ -2283,21 +2373,34 @@ public class Dati {
 			Calendar cal = new GregorianCalendar();
 			
 			System.out.println("Data Richiesta: " + formato.format(cal.getTime()) + " Stringa da ricercare: " + '%'+descrizione.replace(' ', '%')+'%');
-			
-			Query q = session.createSQLQuery("select ins.ID_Inserzione " +
-											"from inserzione ins, " +
-											"prodotto p, " +
-											"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
-												"from supermercato " +
-												"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
-												") as supTmp " +
-											"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.ID_Prodotto = p.ID_Prodotto and ins.DataInizio < :currDate and ins.DataFine > :currDate and ins.ID_Utente != :idUtente and p.Descrizione like :stringToMatch " +
-											"order by supTmp.distanza ");
+
+//			QUANDO SI DECOMMENTA QUESTA QUERY, DECOMMENTARE ANCHE LA RIGA 2311 PER SETTARE IL PARAMETRO ID_UTENTE
+//			Query q = session.createSQLQuery(
+//											"select ins.ID_Inserzione " +
+//											"from inserzione ins, " +
+//											"prodotto p, " +
+//											"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
+//												"from supermercato " +
+//												"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
+//												") as supTmp " +
+//											"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.ID_Prodotto = p.ID_Prodotto and ins.DataInizio < :currDate and ins.DataFine > :currDate and ins.ID_Utente != :idUtente and p.Descrizione like :stringToMatch " +
+//											"order by supTmp.distanza ");
+			Query q = session.createSQLQuery(
+					"select ins.ID_Inserzione " +
+					"from inserzione ins, " +
+					"prodotto p, " +
+					"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
+						"from supermercato " +
+						"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
+						") as supTmp " +
+					"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.ID_Prodotto = p.ID_Prodotto and ins.DataInizio <= :currDate and ins.DataFine > :currDate and p.Descrizione like :stringToMatch " +
+					"order by supTmp.distanza ");
 			q.setParameter("latitudine", Float.valueOf(lat));
 			q.setParameter("longitudine", Float.valueOf(lng));
 			q.setParameter("raggioTerra", 6378.137);
+			q.setParameter("raggioUtente", 100000); //TODO SISTEMARE IL RAGGIO DI RICERCA A UN VALORE ACCETTABILE TIPO 50
 			q.setParameter("currDate", formato.format(cal.getTime()));
-			q.setParameter("idUtente", mappaUtente.get(mailUtente).getIdUtente());
+			//q.setParameter("idUtente", mappaUtente.get(mailUtente).getIdUtente());
 			q.setParameter("stringToMatch", '%'+descrizione.replace(' ', '%')+'%');
 			inserzioniDaSuggerireList = new ArrayList<Integer>(q.list());
 			
@@ -2310,6 +2413,50 @@ public class Dati {
 				if(session!=null && session.isOpen())
 					session.close();
 			}
+		for (Integer integer : inserzioniDaSuggerireList)
+			System.out.println("Id_Inserzione: " + integer);
+		
+		return inserzioniDaSuggerireList;
+	}
+	
+	/**
+	 * Questa funzione ritorna le inserzioni valide.
+	 * E' generica, cioè non usa informazioni dell'utente, l'idea è avere delle inserizioni da mostrare agli utenti non ancora registrati.
+	 * @return ArrayList<Integer> contenenti gli id delle inserzioni trovate.
+	 */
+	public ArrayList<Integer> getInserzioniValide() {
+		factory = buildSessionFactory();
+		Session session = factory.openSession();
+		Transaction tx = null;
+		ArrayList<Integer> inserzioniDaSuggerireList = null;
+
+		session = factory.openSession();
+		try{
+			tx=session.beginTransaction();
+			
+			SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar cal = new GregorianCalendar();
+			
+			Query q = session.createSQLQuery(
+					"select ID_Inserzione " +
+					"from inserzione ins " +
+					"where DataInizio <= :currDate and ins.DataFine > :currDate " +
+					"order by DATEDIFF(DataFine, :currDate) ");
+			q.setParameter("currDate", formato.format(cal.getTime()));
+			inserzioniDaSuggerireList = new ArrayList<Integer>(q.list());
+			
+			tx.commit();
+			} catch(RuntimeException e) {
+				if(tx!=null)
+					tx.rollback();
+				throw e;
+			} finally {
+				if(session!=null && session.isOpen())
+					session.close();
+			}
+		for (Integer integer : inserzioniDaSuggerireList)
+			System.out.println("Id_Inserzione: " + integer);
+		
 		return inserzioniDaSuggerireList;
 	}
 }

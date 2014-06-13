@@ -1,7 +1,9 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ page import="hibernate.Inserzione" %>
+<%@ page import="dati.Dati" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <!DOCTYPE html lang="en-US">
 <!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
@@ -24,6 +26,8 @@
 <link rel="stylesheet" id="color-scheme-css" href="<c:url value="resources/css/color/green.css" />" media="all">
 <link rel="stylesheet" id="jquery-ui-css" href="<c:url value="resources/css/ui-lightness/jquery-ui-1.10.4.custom.min.css" />" media="all">
 <link rel="stylesheet" id="todolistStyle-css" href="<c:url value="resources/css/todolistStyle.css" />">
+<link rel="stylesheet" id="tooltipster-css" href="<c:url value="resources/css/tooltipster/tooltipster.css" />">
+<link rel="stylesheet" id="tooltipster-light-css" href="<c:url value="resources/css/tooltipster/themes/tooltipster-light.css" />">
 
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-1.10.2.min.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-migrate.min.js" />" ></script>
@@ -42,6 +46,11 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places"></script>
 <script src="https://www.google.com/jsapi" type="text/javascript"></script>
+
+<link rel="stylesheet" id="orbit-css" href="<c:url value="resources/css/orbit.css" />">
+
+<script type="text/javascript" src="<c:url value="resources/js/indexJS/orbit.min.js" />" ></script>
+<script type="text/javascript" src="<c:url value="resources/js/indexJS/css3-mediaqueries.js" />" ></script>
 
 <!-- <link rel='stylesheet' id='orbit-css-css'  href='css/orbit.css' type='text/css' media='all' /> -->
 <!--<script type='text/javascript' src='js/orbit.min.js'></script>-->
@@ -72,7 +81,9 @@
             async: false, 
             data: {
 	            j_username: $("#username").val(), 
-	            j_password: $("#password").val()
+	            j_password: $("#password").val(),
+	            'latitudine' : userPosition.coords.latitude,
+                'longitudine' : userPosition.coords.longitude
 	        }, 
             success: function(returnedData, textStatus, jqXHR) {         
             	console.log(returnedData);
@@ -85,8 +96,15 @@
 				}
 										
 				else {
+					//$("#loginForm").hide();
+					//$("#logContainer").html(returnedData);
+					$("#garbage").html(returnedData);
 					$("#loginForm").hide();
-					$("#logContainer").html(returnedData);
+					$("#logoutForm").appendTo("#logContainer");
+					$(".right-side-box").children().hide();
+					$("#carousel-user-container").appendTo(".right-side-box");
+					
+					startCarousels();
 	            }
             }      
         });
@@ -147,10 +165,15 @@
         	url:"./todolist", 
             type: 'GET', 
             async: false, 
-            success: function(returnedData, textStatus, jqXHR) {         
-            	//console.log(returnedData);
-				$(".post").children().hide();
-				$(".post").html(returnedData);
+            success: function(returnedData, textStatus, jqXHR) {
+            	
+            	$('#garbage').html(returnedData);
+            	$(".post").children().hide();
+            	$('#garbage >.todolistContainer').appendTo('.post');
+            	
+            	console.log(returnedData);
+				//$(".post").children().hide();
+				//$(".post").html(returnedData);
             }      
         });
     };
@@ -168,7 +191,7 @@
 	$(function() {
 
 		/* Start Carousel */		
-        /* 
+        /*
         $('#carousel-list').carouFredSel({
             //auto                : true,
             //circular: true,
@@ -211,12 +234,44 @@
 			$('.post-gallery').orbit({
                 animation: 'fade',
             });
-        });
-        */
+        });*/
+        
         /* End Orbit Slider */
+        
+        function getUserGeoloc() {
+			console.log("getUserGeoloc called");
+			
+			navigator.geolocation.getCurrentPosition(
+				    gotPosition,
+				    errorGettingPosition,
+				    {'enableHighAccuracy':true,'timeout':10000,'maximumAge':0}
+				);
+		};
+		function gotPosition(pos) {
+			userPosition = pos;
+			console.log( "latitude:"+ pos.coords.latitude +"\n"+ "longitude:"+ pos.coords.longitude);
+		};
+		function errorGettingPosition(err) {
+			switch (err.code) {
+				case 1:
+					console.log("L'utente non ha autorizzato la geolocalizzazione");
+					break;
+				case 2:
+					console.log("Posizione non disponibile");
+					break;
+				case 3:
+					console.log("Timeout");
+					break;
+				default:
+					console.log("ERRORE:" + err.message);
+					break;
+			}
+		};
             
             
         jQuery(document).ready(function($){
+        	
+        	getUserGeoloc();
             
             /* Start Super fish */
             $('ul.sf-menu').superfish({
@@ -226,7 +281,7 @@
             });
 		    /* End Of Super fish */
             
-            $('#caro22usel-list').carouFredSel({
+            $('#carousel-list').carouFredSel({
                 //auto                : true,
                 //circular: true,
                 items               : 3,
@@ -337,7 +392,7 @@
                         <li class="menu-item">
                             <a href="#">Prodotti</a>
                             <ul class="sub-menu">
-                                <li class="menu-item"><a href="javascript:void(0);" onclick="getInserzionePage();"">Inserisci</a></li>
+                                <li class="menu-item"><a href="javascript:void(0);" onclick="getInserzionePage();">Inserisci</a></li>
                                 <li class="menu-item"><a href="#">Valuta</a></li>
                                 <li class="menu-item"><a href="#">Cerca</a></li>
                             </ul>
@@ -378,14 +433,14 @@
     <div class="container zerogrid">
        
         <!-- Start Left Container -->
-        <div class="col-2-3" id="post-container">
+        <div class="col-3-4" id="post-container">
  			<div class="wrap-col">
         	    <!-- Start Post Item -->
                 <div class="post">
-                <div id="home" class="homeContainer" >
-	                <h1>BENVENUTO</h1></br>
-	                <h1>Sig. Malnati!!</h1></br>
-                </div>
+	                <div id="home" class="homeContainer" >
+		                <h1>BENVENUTO</h1>
+		                <h1>Sig. Malnati!!</h1>
+	                </div>
                 </div>
                 <div class="clear"></div>
             </div>
@@ -397,93 +452,35 @@
         <!-- End Left Container -->
 		
         <!-- Start Right Container -->
-    	<div class="col-1-3">
-    		<div class="wrap-col">
-    	    	<!--
-                <div class="widget-container">
-                    <form role="search" method="get" id="searchform" class="searchform" action="http://demo.themesmarts.com/euclid/">
-        				<div>
-        					<label class="screen-reader-text" for="s">Search for:</label>
-        					<input type="text" value="" name="s" id="s" />
-        					<input type="submit" id="searchsubmit" value="Search" />
-        				</div>
-        			</form>
-                    <div class="clear"></div>
-                </div>
-                -->
+    	<div class="col-1-4">
+    		<div class="wrap-col right-side-box">
                 <div id="carousel-list" class="widget-container">
-                    <div class="carousel-item">
-                        <div class="post-margin">
-                            <h6><a href="#">Port Harbor 1</a></h6>
-                            <span><i class="fa fa-clock-o"></i> December 13, 2013</span>
-                        </div>
-                        
-                        <div class="featured-image">
-                            <img src="http://www.lascelta.com/media/catalog/product/cache/1/image/700x477/9df78eab33525d08d6e5fb8d27136e95/d/s/dsc00499.jpg"  />
-                        </div>
-                        <div class="post-margin">testo sul prodotto</div>
-
-                    </div>
-                    <div class="carousel-item">
-                        <div class="post-margin">
-                            <h6><a href="#">Port Harbor 2</a></h6>
-                            <span><i class="fa fa-clock-o"></i> December 13, 2013</span>
-                        </div>
-                        
-                        <div class="featured-image">
-                            <img src="http://www.lascelta.com/media/catalog/product/cache/1/image/700x477/9df78eab33525d08d6e5fb8d27136e95/d/s/dsc00499.jpg"  />
-                        </div>
-                        <div class="post-margin">testo sul prodotto</div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="post-margin">
-                            <h6><a href="#">Port Harbor 3 </a></h6>
-                            <span><i class="fa fa-clock-o"></i> December 13, 2013</span>
-                        </div>
-                        
-                        <div class="featured-image">
-                            <img src="http://www.lascelta.com/media/catalog/product/cache/1/image/700x477/9df78eab33525d08d6e5fb8d27136e95/d/s/dsc00499.jpg"  />
-                        </div>
-                        <div class="post-margin">testo sul prodotto</div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="post-margin">
-                            <h6><a href="#">Port Harbor 4</a></h6>
-                            <span><i class="fa fa-clock-o"></i> December 13, 2013</span>
-                        </div>
-                        
-                        <div class="featured-image">
-                            <img src="http://www.lascelta.com/media/catalog/product/cache/1/image/700x477/9df78eab33525d08d6e5fb8d27136e95/d/s/dsc00499.jpg"  />
-                        </div>
-                        <div class="post-margin">testo sul prodotto</div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="post-margin">
-                            <h6><a href="#">Port Harbor 5</a></h6>
-                            <span><i class="fa fa-clock-o"></i> December 13, 2013</span>
-                        </div>
-                        
-                        <div class="featured-image">
-                            <img src="http://www.lascelta.com/media/catalog/product/cache/1/image/700x477/9df78eab33525d08d6e5fb8d27136e95/d/s/dsc00499.jpg"  />
-                        </div>
-                        <div class="post-margin">testo sul prodotto</div>
-
-                    </div>
-                    <div class="carousel-item">
-                        <div class="post-margin">
-                            <h6><a href="#">Port Harbor 6</a></h6>
-                            <span><i class="fa fa-clock-o"></i> December 13, 2013</span>
-                        </div>
-                        
-                        <div class="featured-image">
-                            <img src="http://www.lascelta.com/media/catalog/product/cache/1/image/700x477/9df78eab33525d08d6e5fb8d27136e95/d/s/dsc00499.jpg"  />
-                        </div>
-                        <div class="post-margin">testo sul prodotto</div>
-
-                    </div>
-
+                    <%
+				    ArrayList<Integer> inserzioniIDs = Dati.getInstance().getInserzioniValide();
+				    Inserzione inserzione = null;
+				    String supermercato = null;
+				    
+				    for (Integer index : inserzioniIDs) {
+				    	inserzione = Dati.getInstance().getInserzioni().get(index);
+				    	supermercato = inserzione.getSupermercato().getNome() + ", " + inserzione.getSupermercato().getIndirizzo() + ", " + inserzione.getSupermercato().getComune();
+				    	System.out.println(inserzione.getDescrizione());
+				    	System.out.println(supermercato);
+				    %>  
+				    <div class="carousel-item">
+				        <div class="post-margin">
+				            <h6><a href="#"><%= inserzione.getProdotto().getDescrizione() %></a></h6>
+				            <span><i class="fa fa-clock-o"></i><%= inserzione.getDataFine() %></span>
+				        </div>
+				        <div class="featured-image">
+				            <img class="featured-image-img" src="<%= inserzione.getFoto() %>"  />
+				        </div>
+				        <div class="post-margin"><i class="fa fa-map-marker"></i><%= supermercato %></div>
+						<div class="post-margin"><i class="fa fa-eur"></i><%= inserzione.getPrezzo() %></div>
+				    </div>
+				    <%
+				    }
+				    %>
                 </div>
-                    
                 <div class="clear"></div>
             </div>
         </div>        
@@ -492,10 +489,6 @@
         <div class="clear"></div>
     </div>
 	<!-- End Main Container -->
-	
-	
-    
-    
 
     <!-- Start Footer -->
     <div class="spacing-30"></div>
@@ -516,7 +509,7 @@
     </div>
     <!-- End Footer -->
 
-
+	<div id="garbage" style="display: none;"></div>
 </body>
 
 </html>
