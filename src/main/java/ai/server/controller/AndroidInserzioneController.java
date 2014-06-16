@@ -2,9 +2,12 @@ package ai.server.controller;
 
 import hibernate.Argomenti;
 import hibernate.Categoria;
+import hibernate.Inserzione;
 import hibernate.Sottocategoria;
 import hibernate.Supermercato;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -216,5 +220,48 @@ public class AndroidInserzioneController {
 	    							(Math.cos(lat1_rad)*Math.cos(lat2_rad)*Math.cos(lng1_rad-lng2_rad)) ) * earthRadius;
 	    return (float) dist_km;
 	}
+	
+	@RequestMapping(value="/android/inserzione/modifica/getInserzioneById", method = RequestMethod.GET)
+	@ResponseBody
+	public JSONArray getInserzioneDaModificare(HttpServletRequest request) { 
+		Integer idInserzione =  Integer.valueOf(request.getParameter("idInserzione"));
+		System.out.println("Called: /android/inserzione/modifica/getInserzioneById - id=" + idInserzione );
+		JSONArray response = new JSONArray();
+		Inserzione inserzione = dati.getInserzioni().get(idInserzione);
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("descrizione", inserzione.getDescrizione());
+		jsonObj.put("categoria", inserzione.getProdotto().getSottocategoria().getCategoria().getNome());
+		jsonObj.put("sottocategoria", inserzione.getProdotto().getSottocategoria().getNome());
+		jsonObj.put("codiceBarre", String.valueOf(inserzione.getProdotto().getCodiceBarre())); 
+		jsonObj.put("prezzo", String.valueOf(inserzione.getPrezzo()));
+		
+		String imageDataString = null; 
+		try {
 
+			BufferedImage originalImage = ImageIO.read(new File(inserzione.getFoto()));
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write( originalImage, "jpg", baos);
+			baos.flush();
+			byte[] imageInByte = baos.toByteArray();
+			imageDataString = new String(Base64.encodeBase64(imageInByte));
+			baos.close();
+
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println(inserzione.getIdInserzione()+ " -- " + inserzione.getFoto());
+			e.printStackTrace();
+		}
+		
+		jsonObj.put("foto", imageDataString);
+		jsonObj.put("supermercato", String.valueOf(inserzione.getSupermercato().getIdSupermercato()));
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+		jsonObj.put("data_inizio", sdf.format(inserzione.getDataInizio()));
+		jsonObj.put("data_fine", sdf.format(inserzione.getDataFine()));
+		
+		response.add(jsonObj);
+		return response;
+		
+	}
 }

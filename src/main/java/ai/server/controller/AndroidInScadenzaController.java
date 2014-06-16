@@ -3,6 +3,7 @@ package ai.server.controller;
 import hibernate.Inserzione;
 import hibernate.ListaDesideri;
 import hibernate.ListaDesideriProdotti;
+import hibernate.Utente;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -31,21 +32,21 @@ import dati.Dati;
 
 @Controller
 public class AndroidInScadenzaController {
-	
+
 	@Autowired
 	private ServletContext context;
-	
+
 	public void setServletContext(ServletContext context){
 		this.context = context;
 	}
-	
+
 	@Autowired
 	private Dati dati;
-	
+
 	public void setDati(Dati dati){
 		this.dati = dati;
 	}
-	
+
 	@RequestMapping(value="/android/inscadenza/getIdInserzioni", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONArray getIdInserzioni(HttpServletRequest request, Principal principal) {
@@ -56,11 +57,10 @@ public class AndroidInScadenzaController {
 		JSONArray response = new JSONArray();
 		List idInserzioniInScadenza = dati.getInserzioniInScadenza(principal.getName(), request.getParameter("lat"), request.getParameter("lng"));
 		response.addAll(idInserzioniInScadenza);
-		System.out.println("idInserzioniList.size(): " + idInserzioniInScadenza.size());
 		System.out.println(response.toString());
 		return response;
 	}
-	
+
 	@RequestMapping(value="/android/inscadenza/getInserzioneById", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONArray getIdInserzioneById(HttpServletRequest request, Principal principal) {
@@ -68,19 +68,19 @@ public class AndroidInScadenzaController {
 		System.out.println("Called: /android/inscadenza/getInserzioneById - " + idInserzioneListString);
 		JSONArray response = new JSONArray();
 
-//		try {
-//			Thread.sleep(1500);
-//		} catch (InterruptedException e1) {
-//			e1.printStackTrace();
-//		}
-		
+		//		try {
+		//			Thread.sleep(1500);
+		//		} catch (InterruptedException e1) {
+		//			e1.printStackTrace();
+		//		}
+
 		for (String id : idInserzioneListString.split(",")) {
 			JSONObject jsonObj = new JSONObject();
 			Inserzione inserzione = dati.getInserzioni().get(Integer.valueOf(id));
 
 			String imageDataString = null; 
 			try {
-				
+
 				BufferedImage originalImage = ImageIO.read(new File(inserzione.getFoto()));
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				ImageIO.write( originalImage, "jpg", baos);
@@ -88,8 +88,8 @@ public class AndroidInScadenzaController {
 				byte[] imageInByte = baos.toByteArray();
 				imageDataString = new String(Base64.encodeBase64(imageInByte));
 				baos.close();
-				
-				
+
+
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -104,18 +104,35 @@ public class AndroidInScadenzaController {
 			jsonObj.put("supermercato", inserzione.getSupermercato().getNome());
 			jsonObj.put("supermercato_indirizzo", inserzione.getSupermercato().getIndirizzo() + ", " + inserzione.getSupermercato().getComune() + " (" + inserzione.getSupermercato().getProvincia() + ")");
 			jsonObj.put("foto", imageDataString);
+			System.out.println("Searching for idInserzione = " + inserzione.getIdInserzione());
+
+			outerloop:
+				for(Iterator<ListaDesideri> iter = dati.getUtenti().get(principal.getName()).getListaDesideris().iterator(); iter.hasNext(); ) {
+					ListaDesideri ld = iter.next();
+					Boolean trovato = false;
+					System.out.println("Searching in lista desideri con nome = " + ld.getNomeListaDesideri() );
+					for(Iterator<ListaDesideriProdotti> iter1 = ld.getListaDesideriProdottis().iterator(); iter1.hasNext(); ) {
+						ListaDesideriProdotti ldp = iter1.next();
+						if(ldp.getInserzione() != null && ldp.getInserzione().getIdInserzione() == inserzione.getIdInserzione()) {
+							System.out.println("trovato " + ldp.getId().getIdElemento() + " in riferimento all'idInserzione = " + ldp.getInserzione().getIdInserzione());
+							jsonObj.put("nome_todolist", ld.getNomeListaDesideri());
+							break outerloop;
+						}
+					}
+
+				}
 			response.add(jsonObj);
 		}
 		System.out.println("JSONARRAY " + response.size());
 		return response;
 	}
-	
+
 	@RequestMapping(value="/android/inscadenza/getTodoLists", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONArray getTodoLists(HttpServletRequest request, Principal principal) {
 		System.out.println("Called: /android/inscadenza/getTodolists");
 		JSONArray response = new JSONArray();
-		
+
 		for(Iterator<ListaDesideri> iter = dati.getUtenti().get(principal.getName()).getListaDesideris().iterator(); iter.hasNext(); ) {
 			ListaDesideri ld = iter.next();
 			JSONObject jsonObj = new JSONObject();
@@ -125,25 +142,22 @@ public class AndroidInScadenzaController {
 		}
 		return response;
 	}
-	
+
 	@RequestMapping(value="/android/inscadenza/aggiungiElemento", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONArray setElementoAllaTodoList(HttpServletRequest request, Principal principal) {
 		System.out.println("Called: /android/inscadenza/aggiungiElemento");
 		Integer idInserzione = Integer.valueOf(request.getParameter("idInserzione"));
 		Integer idListaDesideri = Integer.valueOf(request.getParameter("idListaDesideri"));
-		System.out.println("idInserzione " + idInserzione + " --- idListaDesideri "+ idListaDesideri);
 		JSONArray response = new JSONArray();
 		int idElemento = new Date().hashCode();
-		System.out.println(dati.getInserzioni().get(idListaDesideri));
-		System.out.println(dati.getUtenti().get(principal.getName()));
 		dati.inserisciElementoListaDesideri(idListaDesideri, idElemento, dati.getInserzioni().get(idInserzione).getDescrizione() , 1, dati.getUtenti().get(principal.getName()), idInserzione);
-		
+
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("posizione", request.getParameter("posizione"));
 		response.add(jsonObj);
 		// fare un controllo se non si è verificata alcuna eccezione.
-		
+
 		return response;
 	}
 }

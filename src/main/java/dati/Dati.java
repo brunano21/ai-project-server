@@ -18,6 +18,7 @@ import hibernate.Supermercato;
 import hibernate.Utente;
 import hibernate.ValutazioneInserzione;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -2260,7 +2261,7 @@ public class Dati {
 			q.setParameter("currDate", formato.format(cal.getTime()));
 			q.setParameter("idUtente", mappaUtente.get(mailUtente).getIdUtente());
 			q.setParameter("raggioUtente", 50000);  // km
-			*/
+			 */
 			Query q = session.createSQLQuery(
 					"select ID_Inserzione " +
 					"from inserzione ins");
@@ -2277,7 +2278,7 @@ public class Dati {
 		}
 		return inserzioniDaValutareList;
 	}
-	
+
 	public List getInserzioniInScadenza(String mailUtente, String lat, String lng) {
 		factory = buildSessionFactory();
 		Session session = factory.openSession();
@@ -2287,7 +2288,7 @@ public class Dati {
 		session = factory.openSession();
 		try{
 			tx=session.beginTransaction();
-			
+
 			SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar cal = new GregorianCalendar();
 			/*
@@ -2313,17 +2314,52 @@ public class Dati {
 					"select ID_Inserzione " +
 					"from inserzione ins");
 			inserzioniDaValutareList = q.list();
-			
+
 			tx.commit();
-			} catch(RuntimeException e) {
-				if(tx!=null)
-					tx.rollback();
-				throw e;
-			} finally {
-				if(session!=null && session.isOpen())
-					session.close();
-			}
+		} catch(RuntimeException e) {
+			if(tx!=null)
+				tx.rollback();
+			throw e;
+		} finally {
+			if(session!=null && session.isOpen())
+				session.close();
+		}
 		return inserzioniDaValutareList;
+	}
+
+	public Integer[] getNumeroValutazioniByIdInserzione(Integer idInserzione, Integer idUtente) {
+		factory = buildSessionFactory();
+		Session session = factory.openSession();
+		Transaction tx = null;
+		List l = null;
+		Integer valutazioni[] = {0, 0};
+		try{
+			tx = session.beginTransaction();
+			Query q = session.createSQLQuery("SELECT " + 
+					"sum(case when valutazione=1 then 1 else 0 end) as 'valutazioni_positive', " + 
+					"sum(case when valutazione=-1 then 1 else 0 end) as 'valutazioni_negative'  " +
+				"FROM valutazione_inserzione WHERE valutazione_inserzione.ID_Inserzione = :idInserzione AND valutazione_inserzione.ID_UtenteInserzionista = :idUtente ");
+			q.setParameter("idInserzione", idInserzione);
+			q.setParameter("idUtente", idUtente);
+			l = q.list();
+			for (Object obj : l) {
+			    Object[] fields = (Object[]) obj;
+			    if(fields[0] != null) 
+			    	valutazioni[0] = ((Number) fields[0]).intValue();
+			    if(fields[1] != null)
+			    	valutazioni[1] = ((Number) fields[1]).intValue();
+			    System.out.println(valutazioni.toString());
+			}
+			
+		} catch(RuntimeException e) {
+			if(tx!=null)
+				tx.rollback();
+			throw e;
+		} finally {
+			if(session!=null && session.isOpen())
+				session.close();
+		}
+		return valutazioni;
 	}
 
 	public ArrayList<Integer> getSuggerimentiProdotto(String mailUtente, String lat, String lng, String descrizione) {
