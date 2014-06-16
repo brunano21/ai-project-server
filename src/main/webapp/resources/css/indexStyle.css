@@ -936,6 +936,8 @@ input#supermercatoInput { width: 150%; }
 .suggerimentoImg div {position: absolute; margin-left: 70px; margin-top: 64px; display:none;}
 .suggerimentoImg i {color: #cccccc};
 
+
+.prossimaImg > a#si { float: left; width:20%; cursor: pointer; }
 .prossimaImg { font-size: 10pt; }
 .prossimaImg > a { float: right; margin-right: 40px; cursor: pointer; }
 .caricaImg { margin-top: 12px; }

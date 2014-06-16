@@ -222,11 +222,20 @@ public class InserzioneController {
 			Session session = null;
 			Transaction tx = null;
 			session = Dati.factory.openSession();
+			Integer id = -1;
 			try {
 				tx=session.beginTransaction();			
 				Query q = session.createSQLQuery("select s.ID_Supermercato "+
 				"from supermercato s"+
-						"where s.");
+						"where s.Nome = :nome and s.Indirizzo = :indirizzo and s.Comune = :comune and s.Provincia = :provincia");
+				q.setParameter("nome", inserzioneForm.getSupermercato());
+				q.setParameter("indirizzo", inserzioneForm.getIndirizzo());
+				q.setParameter("comune", inserzioneForm.getComune());
+				q.setParameter("provincia", inserzioneForm.getProvincia());
+				List idS = q.list();
+				Object ident = idS.get(0);
+				System.out.println("id = "+ident);
+				id = (Integer)ident;
 				tx.commit();
 			} catch(RuntimeException e) {
 				if(tx!=null)
@@ -236,12 +245,13 @@ public class InserzioneController {
 				if(session!=null && session.isOpen())
 					session.close();
 			}
-			supermercato = dati.getSupermercati().get(inserzioneForm.getSupermercato());
+			
+			supermercato = dati.getSupermercati().get(id);
 			
 			if(supermercato == null){
-				idSupermercato=dati.inserisciSupermercato(inserzioneForm.getSupermercato(), inserzioneForm.getIndirizzo(), inserzioneForm.getComune(), inserzioneForm.getProvincia(), inserzioneForm.getLat(), inserzioneForm.getLng());
+				idSupermercato = dati.inserisciSupermercato(inserzioneForm.getSupermercato(), inserzioneForm.getIndirizzo(), inserzioneForm.getComune(), inserzioneForm.getProvincia(), inserzioneForm.getLat(), inserzioneForm.getLng());
 				inserimentoSupermercato = true;
-				supermercato = dati.getSupermercati().get(inserzioneForm.getSupermercato());				
+				supermercato = dati.getSupermercati().get(idSupermercato);				
 			}
 			
 			

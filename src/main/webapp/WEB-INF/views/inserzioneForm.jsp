@@ -48,10 +48,13 @@
             </div>
             <div class="col-2-5 inserzioneImgBox" >
                 <div class="suggerimentoImg">
-                    <img id="suggerimentoImgInput"></img>
+                    <img id="suggerimentoImgInput">
+                </div>
+                <div class="imgCorretta">
+                
                 </div>
                 <div class="prossimaImg">
-                    Immagine trovata? <a>Successiva</a>
+                    Immagine trovata? <a id="si">Si</a> <a>Successiva</a>
                 </div>
                 <div class="caricaImg">
                     
@@ -132,6 +135,16 @@
                     <span class="input-icon"><i class="fa fa-map-marker fa-fw"></i></span>
                     <input id="indirizzoInput" name="indirizzo" class="input-control" type="text" placeholder="Indirizzo">
                 </div>
+                <label for="comuneInput">Comune</label>
+                <div class="input-group">
+                	<span class="input-icon"><i class="fa fa-map-marker fa-fw"></i></span>
+                	<input id="comuneInput" name="comune" class="input-control" type="text" placeholder="Comune">
+                </div>
+				<label for="provinciaInput">Provincia</label>
+				<div class="input-group">
+					<span class="input-icon"><i class="fa fa-map-marker fa-fw"></i></span>
+					<input id="provinciaInput" name="provincia" class="input-control" type="text" placeholder="Provincia">
+				</div>
             </div>
             <div class="col-3-4" id="map-canvas"></div>
         </div>
@@ -441,5 +454,75 @@
     		}
     	});
     }
+
+  //overide del sumbit
+	$('#inserzioneForm').submit(function(event){
+		var vuoto = false;
+		event.preventDefault();
+		$("input.argomenti").each(function(){
+			if($(this).val() == "")
+				vuoto = true;
+		});		
+		
+		if(!vuoto){
+			if(risposta=="No"){
+				$('#preview').attr("src","");
+			}
+			$("select.argomenti").prop('disabled',false);
+			$("input.argomenti").prop('disabled',false);
+			$('#supermercato').val($('#supermercato').val()+" - "+$('#indirizzo').val());
+			var geocoder = new google.maps.Geocoder();
+			geocoder.geocode({'address':$("#indirizzo").val()},function(results,status){
+				if(status == google.maps.GeocoderStatus.OK){			
+					var form = new FormData();
+					
+					$.each($("form").serializeArray(),function(index,value){				
+						form.append(value.name,value.value);
+					});
+					form.append("lat",results[0].geometry.location.lat());
+					form.append("lng",results[0].geometry.location.lng());
+					form.append("foto",$('#preview').attr("src"));
+					
+					if($("#file")[0].files[0] != undefined){
+						var extension = $("#file").val().split(".").pop();
+						if(extension == "jpg" || extension == "png"){
+							form.append("file",$("#file")[0].files[0]);
+						}else{
+							alert("tipo del file caricato non valido, sono validi soltanto i file png e jpg");
+						}
+					}
+					$.ajax({
+						type:'POST',
+						url:window.location.pathname,
+					//	cache:false,
+						dataType: 'text',
+						contentType:false,
+						processData:false,
+						data: form,
+						success:function(response){	
+							document.documentElement.innerHTML = response;
+							risposta = "No";
+							i = 0;
+							codici_prodotti= [];
+							prodotto_selected="";
+							infowindow = new google.maps.InfoWindow();
+							geocoder = new google.maps.Geocoder();
+							supermercati_markers = [];
+							doneTypingInterval = 5000;
+							descrizioneInterval= 5000;
+							markers = [];
+							initialize();
+							getSottocategorie();
+						}
+					});
+				}else{
+					alert("l'indirizzo immesso non è corretto");
+				}
+			});
+		}else{
+			alert("impossibile avviare il submit, il campo del dettaglio precedente e' vuoto");
+		}
+		
+	});
 
 </script>
