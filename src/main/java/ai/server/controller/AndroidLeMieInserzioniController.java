@@ -8,8 +8,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -62,8 +62,8 @@ public class AndroidLeMieInserzioniController {
 			jsonObj.put("categoria", inserzione.getProdotto().getSottocategoria().getCategoria().getNome());
 			jsonObj.put("sottocategoria", inserzione.getProdotto().getSottocategoria().getNome());
 			jsonObj.put("prezzo", inserzione.getPrezzo().toString());
-			jsonObj.put("data_inizio", inserzione.getDataInizio().toString());
-			jsonObj.put("data_fine", inserzione.getDataFine().toString());
+			jsonObj.put("data_inizio", (new SimpleDateFormat("yyyy/MM/dd")).format(inserzione.getDataInizio()));
+			jsonObj.put("data_fine", (new SimpleDateFormat("yyyy/MM/dd")).format(inserzione.getDataFine()));
 			jsonObj.put("descrizione", inserzione.getDescrizione());
 			
 			String imageDataString = null; 
