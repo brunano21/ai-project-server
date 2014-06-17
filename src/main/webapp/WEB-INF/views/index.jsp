@@ -205,54 +205,6 @@
 
 <script type="text/javascript">
 	$(function() {
-
-		/* Start Carousel */		
-        /*
-        $('#carousel-list').carouFredSel({
-            //auto                : true,
-            //circular: true,
-            items : {
-                visible : 3,
-                width : 217, 
-                height : 234 
-            },
-            direction           : "up",
-            //height: 740,
-            scroll : {
-                items           : 1,
-                easing          : "scroll",
-                duration        : 1000,                         
-                pauseOnHover    : true
-            }                   
-        });
-        */
-        
-        /*
-        $('#carousel-list').carouFredSel({
-            //auto                : true,
-            //circular: true,
-            items               : 3,
-            direction           : "up",
-            //height: 740,
-            scroll : {
-                items           : 1,
-                easing          : "elastic",
-                duration        : 1000,                         
-                pauseOnHover    : true
-            }                   
-        });
-        */
-		/* End Carousel */
-		
-		/* Start Orbit Slider */
-		/*
-        $(window).load(function() {
-			$('.post-gallery').orbit({
-                animation: 'fade',
-            });
-        });*/
-        
-        /* End Orbit Slider */
         
         function getUserGeoloc() {
 			console.log("getUserGeoloc called");

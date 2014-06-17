@@ -625,6 +625,7 @@ public class Dati {
 	public void inserisciListaDesideri(int idListaDesideri, Utente utente, String nomeListaDesideri) {
 		if(idListaDesideri == 0 || utente == null || nomeListaDesideri == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
+		
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -634,16 +635,17 @@ public class Dati {
 			session.save(listaDesideri);
 			mappaListaDesideri.put(idListaDesideri, listaDesideri);
 			mappaUtente.get(utente.getMail()).getListaDesideris().add(listaDesideri);
+			
 			tx.commit();
-		}catch(Throwable ex){
+		} catch(Throwable ex) {
 			if(tx != null) {
 				tx.rollback();
 				throw new RuntimeException(ex);
 			}
-		}finally{
-			if(session!=null && session.isOpen()) 
+		} finally {
+			if(session != null && session.isOpen()) 
 				session.close();
-			session=null;
+			session = null;
 		}
 	}
 	
@@ -656,6 +658,7 @@ public class Dati {
 	public void modificaNomeListaDesideri(int idListaDesideri, Utente utente, String nuovoNomeListaDesideri) {
 		if(idListaDesideri == 0 || utente == null || nuovoNomeListaDesideri == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
+		
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -667,22 +670,28 @@ public class Dati {
 			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
 				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
 			
-			
 			ListaDesideri tmpListaDesideri = mappaListaDesideri.get(idListaDesideri);
-			
 			tmpListaDesideri.setNomeListaDesideri(nuovoNomeListaDesideri);
 			session.update(tmpListaDesideri);
-			
 			mappaListaDesideri.put(idListaDesideri, tmpListaDesideri);
 			
+			for(Iterator ldIterator = mappaUtente.get(utente.getMail()).getListaDesideris().iterator(); ldIterator.hasNext();) {
+				ListaDesideri ld = (ListaDesideri) ldIterator.next();
+				if(ld.getIdListaDesideri() != idListaDesideri)
+					continue;
+
+				ld.setNomeListaDesideri(nuovoNomeListaDesideri);
+				break;
+			}
+			
 			tx.commit();
-		}catch(Throwable ex){
+		} catch(Throwable ex) {
 			if(tx != null) {
 				tx.rollback();
 				throw new RuntimeException(ex);
 			}
-		}finally{
-			if(session!=null && session.isOpen()) 
+		} finally {
+			if(session != null && session.isOpen()) 
 				session.close();
 			session=null;
 		}
@@ -696,6 +705,7 @@ public class Dati {
 	public void eliminaListaDesideri(int idListaDesideri, Utente utente) {
 		if(idListaDesideri == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
+		
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -707,7 +717,6 @@ public class Dati {
 			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
 				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
 			
-			
 			//rimozione anche dalla lista_desideri_prodotti
 			Query query = session.createQuery("FROM ListaDesideriProdotti WHERE ID_ListaDesideri = :id");
 			query.setParameter("id", idListaDesideri);
@@ -718,19 +727,19 @@ public class Dati {
 				mappaListaDesideriProdotti.remove(prodotto.getId());
 				session.delete(prodotto);
 			}
-			
 			session.delete(mappaListaDesideri.get(idListaDesideri));
 			
 			mappaUtente.get(utente.getMail()).getListaDesideris().remove(mappaListaDesideri.get(idListaDesideri));
 			mappaListaDesideri.remove(idListaDesideri);
+			
 			tx.commit();
-		}catch(Throwable ex){
+		} catch(Throwable ex) {
 			if(tx != null) {
 				tx.rollback();
 				throw new RuntimeException(ex);
 			}
-		}finally{
-			if(session!=null && session.isOpen()) 
+		} finally {
+			if(session != null && session.isOpen()) 
 				session.close();
 			session=null;
 		}
@@ -748,6 +757,7 @@ public class Dati {
 	public void inserisciElementoListaDesideri(int idListaDesideri, int idElemento, String descrizione, int quantita, Utente utente, Integer idInserzione) {
 		if(idListaDesideri == 0 || idElemento == 0 || descrizione == null || quantita <=0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
+		
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -764,18 +774,25 @@ public class Dati {
 			mappaListaDesideriProdotti.put(new ListaDesideriProdottiId(idElemento, idListaDesideri), elemento);
 			session.save(elemento);
 			
-			// vedere inoltre se aggiornare il set ListaDesideri dell'utente
+			for(Iterator ldIterator = mappaUtente.get(utente.getMail()).getListaDesideris().iterator(); ldIterator.hasNext();) {
+				ListaDesideri ld = (ListaDesideri) ldIterator.next();
+				if(ld.getIdListaDesideri() != idListaDesideri)
+					continue;
+				
+				ld.getListaDesideriProdottis().add(elemento);
+				break;
+			}
 			
 			tx.commit();
-		}catch(Throwable ex){
+		} catch(Throwable ex) {
 			if(tx != null) {
 				tx.rollback();
 				throw new RuntimeException(ex);
 			}
-		}finally{
-			if(session!=null && session.isOpen()) 
+		} finally {
+			if(session != null && session.isOpen()) 
 				session.close();
-			session=null;
+			session = null;
 		}
 	}
 
@@ -789,6 +806,7 @@ public class Dati {
 	public void modificaDescrizioneElementoListaDesideri(int idListaDesideri, int idElemento, String descrizione, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || descrizione == null || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
+		
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -804,23 +822,37 @@ public class Dati {
 				throw new RuntimeException("Id elemento non trovato: " + idElemento);
 			
 			ListaDesideriProdotti elemento = (ListaDesideriProdotti) mappaListaDesideriProdotti.get(new ListaDesideriProdottiId(idElemento, idListaDesideri));
-			
 			elemento.setDescrizione(descrizione);
-			
 			session.update(elemento);
 			
 			// vedere inoltre se aggiornare il set ListaDesideri dell'utente
+			doubleloop:
+			for(Iterator ldIterator = mappaUtente.get(utente.getMail()).getListaDesideris().iterator(); ldIterator.hasNext();) {
+				ListaDesideri ld = (ListaDesideri) ldIterator.next();
+				if(ld.getIdListaDesideri() != idListaDesideri)
+					continue;
+				
+				for(Iterator ldpIterator = ld.getListaDesideriProdottis().iterator(); ldpIterator.hasNext();) {
+					ListaDesideriProdotti ldp = (ListaDesideriProdotti) ldpIterator.next();
+					if(ldp.getId().getIdElemento() != idElemento)
+						continue;
+					
+					ldp.setDescrizione(descrizione);
+					break doubleloop;
+				}
+				System.out.println("MONDO PORCOOOOOOOOOOOOOOOO");
+			}
 			
 			tx.commit();
-		}catch(Throwable ex){
+		} catch(Throwable ex) {
 			if(tx != null) {
 				tx.rollback();
 				throw new RuntimeException(ex);
 			}
-		}finally{
-			if(session!=null && session.isOpen()) 
+		} finally {
+			if(session != null && session.isOpen()) 
 				session.close();
-			session=null;
+			session = null;
 		}
 	}
 	
@@ -834,6 +866,7 @@ public class Dati {
 	public void modificaQuantitaElementoListaDesideri(int idListaDesideri, int idElemento, int quantita, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || quantita == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
+		
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -849,21 +882,36 @@ public class Dati {
 				throw new RuntimeException("Id elemento non trovato: " + idElemento);
 			
 			ListaDesideriProdotti elemento = (ListaDesideriProdotti) mappaListaDesideriProdotti.get(new ListaDesideriProdottiId(idElemento, idListaDesideri));
-			
 			elemento.setQuantità(quantita);
-			
 			session.update(elemento);
 			
+			doubleloop:
+				for(Iterator ldIterator = mappaUtente.get(utente.getMail()).getListaDesideris().iterator(); ldIterator.hasNext();) {
+					ListaDesideri ld = (ListaDesideri) ldIterator.next();
+					if(ld.getIdListaDesideri() != idListaDesideri)
+						continue;
+					
+					for(Iterator ldpIterator = ld.getListaDesideriProdottis().iterator(); ldpIterator.hasNext();) {
+						ListaDesideriProdotti ldp = (ListaDesideriProdotti) ldpIterator.next();
+						if(ldp.getId().getIdElemento() != idElemento)
+							continue;
+						
+						ldp.setQuantità(quantita);
+						break doubleloop;
+					}
+					System.out.println("MONDO PORCOOOOOOOOOOOOOOOO111111111111");
+				}
+			
 			tx.commit();
-		}catch(Throwable ex){
+		} catch(Throwable ex) {
 			if(tx != null) {
 				tx.rollback();
 				throw new RuntimeException(ex);
 			}
-		}finally{
-			if(session!=null && session.isOpen()) 
+		} finally {
+			if(session != null && session.isOpen()) 
 				session.close();
-			session=null;
+			session = null;
 		}
 	}
 	
@@ -877,6 +925,7 @@ public class Dati {
 	public void modificaIDInserzioneElementoListaDesideri(int idListaDesideri, int idElemento, int idInserzione, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || idInserzione == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
+		
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -896,19 +945,35 @@ public class Dati {
 			
 			ListaDesideriProdotti elemento = (ListaDesideriProdotti) mappaListaDesideriProdotti.get(new ListaDesideriProdottiId(idElemento, idListaDesideri));
 			elemento.setInserzione(mappaInserzioni.get(idInserzione));
-			
 			session.update(elemento);
 			
+			doubleloop:
+				for(Iterator ldIterator = mappaUtente.get(utente.getMail()).getListaDesideris().iterator(); ldIterator.hasNext();) {
+					ListaDesideri ld = (ListaDesideri) ldIterator.next();
+					if(ld.getIdListaDesideri() != idListaDesideri)
+						continue;
+					
+					for(Iterator ldpIterator = ld.getListaDesideriProdottis().iterator(); ldpIterator.hasNext();) {
+						ListaDesideriProdotti ldp = (ListaDesideriProdotti) ldpIterator.next();
+						if(ldp.getId().getIdElemento() != idElemento)
+							continue;
+						
+						ldp.setInserzione(mappaInserzioni.get(idInserzione));
+						break doubleloop;
+					}
+					System.out.println("MONDO PORCOOOOOOOOOOOOOOOO222222222222");
+				}
+			
 			tx.commit();
-		}catch(Throwable ex){
+		} catch(Throwable ex) {
 			if(tx != null) {
 				tx.rollback();
 				throw new RuntimeException(ex);
 			}
-		}finally{
-			if(session!=null && session.isOpen()) 
+		} finally {
+			if(session != null && session.isOpen()) 
 				session.close();
-			session=null;
+			session = null;
 		}
 	}
 	
@@ -921,6 +986,7 @@ public class Dati {
 	public void eliminaElementoListaDesideri(int idListaDesideri, int idElemento, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
+		
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -936,20 +1002,36 @@ public class Dati {
 				throw new RuntimeException("Id elemento non trovato: " + idElemento);
 			
 			ListaDesideriProdotti elemento = (ListaDesideriProdotti) mappaListaDesideriProdotti.get(new ListaDesideriProdottiId(idElemento, idListaDesideri));
-			
 			session.delete(elemento);
 			mappaListaDesideriProdotti.remove(new ListaDesideriProdottiId(idElemento, idListaDesideri));
 			
+			doubleloop:
+				for(Iterator ldIterator = mappaUtente.get(utente.getMail()).getListaDesideris().iterator(); ldIterator.hasNext();) {
+					ListaDesideri ld = (ListaDesideri) ldIterator.next();
+					if(ld.getIdListaDesideri() != idListaDesideri)
+						continue;
+					
+					for(Iterator ldpIterator = ld.getListaDesideriProdottis().iterator(); ldpIterator.hasNext();) {
+						ListaDesideriProdotti ldp = (ListaDesideriProdotti) ldpIterator.next();
+						if(ldp.getId().getIdElemento() != idElemento)
+							continue;
+						
+						ldpIterator.remove();
+						break doubleloop;
+					}
+					System.out.println("MONDO PORCOOOOOOOOOOOOOOOO333333333333333333");
+				}
+			
 			tx.commit();
-		}catch(Throwable ex){
+		} catch(Throwable ex) {
 			if(tx != null) {
 				tx.rollback();
 				throw new RuntimeException(ex);
 			}
-		}finally{
-			if(session!=null && session.isOpen()) 
+		} finally {
+			if(session != null && session.isOpen()) 
 				session.close();
-			session=null;
+			session = null;
 		}
 	}
 	
@@ -963,6 +1045,7 @@ public class Dati {
 	public void modificaAcquistatoElementoListaDesideri(int idListaDesideri, int idElemento, boolean acquistato, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
+		
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -1000,8 +1083,7 @@ public class Dati {
 				mappaListaDesideriProdotti.remove(prodotto);
 				session.delete(prodotto);
 				tx.commit();
-			}
-			else { 
+			} else { 
 				tx=session.beginTransaction();
 				// sposto la tupla dalla lista spesa alla lista desideri
 				
@@ -1027,15 +1109,15 @@ public class Dati {
 			}
 			
 			
-		}catch(Throwable ex){
+		} catch(Throwable ex) {
 			if(tx != null) {
 				tx.rollback();
 				throw new RuntimeException(ex);
 			}
-		}finally{
-			if(session!=null && session.isOpen()) 
+		} finally {
+			if(session != null && session.isOpen()) 
 				session.close();
-			session=null;
+			session = null;
 		}
 	}
 	

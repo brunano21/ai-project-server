@@ -192,7 +192,7 @@ public class ListaSpesaController {
 				System.out.println(request.getParameter("idListaDesideri"));
 				System.out.println(request.getParameter("idElemento"));
 				System.out.println(request.getParameter("quantita"));
-				dati.modificaDescrizioneElementoListaDesideri(Integer.parseInt(request.getParameter("idListaDesideri")), Integer.parseInt(request.getParameter("idElemento")), request.getParameter("quantita"), Dati.getInstance().getUtenti().get(principal.getName()));
+				dati.modificaQuantitaElementoListaDesideri(Integer.parseInt(request.getParameter("idListaDesideri")), Integer.parseInt(request.getParameter("idElemento")), Integer.parseInt(request.getParameter("quantita")), Dati.getInstance().getUtenti().get(principal.getName()));
 				break;
 			
 			case "modificaFlagAcquistatoElemento":

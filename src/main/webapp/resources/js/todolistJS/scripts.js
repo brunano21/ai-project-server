@@ -119,7 +119,9 @@ function prepareList() {
         if (todoMap[$(this).parent().attr('id')]['Nome'] != $(this).val()) {
 	        todoMap[$(this).parent().attr('id')]['Nome'] = $(this).val();
 	        localStorage.setItem('todoMap', JSON.stringify(todoMap));
-	
+	        
+	        console.log("modificaNomeListaDesideri");
+	        
 	        // inviare richiesta al server per rinominare la lista
 	        sendToServer('modificaNomeListaDesideri', [todoMap[$(this).parent().attr('id')]['Nome'], todoMap[$(this).parent().attr('id')]['ID_ListaDB']]);
         }
@@ -315,7 +317,7 @@ function prepareList() {
     		
         $('#expList').append(
             "<li id='" + todoListId + "' class='singleTodoList collapsed expanded'>" +
-                "<span class='todoListName'>Nuova Lista</span>" +
+                "<span class='todoListName'>" + todoMap[todoListId]['Nome'] + "</span>" +
                 "<input type='text' class='todoListNameInput' style='display:none' />" + 
                 "<div class='delImg'></div>" +
                 "<div class='newItemContainer input-group'>" +
@@ -510,30 +512,6 @@ function prepareList() {
 				case "nuovoElemento_Response":	    		
 		    		for (var suggerimento in jsonData['suggerimenti']) {
 						var idElementoSuggerito = "elem_" + jsonData['infoElemento']['ID_ListaDesideri'] + "_" + jsonData['infoElemento']['ID_Elemento'] + "_" + jsonData['suggerimenti'][suggerimento]['ID_Inserzione'];
-//			    		$('.carousel-list-mini').append(
-//			    			"<div id=\"" + idElementoSuggerito + "\" class=\"carousel-item-mini\" style=\"display:none\">" +
-//			                    "<div class=\"featured-image\">" +
-//			                        "<img src=\"" + jsonData['suggerimenti'][suggerimento]['foto'] + "\">" +
-//			                    "</div>" +
-//			                    "<div class=\"post-margin\">" +
-//			                        "<h6><a href=\"#\">" + jsonData['suggerimenti'][suggerimento]['descrizione'] + "</a></h6>" +
-//			                        "<div><i class=\"fa fa-map-marker\"></i>" + jsonData['suggerimenti'][suggerimento]['supermercato'] + "</div>" +
-//			                        "<div><i class=\"fa fa-clock-o\"></i>" + jsonData['suggerimenti'][suggerimento]['dataFine'] + "</div>" +
-//			                        "<div><i class=\"fa fa-eur\"></i>" + jsonData['suggerimenti'][suggerimento]['prezzo'] + "</div>" +
-//			                    "</div>" +
-//			                    "<div class=\"connect-item genericBtn\"><i class=\"fa fa-plus fa-lg fa-2x\"></i></div>" +
-//			                "</div>" +
-//			                "<div class=\"flip-container\" ontouchstart=\"this.classList.toggle('hover');\">" +
-//				    			"<div class=\"flipper\">" +
-//				    			  "<div class=\"front\">" +
-//				    			    "<img src=\"http://cdn01.livingrichwithcoupons.com/wp-content/uploads/barilla4.jpg\"/>" +
-//				    			  "</div>" +
-//				    			  "<div class=\"back \">" +
-//				    			    "<div class=\"\"><i class=\"fa fa-plus fa-lg fa-2x\"></i></div>" +
-//				    			  "</div>" +
-//				    			"</div>" +
-//			    			"</div>"
-//			    		);
 			    		$('.carousel-list-mini').append(
 				    			"<div id=\"" + idElementoSuggerito + "\" class=\"carousel-item-mini\" style=\"display:none\">" +
 				                    
@@ -559,8 +537,9 @@ function prepareList() {
 			    		
 			    		//TODO Il back risulta come non cliccabile, anche se il listener viene attaccato correttamente, tuttavia non si riesce a cliccare
 			    		//Io penso sia per il fatto che quando si gira non risulta visibile, la cosa strana è che prima mi funzionava, BAH, indagherò.
-			    		$("#"+idElementoSuggerito).find('.back').click(connectItem);
-			    		$("#"+idElementoSuggerito).find('.front').click(connectItem);
+			    		//$("#"+idElementoSuggerito).find('.back').click(connectItem);
+			    		//$("#"+idElementoSuggerito).find('.front').click(connectItem);
+			    		$("#"+idElementoSuggerito).find('.flip-container').click(connectItem);
 			    		$("#"+idElementoSuggerito).show("slow");
 		    		}
 					break;
@@ -660,71 +639,7 @@ function prepareList() {
             for (var index in todoMap) { // index == todoList0, todoList1, todoList2, ... 
                 // append the current todo list.
             	console.log("Index: " + index + "\t Nome: " + todoMap[index]['Nome']);
-            	
             	addNewList(index);
-            	/*
-                $('#expList').append(
-                    "<li id='" + index + "' class='singleTodoList collapsed'>" +
-                        "<span class='todoListName'>" + todoMap[index]['Nome'] + "</span>" +
-                        "<input type='text' class='todoListNameInput' style='display:none' />" + 
-                        "<div class='delImg'></div>" +
-                        "<div class='newItemContainer input-group'>" +
-                        	"<span class='input-icon'><i class='fa fa-shopping-cart fa-fw'></i></span>" +
-                            "<input class='itemText input-control' type='text'> " +
-                            "<span class='input-icon' style='border-radius: 4px 0px 0px 4px;'><i class='fa fa-plus fa-fw'></i></span>" +
-                            "<input class='itemQuantity input-control' type='text'> " + 
-                            "<div class='addNewItemBtn genericBtn'>Aggiungi</div>" +
-                        "</div>" +  
-                        "<ul class='show-items'></ul>" +
-                    "</li>" +
-                    "<div class='listSeparator'></div>"
-                );
-                
-                // Register listeners
-                $("#"+index + "> .todoListName").click(modificaNomeLista);
-                $("#"+index + "> .todoListNameInput").focusout(focusInputNomeLista);
-                $("#"+index + "> .delImg").click(eliminaLista);
-                */
-                
-            	/*
-                // appendo gli elementi alla lista in questione
-                for (var k in todoMap[index]['Elementi']) {
-                	console.log("\t\tElementi: " + k + "\t testo: " + todoMap[index]['Elementi'][k]['testo']);
-                    var acquistato = todoMap[index]['Elementi'][k]['acquistato'];
-                    
-                    $("#"+index + " > ul").append(
-                        "<li id='" + k + "' class='singleTodoItem" + ((acquistato) ? " completed" : "")  + "' >" +
-                            "<span class='todoElemName'>" + ((acquistato) ? ("<strike>" + todoMap[index]['Elementi'][k]['testo'] + "</strike>") : (todoMap[index]['Elementi'][k]['testo'])) + "</span> - " +
-                            "<input type='text' class='todoElemNameInput' style='display:none' />" +
-                            "<span class='todoElemQuantity'>" + ((acquistato) ? ("<strike>" + todoMap[index]['Elementi'][k]['quantita'] + "</strike>") : (todoMap[index]['Elementi'][k]['quantita'])) + "</span>" +
-                            "<input type='text' class='todoElemQuantityInput' style='display:none' />" +
-                            "<div class='itemControls'>" + 
-                                "<div class='okImg'></div>" +
-                                "<div class='delImg'></div>" +
-                            "</div>" + 
-                        "</li>"
-                    );
-
-                    // listeners per editare il testo dell'elemento
-                    $("#"+ k + "> .todoElemName").click(modificaNomeElemento);
-                    $("#"+ k + "> .todoElemNameInput").focusout(focusInputNomeElemento);
-                    // listeners per editare la quantità dell'elemento
-                    $("#"+ k + "> .todoElemQuantity").click(modificaQuantitaElemento);
-                    $("#"+ k + "> .todoElemQuantityInput").focusout(focusInputQuantitaElemento);
-                    // listener per indicare l'elemento come 'acquistato' o meno
-                    $("#"+ k + "> .itemControls > .okImg").click(acquistatoToggle);
-                    // listener per eliminare l'elemento
-                    $("#"+ k + "> .itemControls > .delImg").click(eliminaElemento);
-                    console.log(todoMap[index]['Elementi'][k]['ID_Inserzione']);
-                    
-                    // check se è stata associata un'inserzione
-                    if(todoMap[index]['Elementi'][k]['ID_Inserzione'] != null) {
-                    	var data = {"idListaDesideri" : index,
-                    				"idElemento" : k,
-                    				"idInserzione" : todoMap[index]['Elementi'][k]['ID_Inserzione']};
-                    	sendToServer("recuperaInserzione", data);
-                    }
-                }*/
             }
         }
     }; // end loadFromLocalStorage
