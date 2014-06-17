@@ -113,8 +113,6 @@ public class ListaSpesaController {
 	
 	@RequestMapping(value="/todolist", method = RequestMethod.POST)
 	public @ResponseBody ObjectNode processTodoList(HttpServletRequest request, Principal principal){
-		
-		ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
 		JsonNodeFactory factory;
 		ObjectNode result = null;
 		

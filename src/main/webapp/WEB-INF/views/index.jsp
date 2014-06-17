@@ -96,15 +96,9 @@
 				}
 										
 				else {
-					//$("#loginForm").hide();
-					//$("#logContainer").html(returnedData);
-					$("#garbage").html(returnedData);
 					$("#loginForm").hide();
-					$("#logoutForm").appendTo("#logContainer");
-					$(".right-side-box").children().hide();
-					$("#carousel-user-container").appendTo(".right-side-box");
-					
-					startCarousels();
+					$("#logContainer").html(returnedData);
+					getUserCustomization_Index();
 	            }
             }      
         });
@@ -123,6 +117,28 @@
                 } 
         });
     };
+    
+    function getUserCustomization_Index() {
+    	$.ajax({
+        	url:"./custom-index", 
+            type: 'GET', 
+                async: true,
+                context: document.body, 
+                data: { 
+                	'latitudine' : userPosition.coords.latitude,
+                    'longitudine' : userPosition.coords.longitude
+                    }, 
+                success: function(returnedData, textStatus, jqXHR) {
+					$(".right-side-box").children().hide();
+					$(".right-side-box").html(returnedData);
+					
+					startCarousels();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log("Error msg " + xhr.status + " " + ajaxOptions);
+				}
+        });
+    }
     	       
    	function getRegisterForm() {
 		if ($("#registerContainer").children().length != 0)
