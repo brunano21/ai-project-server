@@ -278,6 +278,9 @@ a:hover{ color:#2980b9; }
 	height: 500px;
 }
 
+.caroufredsel_wrapper {
+	height: 797px;
+}
 #carousel-list {
     overflow: hidden;
 	float: right;

@@ -30,48 +30,45 @@ import dati.Dati;
 
 @Controller
 public class ValutazioneController {
+	private Map<Integer,Inserzione> inserzioni;
 	
 	@Autowired
 	private Dati dati;
 	
-	public void setDati(Dati dati){
+	public void setDati(Dati dati) {
 		this.dati=dati;
 	}
 	
 	@Autowired
 	private ServletContext context;
 	
-	public void setServletContext(ServletContext context){
+	public void setServletContext(ServletContext context) {
 		this.context=context;
 	}
 	
-	private Map<Integer,Inserzione> inserzioni;
-	
-	
-	@RequestMapping(value = "/valutazione")
-	public ModelAndView showValutazione(){
-		
+	@RequestMapping(value = "/valutazione", method = RequestMethod.GET)
+	public ModelAndView showValutazione() {
 		return new ModelAndView("valutazione");
 	}
 	
 	@RequestMapping(value = "/valutazione/riceviValutazione",method = RequestMethod.POST)
-	public @ResponseBody String riceviValutazione(String valutazione,String idInserzione,Principal principal){
+	public @ResponseBody String riceviValutazione(String valutazione, String idInserzione, Principal principal) {
 		
 		Inserzione inserzione = dati.getInserzioni().get(new Integer(idInserzione));
 		boolean trovato = false;
-		if(inserzione != null){			
-			for(ValutazioneInserzione vi : (Set<ValutazioneInserzione>)inserzione.getValutazioneInserziones()){				
-				if(vi.getUtenteByIdUtenteValutatore().getMail().equals(principal.getName())){
+		if(inserzione != null) {			
+			for(ValutazioneInserzione vi : (Set<ValutazioneInserzione>)inserzione.getValutazioneInserziones()) {				
+				if(vi.getUtenteByIdUtenteValutatore().getMail().equals(principal.getName())) {
 					trovato = true;
 					break;
 				}				
 			}			
-			if(!trovato){
-				if("corretta".equals(valutazione)){
+			if(!trovato) {
+				if("corretta".equals(valutazione)) {
 					dati.inserimentoValutazioneInserzione(inserzione,inserzione.getUtente(), dati.getUtenti().get(principal.getName()),1, new Date());
 					return "ok";
 				}
-				if("errata".equals(valutazione)){
+				if("errata".equals(valutazione)) {
 					dati.inserimentoValutazioneInserzione(inserzione,inserzione.getUtente(), dati.getUtenti().get(principal.getName()),-1, new Date());
 					return "ok";
 				}
