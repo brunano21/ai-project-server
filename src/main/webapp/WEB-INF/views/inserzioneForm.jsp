@@ -50,11 +50,8 @@
                 <div class="suggerimentoImg">
                     <img id="suggerimentoImgInput">
                 </div>
-                <div class="imgCorretta">
-                
-                </div>
                 <div class="prossimaImg">
-                    Immagine trovata? <a id="si">Si</a> <a>Successiva</a>
+                    <span class="col-full">Immagine trovata? </span><a class="col-1-2" id="si">Si</a> <a id="successiv" class="col-1-2">Successiva</a>
                 </div>
                 <div class="caricaImg">
                     
@@ -162,6 +159,7 @@
 </div>
 
 <script type="text/javascript">
+	var risposta = "No";
 	var supermercati_markers = [];
     var fromDate = $("#dataInizioInput").datepicker($.datepicker.regional[ "it" ], {
         defaultDate: "+1w",
@@ -459,17 +457,17 @@
 	$('#inserzioneForm').submit(function(event){
 		var vuoto = false;
 		event.preventDefault();
-		$("input.argomenti").each(function(){
+	/*	$("input.argomenti").each(function(){
 			if($(this).val() == "")
 				vuoto = true;
-		});		
+		});		*/
 		
 		if(!vuoto){
 			if(risposta=="No"){
 				$('#preview').attr("src","");
 			}
-			$("select.argomenti").prop('disabled',false);
-			$("input.argomenti").prop('disabled',false);
+	//		$("select.argomenti").prop('disabled',false);
+	//		$("input.argomenti").prop('disabled',false);
 			$('#supermercato').val($('#supermercato').val()+" - "+$('#indirizzo').val());
 			var geocoder = new google.maps.Geocoder();
 			geocoder.geocode({'address':$("#indirizzo").val()},function(results,status){
