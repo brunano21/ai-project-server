@@ -143,18 +143,16 @@ function searchImage(){
     imageSearch.execute($("#descrizioneInput").val());
 
 };
-
 $("#supermercatoInput").autocomplete({
-    source : window.location.pathname+"inserzione/getSuggerimenti/supermercati",
+    source : window.location.pathname+"inserzione/getSuggerimenti/supermercati"
+	/*,
     select : function(event, ui){
-        var selected = ui.item.label;
-        var strs = selected.split(/\s-\s/);
-        $('#supermercatoInput').val(strs[0]);
-        $('#indirizzoInput').val(strs[1]);
+        var selected = ui.item.label;        
+        $('#supermercatoInput').val(selected);
         //TODO to check!!
-        $('#indirizzoInput').trigger("keyup");
+      //  $('#indirizzoInput').trigger("keyup");
         //event.preventDefault();
-    }
+    }*/
 });
 
 
@@ -184,9 +182,11 @@ function loadMarkers(map,path,latLng){
 					infowindow.open(map,this);
 					$('a.infowindow').click(function(){
 						if($(this).attr('id')=="Si"){
-							var strs = $('#nome.infowindow').text().split(/\s-\s/);
-							$('#supermercato').val(strs[0]);
-							$('#indirizzo').val(strs[1]);
+							var strs = $('#nome.infowindow').text();
+							$('#supermercatoInput').val(value.nome);
+							$('#indirizzoInput').val(value.indirizzo);
+							$('#comuneInput').val(value.comune);
+							$('#provinciaInput').val(value.provincia);
 							$('#domanda.infowindow').empty();
 							$('#nome.infowindow').after("risposta ricevuta");
 						}else{
@@ -300,10 +300,10 @@ function cercaSupermercato(){
 $('#inserzioneForm').submit(function(event){
 	var vuoto = false;
 	event.preventDefault();
-/*	$("input.argomenti").each(function(){
+	$("input#quantitaDettaglioInput").each(function(){
 		if($(this).val() == "")
 			vuoto = true;
-	});		*/
+	});		
 	
 	if(!vuoto){
 		if(risposta=="No"){

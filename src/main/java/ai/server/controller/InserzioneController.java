@@ -81,7 +81,7 @@ public class InserzioneController {
 		}
 		
 		model.put("categorie", categorie);
-		
+		*/
 		Set<String> argomenti = new HashSet<String>();
 		
 		for(Map.Entry<String, Argomenti> a : dati.getArgomenti().entrySet()){
@@ -90,7 +90,7 @@ public class InserzioneController {
 			
 		}
 		model.put("argomenti", argomenti);
-		return "inserzione";*/
+	//	return "inserzione";
 		
 		Set<String> categorie = new HashSet<String>();
 		
@@ -130,6 +130,9 @@ public class InserzioneController {
 			if(distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(float) s.getValue().getLatitudine(),(float) s.getValue().getLongitudine()) < 3){
 				obj=factory.objectNode();
 				obj.put("nome", s.getValue().getNome());
+				obj.put("indirizzo", s.getValue().getIndirizzo());
+				obj.put("comune", s.getValue().getComune());
+				obj.put("provincia", s.getValue().getProvincia());
 				obj.put("lat", s.getValue().getLatitudine());
 				obj.put("lng", s.getValue().getLongitudine());
 				results.add(obj);
