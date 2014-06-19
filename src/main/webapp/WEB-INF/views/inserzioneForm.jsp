@@ -2,10 +2,7 @@
     pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<script src="https://www.google.com/jsapi" type="text/javascript"></script>
-<script type="text/javascript">    
-    google.load('search', '1');
-    </script>
+
 
 <div id="inserzione" class="inserzioneContainer" >
     <h2>INSERZIONE</h2>

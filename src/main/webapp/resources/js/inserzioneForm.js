@@ -159,6 +159,8 @@ $("#supermercatoInput").autocomplete({
 var currentLocation;
 var infowindow ;
 var geocoder ;
+var supermercato_scelto = false;
+
 
 function loadMarkers(map,path,latLng){
 	$.ajax({type:"GET",
@@ -177,26 +179,32 @@ function loadMarkers(map,path,latLng){
 				});	
 				
 				google.maps.event.addListener(marker, 'click', function() {
-					var string = "<a class ='infowindow' id='Si'>Si</a> o <a class ='infowindow' id='No'>No</a>";
-					infowindow.setContent("<div class='infowindow 'id='nome'>"+value.nome+"</div>\n<div class='infowindow' id='domanda'> E' questo?\n"+string+"</div>");
-					infowindow.open(map,this);
-					$('a.infowindow').click(function(){
-						if($(this).attr('id')=="Si"){
-							var strs = $('#nome.infowindow').text();
-							$('#supermercatoInput').val(value.nome);
-							$('#indirizzoInput').val(value.indirizzo);
-							$('#comuneInput').val(value.comune);
-							$('#provinciaInput').val(value.provincia);
-							$('#domanda.infowindow').empty();
-							$('#nome.infowindow').after("risposta ricevuta");
-						}else{
-							$('#domanda.infowindow').empty();
-							$('#nome.infowindow').after("risposta ricevuta");
-						}
-					}).css({'cursor':'pointer',
-		    			'background-color':'skyblue',
-		    			'color':'blue',
-		    		});
+					if(!supermercato_scelto){
+						var string = "<a class ='infowindow' id='Si'>Si</a> o <a class ='infowindow' id='No'>No</a>";
+						infowindow.setContent("<div class='infowindow 'id='nome'>"+value.nome+"</div>\n<div class='infowindow' id='domanda'> E' questo?\n"+string+"</div>");
+						infowindow.open(map,this);
+						$('a.infowindow').click(function(){
+							if($(this).attr('id')=="Si"){
+								var strs = $('#nome.infowindow').text();
+								$('#supermercatoInput').val(value.nome);
+								$('#indirizzoInput').val(value.indirizzo);
+								$('#comuneInput').val(value.comune);
+								$('#provinciaInput').val(value.provincia);
+								$('#domanda.infowindow').empty();
+								$('#nome.infowindow').after("risposta ricevuta");
+							}else{
+								$('#domanda.infowindow').empty();
+								$('#nome.infowindow').after("risposta ricevuta");
+							}
+						}).css({'cursor':'pointer',
+			    			'background-color':'skyblue',
+			    			'color':'blue',
+			    		});
+						supermercato_scelto = true;
+					}else{
+						infowindow.setContent("<div class='infowindow 'id='nome'>"+value.nome+"</div>");
+						infowindow.open(map,this);
+					}
 				});
 				supermercati_markers.push(marker);
 			});
@@ -208,7 +216,7 @@ var mapInitialized = false;
 var latLng = null;
 function mapInitializer(){
 	infowindow = new google.maps.InfoWindow();
-    geocoder = new google.maps.Geocoder();
+    geocoder = new google.maps.Geocoder();    
 	geocoder.geocode({'address':"Italia"},function(results,status){
 		if(status == google.maps.GeocoderStatus.OK){
 			currentLocation = results[0].geometry.location;
@@ -265,36 +273,56 @@ var typingTimer;
 var doneTypingInterval = 5000;
 
 $('#indirizzoInput').keyup(function(){
-	typingTimer = setTimeout(cercaSupermercato(), doneTypingInterval);
+	typingTimer = setTimeout(cercaSupermercato, doneTypingInterval);
 });
 
 $('#indirizzoInput').keydown(function(){
 	clearTimeout(typingTimer);
 });
 
+$('#comuneInput').keyup(function(){
+	typingTimer = setTimeout(cercaSupermercato, doneTypingInterval);
+});
+
+$('#comuneInput').keydown(function(){
+	clearTimeout(typingTimer);
+});
+
+$('#provinciaInput').keyup(function(){
+	typingTimer = setTimeout(cercaSupermercato, doneTypingInterval);
+});
+
+$('#provinciaInput').keydown(function(){
+	clearTimeout(typingTimer);
+});
 
 var markers = [];
 var map;
 function cercaSupermercato(){
-	var geocoder = new google.maps.Geocoder();
-	geocoder.geocode({'address':$("#indirizzoInput").val()},function(results,status){
-		if(status == google.maps.GeocoderStatus.OK){
-			for(var i=0;i<markers.length;i++){
-				markers[i].setMap(null);
-			}
-			var marker = new google.maps.Marker({
-			    map: map,
-			    position: results[0].geometry.location,
-			  });
-			map.setCenter(marker.getPosition());
-			infowindow.setContent($('#supermercatoInput').val()+" "+$('#indirizzoInput').val());
-		    infowindow.open(map, marker);
-			markers.push(marker);
-		}else{
-			alert("errore nell'indirizzo");
-    		}
-    	});
-    }
+	var indirizzo = $("#indirizzoInput").val();
+	var comune = $("#comuneInput").val();
+	var provincia = $("#provinciaInput").val();
+	if(indirizzo != "" && comune != "" && provincia != ""){
+		var geocoder = new google.maps.Geocoder();
+		geocoder.geocode({'address':indirizzo+" "+comune+" "+provincia},function(results,status){
+			if(status == google.maps.GeocoderStatus.OK){
+				for(var i=0;i<markers.length;i++){
+					markers[i].setMap(null);
+				}
+				var marker = new google.maps.Marker({
+				    map: map,
+				    position: results[0].geometry.location,
+				  });
+				map.setCenter(marker.getPosition());
+				infowindow.setContent($('#supermercatoInput').val()+" "+indirizzo);
+			    infowindow.open(map, marker);
+				markers.push(marker);
+			}else{
+				alert("errore nell'indirizzo");
+	    		}
+	    	});
+	}
+}
 
   //overide del sumbit
 $('#inserzioneForm').submit(function(event){

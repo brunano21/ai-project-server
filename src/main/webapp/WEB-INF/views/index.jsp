@@ -40,8 +40,6 @@
     google.load('search', '1');
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places"></script>
-<script src="https://www.google.com/jsapi" type="text/javascript"></script>
 
 <!-- <link rel='stylesheet' id='orbit-css-css'  href='css/orbit.css' type='text/css' media='all' /> -->
 <!--<script type='text/javascript' src='js/orbit.min.js'></script>-->
