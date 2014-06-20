@@ -269,31 +269,37 @@ function mapInitializer(){
 	    'callback=mapInitializer';
 	document.body.appendChild(script);
 })();
-var typingTimer;
+var typingTimer = undefined;
 var doneTypingInterval = 5000;
 
 $('#indirizzoInput').keyup(function(){
-	typingTimer = setTimeout(cercaSupermercato, doneTypingInterval);
+	if(typingTimer == undefined)
+		typingTimer = setTimeout(cercaSupermercato, doneTypingInterval);
 });
 
 $('#indirizzoInput').keydown(function(){
 	clearTimeout(typingTimer);
+	typingTimer = undefined;
 });
 
 $('#comuneInput').keyup(function(){
-	typingTimer = setTimeout(cercaSupermercato, doneTypingInterval);
+	if(typingTimer == undefined)
+		typingTimer = setTimeout(cercaSupermercato, doneTypingInterval);	
 });
 
 $('#comuneInput').keydown(function(){
 	clearTimeout(typingTimer);
+	typingTimer = undefined;
 });
 
 $('#provinciaInput').keyup(function(){
-	typingTimer = setTimeout(cercaSupermercato, doneTypingInterval);
+	if(typingTimer == undefined)
+		typingTimer = setTimeout(cercaSupermercato, doneTypingInterval);
 });
 
 $('#provinciaInput').keydown(function(){
 	clearTimeout(typingTimer);
+	typingTimer = undefined;
 });
 
 var markers = [];
