@@ -59,30 +59,29 @@
 #expList .expanded {
     background-image: url(../img/expanded.png);
 }
-#expList {
-    clear: both;
-    height: 300px;
-    overflow-y: auto;
-}
+#expList { clear: both; }
 
 /* PER LA PULSANTIERA */
-.listControl{
-  margin-bottom: 15px;
-}
+.listControl{ margin-bottom: 15px; }
 .listControl div {
     display: inline-block;
-    border: 1px solid #555555;
+    border: 1px solid #999696;
     color: #555555;
     cursor: pointer;
     height: 1.5em;
     line-height: 1.5em;
-    margin-right: 5px;
-    padding: 4px 10px;
+    padding: 5px 10px;
+    border-radius: 4px;
+	margin: 0.9em;
 }
 .listControl div:hover {
-    background-color:#555555;
-    color:#222222; 
     font-weight:normal;
+    background-color: #fff;
+    border-color: #e8c291;
+    outline: none;
+    -moz-box-shadow: 0 0 0 1px #e8c291 inset;
+    -webkit-box-shadow: 0 0 0 1px #e8c291 inset;
+    box-shadow: 0 0 0 1px #e8c291 inset;
 }
 
 /*------------------------------------*/
@@ -104,19 +103,17 @@
     list-style: none;
     cursor: text;
     line-height: 140%;
-    text-indent: 0px;
-    border: dashed 1px;
     padding: 6px;
-    width: 14em;
+    width: 18em;
+    margin-bottom: 0.5em;
 }
 
-.newItemContainer {
-    height: 2.5em;
-    width: 18em;
-}
+.newItemContainer { height: 2em; width: 20.5em; margin-bottom: 0.5em; }
+.newItemContainer .input-icon { height: 2.5em; border-radius: 4px 0px 0px 4px; }
+.newItemContainer .input-control { height: 2.5em; border-radius: 0px 4px 4px 0px; }
 
 input[type="text"] {
-   height: 2.0em;
+    height: 2.0em;
     padding: 4px;
     float: left;
     margin-right: 0.5em;
@@ -126,26 +123,28 @@ input[type="text"] {
 .itemText {
     width: 8em;
 }
+
 .itemQuantity {
     width: 2.5em;
 }
 
-
-.addNewItemBtn {
-    float: right;
-    border: 1px solid #555555;
-    color: #555555;
-    cursor: pointer;
-    height: 1.5em;
-    line-height: 1.5em;
-    margin-right: 5px;
-    padding: 4px 10px;
+.listSeparator {
+	border-bottom: 1px dashed grey;
+	position: relative;
+	width: 90%;
+	left: 5%;
+	margin-bottom: 0.5em;
 }
 
-.addNewItemBtn:hover {
-    background-color:#555555;
-    color:#222222; 
-    font-weight:normal;
+.addNewItemBtn {
+	float: right;
+	cursor: pointer;
+	height: 2.5em;
+	line-height: 2.5em;
+	margin-right: 5px;
+	width: 5.3em;
+	font-size: smaller;
+	text-align: center;
 }
 
 .itemControls {
@@ -171,38 +170,28 @@ input[type="text"] {
 /*------------------------------*/
 #post_left {
     width: 50%;
-    border: 1px solid;
-    height: 100%
+    height: 100%;
+    background-color: #fff;
 }
 
 #post_right {
     width: 49%;
-    border: 1px solid;
     float: right;
-    height: 100%
+    height: 100%;
+    background-color: #fff;
 }
-
-#loaderGif {
-   background: rgba(0,0,0,0.5) url(../img/loader.gif) no-repeat center center;
-  /* position: absolute;
-   top: 0px;
-   left: 0px;*/
-   height: 100px;
-   z-index: 1000;
-
-}
+#post_right h3 { text-align: center; }
 
 .connect-item {
-    width: 16%;
-    float: left;
-    height: 18px;
-    text-align: center;
-    margin-top: 8%;
-
+	width: 25%;
+	float: left;
+	height: 18px;
+	text-align: center;
+	margin-top: 16%;
+	margin-left: -83px;
 }
 
-
-.carousel-item-mini{
+.carousel-item-mini {
 	background: #FFFFFF;
     margin: 5px;
     display: block;
@@ -210,7 +199,71 @@ input[type="text"] {
     height: 70px;
 }
 
-.carousel-item-mini .post-margin{width: 50%; font-size: 13px; float: left; overflow: hidden; white-space: nowrap; margin-left: 1px;}
-.carousel-item-mini .featured-image{ margin-bottom: 5px; padding: 4px; max-width: 27%; float: left;}
-.carousel-item-mini h6 a{ font-size:13px; color:#444444 }
-.carousel-item-mini h6 a:hover{ color:#2980b9; }
+.carousel-item-mini .post-margin { width: 74%; font-size: 13px; float: left; overflow: hidden; white-space: nowrap; margin-left: 5px; }
+.carousel-item-mini .featured-image { margin-bottom: 5px; max-width: 27%; float: left; height: 70px; width: 80px; }
+.carousel-item-mini img { max-width: 100%; height: 62px; width: 87px; }
+.carousel-item-mini h6 a { font-size:13px; color:#444444 }
+.carousel-item-mini h6 a:hover { color:#2980b9; }
+
+.featured-image-img { max-width: 100%; max-height: 100%; margin: auto; display: block; }
+
+
+/* entire container, keeps perspective */
+.flip-container {
+	-webkit-perspective: 1000;
+	-moz-perspective: 1000;
+	-ms-perspective: 1000;
+	perspective: 1000;
+}
+/* flip the pane when hovered */
+.flip-container:hover .flipper, .flip-container.hover .flipper {
+	-webkit-transform: rotateY(180deg);
+	-moz-transform: rotateY(180deg);
+	-o-transform: rotateY(180deg);
+	-ms-transform: rotateY(180deg);
+	transform: rotateY(180deg);
+}
+
+/* flip speed goes here */
+.flipper {
+	-webkit-backface-visibility: hidden;
+	-moz-backface-visibility: hidden;
+	-ms-backface-visibility: hidden;
+	backface-visibility: hidden;
+	-webkit-transition: 1s;
+	-webkit-transform-style: preserve-3d;
+	-moz-transition: 1s;
+	-moz-transform-style: preserve-3d;
+	-o-transition: 1s;
+	-o-transform-style: preserve-3d;
+	-ms-transition: 1s;
+	-ms-transform-style: preserve-3d;
+	transition: 1s;
+	transform-style: preserve-3d;
+	position: relative;
+}
+
+/* hide back of pane during swap */
+.front, .back {
+	-webkit-backface-visibility: hidden;
+	-moz-backface-visibility: hidden;
+	-ms-backface-visibility: hidden;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+/* front pane, placed above back */
+.front {
+	z-index: 2;
+}
+
+/* back, initially hidden pane */
+.back {
+	margin-top: 15px;
+	-webkit-transform: rotateY(180deg);
+	-moz-transform: rotateY(180deg);
+	-o-transform: rotateY(180deg);
+	-ms-transform: rotateY(180deg);
+	transform: rotateY(180deg);
+}

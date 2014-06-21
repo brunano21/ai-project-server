@@ -1,5 +1,6 @@
 package ai.server.controller;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,11 +13,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.sun.mail.iap.Response;
+
+
 
 import dati.Dati;
 import hibernate.Profilo;
@@ -69,6 +70,20 @@ public class LoginController {
 	 @RequestMapping(value="/logout",method = RequestMethod.GET)
 	 public ModelAndView logout(){
 		 return new ModelAndView("index");
+	 }
+	 
+	 @RequestMapping(value="/custom-index",method = RequestMethod.GET)
+	 public ModelAndView getCustomUserPage(HttpServletRequest request, Principal principal, HttpServletResponse response) {
+		 
+		 if (request.getParameter("latitudine") == null || request.getParameter("longitudine") == null)
+			 try {
+				response.sendError(666, "Coordinates not found!");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 
+		 return new ModelAndView("customUserIndex", null);
 	 }
 	 
 }
