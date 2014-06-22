@@ -17,8 +17,6 @@ import java.security.Principal;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,8 +27,6 @@ import dati.Dati;
 @Controller
 public class ListaSpesaController {
 
-
-
 	@Autowired
 	private Dati dati;
 
@@ -40,17 +36,11 @@ public class ListaSpesaController {
 
 	@RequestMapping(value="/todolist", method = RequestMethod.GET)
 	public String showForm(Map model) {
-
 		return "todolist";
 	}
 
-	@RequestMapping(value="/android/todolist/getTodoList",method=RequestMethod.GET)
-	public @ResponseBody ObjectNode getTodoListAndroid(Principal principal){
-		return getTodoList(principal);
-	}
-	
 	@RequestMapping(value="/todolist/getTodoList",method=RequestMethod.GET)
-	public @ResponseBody ObjectNode getTodoList(Principal principal){
+	public @ResponseBody ObjectNode getTodoList(Principal principal) {
 		JsonNodeFactory factory = JsonNodeFactory.instance;
 		ObjectNode result = factory.objectNode(); 
 
@@ -58,10 +48,10 @@ public class ListaSpesaController {
 		for (ListaDesideri listaDesideri : SetListaDesideri) {
 			ObjectNode objTodoList = factory.objectNode();
 
-			ObjectNode objProdotti = factory.objectNode();;
+			ObjectNode objProdotti = factory.objectNode();
 			Set<ListaDesideriProdotti> setProdotto = listaDesideri.getListaDesideriProdottis();
 			for(ListaDesideriProdotti prodotto : setProdotto ) {
-				ObjectNode objProdotto = factory.objectNode();;
+				ObjectNode objProdotto = factory.objectNode();
 				objProdotto.put("ID_Elemento", prodotto.getId().getIdElemento());
 				objProdotto.put("testo", prodotto.getDescrizione());
 				objProdotto.put("quantita", prodotto.getQuantità());
@@ -79,42 +69,14 @@ public class ListaSpesaController {
 		return result;
 	}
 
+	/*
 	@RequestMapping(value="/todolist/userGeoloc",method=RequestMethod.POST)
 	public @ResponseBody ObjectNode getTodoListSuggestion(HttpServletRequest request, Principal principal) {
-
 		System.out.println(request.getParameter("latitudine"));
 		System.out.println(request.getParameter("longitudine"));
-		/*
-		float userLat = Float.valueOf(request.getParameter("latitudine"));
-		float userLong = Float.valueOf(request.getParameter("longitudine"));
-
-		float dist1, dist2;
-
-		Map<String, Supermercato> smMap = dati.getSupermercati();
-		ArrayList<Integer> smMatching = new ArrayList<>();
-
-		for (String sKey : smMap.keySet()) {
-
-			//dist1 = computeDistance(userLat, userLong, smMap.get(sKey).getLatitudine(), smMap.get(sKey).getLongitudine());
-			dist2 = getGeoDistance(userLat, userLong, smMap.get(sKey).getLatitudine(), smMap.get(sKey).getLongitudine());
-
-			System.out.println(smMap.get(sKey).getNome());
-			System.out.println("DISTANZA: " + dist2);
-			System.out.println();
-
-			if (dist2 < 10000)
-				smMatching.add(smMap.get(sKey).getIdSupermercato());
-		}
-
-		Map<Integer, Inserzione> inserzioniMap = dati.getInserzioni();
-		for (Integer integer : smMatching) {
-			// recuperare le inserzioni ancora valide e suggerirle
-		}
-
-		 */
-
 		return null;
 	}
+	*/
 
 	@RequestMapping(value="/todolist", method = RequestMethod.POST)
 	public @ResponseBody ObjectNode processTodoList(HttpServletRequest request, Principal principal){
@@ -253,6 +215,7 @@ public class ListaSpesaController {
 		return result;
 	}
 
+	/*
 	public static float getGeoDistance(float lat1, float lng1, float lat2, float lng2) {
 		double earthRadius = 6378.137;
 		double lat1_rad = Math.toRadians(lat1);
@@ -264,4 +227,5 @@ public class ListaSpesaController {
 				(Math.cos(lat1_rad)*Math.cos(lat2_rad)*Math.cos(lng1_rad-lng2_rad)) ) * earthRadius;
 		return (float) dist_km;
 	}
+	*/
 }

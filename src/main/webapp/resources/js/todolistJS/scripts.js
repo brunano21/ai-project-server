@@ -67,6 +67,7 @@ function prepareList() {
             StrikeThrough(index + 1, $divId);
         }, 25);
     };
+    
     /********************************************* PRIVATE FUNCTIONS ***********************************************/
     
     var _attachTooltipster = function(values) {
