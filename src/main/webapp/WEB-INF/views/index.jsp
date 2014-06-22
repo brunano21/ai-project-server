@@ -86,6 +86,7 @@
 				else {
 					$("#loginForm").hide();
 					$("#logContainer").html(returnedData);
+					localStorage.removeItem("lat");
 	            }
             }      
         });

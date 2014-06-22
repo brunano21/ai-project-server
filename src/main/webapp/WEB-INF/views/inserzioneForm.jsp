@@ -6,6 +6,8 @@
 
 <div id="inserzione" class="inserzioneContainer" >
     <h2>INSERZIONE</h2>
+    <div id="dialog">    	
+    </div>
     <form id="inserzioneForm" class="inserzioneForm" name="inserzioneForm" enctype="multipart/form-data">
         <div id="prodottoBox">
             <div class="col-3-5">

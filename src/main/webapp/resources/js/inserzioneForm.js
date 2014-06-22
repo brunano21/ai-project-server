@@ -30,7 +30,6 @@ var categoriaInputSelect = new Select({el: $('#categoriaInput')[0]});
 
 $('#categoriaInput').change(function(){
 	path = window.location.pathname + "inserzione/sottocategorie/" + categoriaInputSelect.value;
-	console.log(path);
 	$.ajax({
 		type:"GET",
 		url: path,
@@ -333,12 +332,13 @@ function cercaSupermercato(){
   //overide del sumbit
 $('#inserzioneForm').submit(function(event){
 	var vuoto = false;
+//	var optional_inputs = ["quantitaDettaglioInput","dataFineInput",""];
 	event.preventDefault();
-	$("input#quantitaDettaglioInput").each(function(){
-		if($(this).val() == "")
-			vuoto = true;
-	});		
-	
+//	$("#inserzioneForm > input").each(function(){
+//		if($(this).attr("id").val() in optional_inputs)
+//			if($(this).val() == "")
+//				vuoto = true;
+//	});		
 	if(!vuoto){
 		if(risposta=="No"){
 			$('#preview').attr("src","");
@@ -347,10 +347,9 @@ $('#inserzioneForm').submit(function(event){
 //		$("input.argomenti").prop('disabled',false);
 //		$('#supermercato').val($('#supermercato').val()+" - "+$('#indirizzo').val());
 		var geocoder = new google.maps.Geocoder();
-		geocoder.geocode({'address':$("#indirizzo").val()},function(results,status){
+		geocoder.geocode({'address':$("#indirizzoInput").val()+" "+$("#comuneInput").val()+" "+$("provinciaInput").val()},function(results,status){
 			if(status == google.maps.GeocoderStatus.OK){			
 				var form = new FormData();
-				
 				$.each($("form").serializeArray(),function(index,value){				
 					form.append(value.name,value.value);
 				});
@@ -358,7 +357,7 @@ $('#inserzioneForm').submit(function(event){
 				form.append("lng",results[0].geometry.location.lng());
 				form.append("foto",$('#preview').attr("src"));
 				
-				if($("#file")[0].files[0] != undefined){
+				if($("#imgInput > input.file")[0].files[0] != undefined){
 					var extension = $("#file").val().split(".").pop();
 					if(extension == "jpg" || extension == "png"){
 						form.append("file",$("#file")[0].files[0]);
@@ -368,13 +367,36 @@ $('#inserzioneForm').submit(function(event){
 				}
 				$.ajax({
 					type:'POST',
-					url:window.location.pathname,
+					url:window.location.pathname+"inserzione",
 				//	cache:false,
 					dataType: 'text',
 					contentType:false,
 					processData:false,
 					data: form,
 					success:function(response){	
+						if(response.exception != undefined){
+							$("#dialog").html(response.exception+"\n riprova ad inserire un'altra inserzione");
+							$("#dialog").dialog({									
+								height: 300,
+								width : 500,
+								modal:true,
+								buttons:{OK:function(){
+									$(this).dialog("close");
+								}
+								},
+								close:function(){									
+								}
+							}
+							);
+						}else{
+							if(response.errors != undefined){
+								$.each(errors,function(index,value){
+									
+								});
+							}else{
+								$("")
+							}
+						}
 						document.documentElement.innerHTML = response;
 						risposta = "No";
 						i = 0;

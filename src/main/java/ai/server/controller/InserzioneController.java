@@ -22,6 +22,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.node.ArrayNode;
@@ -33,6 +34,7 @@ import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -169,7 +171,7 @@ public class InserzioneController {
 	}
 	
 	@RequestMapping(value="/inserzione",method= RequestMethod.POST)
-	public ModelAndView processInserzione(InserzioneForm inserzioneForm, BindingResult result,Principal principal){
+	public @ResponseBody Object processInserzione(InserzioneForm inserzioneForm, BindingResult result,Principal principal, HttpServletResponse response){
 		boolean inserimentoSupermercato=false;
 		boolean inserimentoInserzione=false;
 		boolean inserimentoProdotto=false;
@@ -183,25 +185,17 @@ public class InserzioneController {
 				System.out.println(result.getAllErrors().get(0).toString());
 			inserzioneValidator.validate(inserzioneForm, result,principal);
 			if(result.hasErrors()){
-				Map<String, Object> model = new HashMap<String, Object>();		
-				if(inserzioneForm.getFile() != null)
-					inserzioneForm.setFile(null);
-				inserzioneForm.setSupermercato(inserzioneForm.getSupermercato().split(" - ")[0]);
-				model.put("inserzioneForm", inserzioneForm);				
-				Set<String> categorie = new HashSet<String>();
 				
-				for(Map.Entry<Integer,Categoria> c : dati.getCategorie().entrySet()){
-					categorie.add(c.getValue().getNome());
+				response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+				JsonNodeFactory factory = JsonNodeFactory.instance;				
+				ArrayNode errors = factory.arrayNode();
+				ObjectNode obj;
+				for(FieldError fieldError : result.getFieldErrors()){
+					obj=factory.objectNode();
+					obj.put(fieldError.getField(), fieldError.getDefaultMessage());
+					errors.add(obj);
 				}
-				
-				model.put("categorie", categorie);				
-				Set<String> argomenti = new HashSet<String>();
-				
-				for(Map.Entry<String,Argomenti> a : dati.getArgomenti().entrySet()){					
-					argomenti.add(a.getValue().getArgomento());					
-				}
-				model.put("argomenti", argomenti);
-				return new ModelAndView("inserzione",model);
+				return errors;
 			}
 			String path = "";
 			int hashcode = 0;
@@ -320,30 +314,20 @@ public class InserzioneController {
 				dati.eliminaSupermercato(idSupermercato);
 			}
 			e.printStackTrace();
-			
-			Map<String, Object> model = new HashMap<String, Object>();		
-			inserzioneForm.setSupermercato(inserzioneForm.getSupermercato().split(" - ")[0]);
-			model.put("inserzioneForm", inserzioneForm);				
-			Set<String> categorie = new HashSet<String>();
-			
-			for(Map.Entry<Integer,Categoria> c : dati.getCategorie().entrySet()){
-				categorie.add(c.getValue().getNome());
-			}
-			
-			model.put("categorie", categorie);				
-			Set<String> argomenti = new HashSet<String>();
-			
-			for(Map.Entry<String,Argomenti> a : dati.getArgomenti().entrySet()){					
-				argomenti.add(a.getValue().getArgomento());					
-			}
-			model.put("argomenti", argomenti);
-			model.put("error","errore nell'immissione del form");
-			return new ModelAndView("inserzione",model);
+			response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+			JsonNodeFactory factory = JsonNodeFactory.instance;				
+			ArrayNode errors = factory.arrayNode();
+			ObjectNode obj;
+			obj=factory.objectNode();				
+			obj.put("exception", "errore nell'immissione del form");
+			errors.add(obj);
+			return errors;
 		}
 		Map<String,Object> model = new HashMap<String, Object>();
 		model.put("inserzione", inserzioneForm);
 		model.put("idInserzione", new Integer(idInsererzione));
 		model.put("dati",dati);
+		response.setStatus(HttpServletResponse.SC_OK);
 		return new ModelAndView("inserzionesuccess",model);
 	}
 	
