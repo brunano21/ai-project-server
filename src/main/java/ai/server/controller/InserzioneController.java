@@ -171,7 +171,7 @@ public class InserzioneController {
 	}
 	
 	@RequestMapping(value="/inserzione",method= RequestMethod.POST)
-	public @ResponseBody Object processInserzione(InserzioneForm inserzioneForm, BindingResult result,Principal principal, HttpServletResponse response){
+	public @ResponseBody Object processInserzione(InserzioneForm inserzioneForm, BindingResult result,Principal principal){
 		boolean inserimentoSupermercato=false;
 		boolean inserimentoInserzione=false;
 		boolean inserimentoProdotto=false;
@@ -186,7 +186,6 @@ public class InserzioneController {
 			inserzioneValidator.validate(inserzioneForm, result,principal);
 			if(result.hasErrors()){
 				
-				response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
 				JsonNodeFactory factory = JsonNodeFactory.instance;				
 				ArrayNode errors = factory.arrayNode();
 				ObjectNode obj;
@@ -195,7 +194,9 @@ public class InserzioneController {
 					obj.put(fieldError.getField(), fieldError.getDefaultMessage());
 					errors.add(obj);
 				}
-				return errors;
+				obj=factory.objectNode();
+				obj.put("errors", errors);
+				return obj;
 			}
 			String path = "";
 			int hashcode = 0;
@@ -314,7 +315,6 @@ public class InserzioneController {
 				dati.eliminaSupermercato(idSupermercato);
 			}
 			e.printStackTrace();
-			response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
 			JsonNodeFactory factory = JsonNodeFactory.instance;				
 			ArrayNode errors = factory.arrayNode();
 			ObjectNode obj;
@@ -327,7 +327,6 @@ public class InserzioneController {
 		model.put("inserzione", inserzioneForm);
 		model.put("idInserzione", new Integer(idInsererzione));
 		model.put("dati",dati);
-		response.setStatus(HttpServletResponse.SC_OK);
 		return new ModelAndView("inserzionesuccess",model);
 	}
 	

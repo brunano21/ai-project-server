@@ -64,7 +64,6 @@
     };
 
     function sendLogin() {
-        localStorage.removeItem("lat");
         $.ajax({
         	url:"./j_spring_security_check", 
             type: 'POST', 
@@ -86,7 +85,7 @@
 				else {
 					$("#loginForm").hide();
 					$("#logContainer").html(returnedData);
-					localStorage.removeItem("lat");
+			        localStorage.removeItem("lat");					
 	            }
             }      
         });

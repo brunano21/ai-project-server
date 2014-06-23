@@ -15,7 +15,7 @@
                     <label for="descrizioneInput">Descrizione Prodotto</label>
                     <div class="input-group">
                         <span class="input-icon"><i class="fa fa-shopping-cart fa-fw"></i></span>
-                        <input id="descrizioneInput"class="input-control" name="descrizione" type="text" placeholder="Descrizione Prodotto">
+                        <input id="descrizioneInput"class="input-control" name="descrizione" type="text" placeholder="Descrizione Prodotto" required>
                     </div>
                 </div>
                 
@@ -23,7 +23,7 @@
                     <label for="codiceBarreInput">Codice a Barre</label>
                     <div class="input-group">
                         <span class="input-icon"><i class="fa fa-barcode fa-fw"></i></span>
-                        <input id="codiceBarreInput"class="input-control" name="codiceBarre" type="text" placeholder="Bar code">
+                        <input id="codiceBarreInput"class="input-control" name="codiceBarre" type="text" placeholder="Bar code" required>
                     </div>
                 </div>
                 <div class="categoria">
@@ -97,7 +97,7 @@
                 <label for="dataInizioInput">Data Inizio</label>
                 <div class="input-group">
                     <span class="input-icon"><i class="fa fa-calendar fa-fw"></i></span>
-                    <input id="dataInizioInput" name="dataInizio" class="input-control" type="text" placeholder="Inizio offerta">
+                    <input id="dataInizioInput" name="dataInizio" class="input-control" type="text" placeholder="Inizio offerta" required>
                 </div>
             </div>
             <div class="col-1-3 dataFine">
@@ -111,7 +111,7 @@
                 <label for="prezzoInput">Prezzo</label>
                 <div class="input-group">
                     <span class="input-icon"><i class="fa fa-eur fa-fw"></i></span>
-                    <input id="prezzoInput" name="prezzo" class="input-control" type="text" placeholder="Prezzo">
+                    <input id="prezzoInput" name="prezzo" class="input-control" type="text" placeholder="Prezzo" required>
                 </div>
             </div>
         </div>
@@ -124,22 +124,22 @@
                 <label for="supermercatoInput">Supermercato</label>
                 <div class="input-group">
                     <span class="input-icon"><i class="fa fa-map-marker fa-fw"></i></span>
-                    <input id="supermercatoInput" name="supermercato" class="input-control" type="text" placeholder="Supermercato">
+                    <input id="supermercatoInput" name="supermercato" class="input-control" type="text" placeholder="Supermercato" required>
                 </div>
                 <label for="indirizzoInput">Indirizzo</label>
                 <div class="input-group">
                     <span class="input-icon"><i class="fa fa-map-marker fa-fw"></i></span>
-                    <input id="indirizzoInput" name="indirizzo" class="input-control" type="text" placeholder="Indirizzo">
+                    <input id="indirizzoInput" name="indirizzo" class="input-control" type="text" placeholder="Indirizzo" required>
                 </div>
                 <label for="comuneInput">Comune</label>
                 <div class="input-group">
                 	<span class="input-icon"><i class="fa fa-map-marker fa-fw"></i></span>
-                	<input id="comuneInput" name="comune" class="input-control" type="text" placeholder="Comune">
+                	<input id="comuneInput" name="comune" class="input-control" type="text" placeholder="Comune" required>
                 </div>
 				<label for="provinciaInput">Provincia</label>
 				<div class="input-group">
 					<span class="input-icon"><i class="fa fa-map-marker fa-fw"></i></span>
-					<input id="provinciaInput" name="provincia" class="input-control" type="text" placeholder="Provincia">
+					<input id="provinciaInput" name="provincia" class="input-control" type="text" placeholder="Provincia" required>
 				</div>
             </div>
             <div class="col-3-4" id="map-canvas"></div>

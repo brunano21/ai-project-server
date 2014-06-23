@@ -374,7 +374,14 @@ $('#inserzioneForm').submit(function(event){
 					processData:false,
 					data: form,
 					success:function(response){	
-						if(response.exception != undefined){
+						try{
+							var risposta = $.parseJSON(response);
+						}catch(err){
+							console.log("ERROR : "+err);
+						}
+						console.log(typeof( risposta ));
+						console.log(risposta.hasOwnProperty("errors"));
+						if(response.hasOwnProperty("exception")){
 							$("#dialog").html(response.exception+"\n riprova ad inserire un'altra inserzione");
 							$("#dialog").dialog({									
 								height: 300,
@@ -389,15 +396,20 @@ $('#inserzioneForm').submit(function(event){
 							}
 							);
 						}else{
-							if(response.errors != undefined){
-								$.each(errors,function(index,value){
-									
+							if(response.hasOwnProperty("errors")){
+								$.each(response.errors,function(index,value){
+									var tooltipPosition = { my: 'center+20 bottom', at: 'center top-5' }; 
+									$.each(value,function(i,v){
+										$(i).parent().children().css("border", "1px solid #E00000");
+										$(i).parent().children().first().css("border-right", "0");
+										$(i).prop("title",v);
+										$(i).tooltip({ position: tooltipPosition });
+									});
 								});
 							}else{
-								$("")
+								$("#inserzione").html(response);
 							}
 						}
-						document.documentElement.innerHTML = response;
 						risposta = "No";
 						i = 0;
 						codici_prodotti= [];

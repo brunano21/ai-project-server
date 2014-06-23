@@ -41,7 +41,7 @@ public class InserzioneValidation {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		try{
-			if(!inserzione.getDataInizio().equals("")){
+			if(!"".equals(inserzione.getDataInizio())){
 				//Inserzione più vecchia di 30 giorni
 				if((new Date().getTime()/86400000-sdf.parse(inserzione.getDataInizio()).getTime()/86400000) > 30){
 					errors.rejectValue("dataInizio", "invalidDate.InserzioneForm.dataInizio", 
@@ -52,10 +52,11 @@ public class InserzioneValidation {
 					errors.rejectValue("dataInizio", "invalidDate.InserzioneForm.dataInizio", 
 							"Tempo inconsistente");
 				}
-				if(sdf.parse(inserzione.getDataInizio()).getTime() >= sdf.parse(inserzione.getDataFine()).getTime())
-					errors.rejectValue("dataInizio", "invalidDate.InserzioneForm.dataInizio", 
-							"Data di inizio maggiore della data di Fine");
-				
+				if(!"".equals(inserzione.getDataFine())){
+					if(sdf.parse(inserzione.getDataInizio()).getTime() >= sdf.parse(inserzione.getDataFine()).getTime())
+						errors.rejectValue("dataInizio", "invalidDate.InserzioneForm.dataInizio", 
+								"Data di inizio maggiore della data di Fine");
+				}
 				Prodotto prodotto = dati.getProdotti().get(inserzione.getCodiceBarre());
 				int count = 0;
 				if(prodotto != null){
