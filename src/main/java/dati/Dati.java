@@ -18,6 +18,7 @@ import hibernate.Supermercato;
 import hibernate.Utente;
 import hibernate.ValutazioneInserzione;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -454,7 +455,7 @@ public class Dati {
 		boolean eliminazioneArgomentiInserzione = false;
 		boolean inserimentoArgomentiInserzione = false;
 
-		if(idInserzione <= 0 || utente == null || supermercato == null || prodotto == null || prezzo <= 0 || dataInizio == null || dataFine == null || descrizione == null || foto == null || argomenti == null)
+		if(idInserzione <= 0 || utente == null || supermercato == null || prodotto == null || prezzo <= 0 || dataInizio == null || dataFine == null || descrizione == null || foto == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
 
 		Inserzione inserzioneVecchia = null;
@@ -465,19 +466,21 @@ public class Dati {
 		Set<ArgomentiInserzione> argomentiInserzioneEliminati = new HashSet<ArgomentiInserzione>();
 		Set<ArgomentiInserzione> argomentiInserzioneInseriti = new HashSet<ArgomentiInserzione>();
 
-		Iterator<Argomenti> itArgomenti = argomenti.iterator();
-		Iterator<String> itValori = valori.iterator();
-		Argomenti a = null;
-		String valore = null;
 
-		while(itArgomenti.hasNext() && itValori.hasNext()){
-			a = itArgomenti.next();
-			valore = itValori.next();
-			ArgomentiInserzioneId id = new ArgomentiInserzioneId(idInserzione, a.getArgomento());
-			ArgomentiInserzione ai = new ArgomentiInserzione(id, inserzioneVecchia, a,new Float(valore));			
-		}	
+		if(argomenti != null && valori != null) {
+			Iterator<Argomenti> itArgomenti = argomenti.iterator();
+			Iterator<String> itValori = valori.iterator();
+			Argomenti a = null;
+			String valore = null;
 
-		Inserzione inserzione = new Inserzione(utente, supermercato, prodotto, prezzo, dataInizio, dataFine, descrizione, foto,0,(float)0.0,inserzioneVecchia.getListaDesideriProdottis(),inserzioneVecchia.getListaSpesaProdottis(),inserzioneVecchia.getValutazioneInserziones(),argomenti);
+			while(itArgomenti.hasNext() && itValori.hasNext()){
+				a = itArgomenti.next();
+				valore = itValori.next();
+				ArgomentiInserzioneId id = new ArgomentiInserzioneId(idInserzione, a.getArgomento());
+				ArgomentiInserzione ai = new ArgomentiInserzione(id, inserzioneVecchia, a,new Float(valore));			
+			}	
+		}
+		Inserzione inserzione = new Inserzione(utente, supermercato, prodotto, prezzo, dataInizio, dataFine, descrizione, foto, 0, (float) 0.0,inserzioneVecchia.getListaDesideriProdottis(),inserzioneVecchia.getListaSpesaProdottis(),inserzioneVecchia.getValutazioneInserziones(),argomenti);
 		inserzione.setIdInserzione(idInserzione);
 
 		try{
@@ -507,11 +510,13 @@ public class Dati {
 
 				}
 			}
+			/*
 			if(!utente.equals(inserzioneVecchia.getUtente())){
 				inserzioneVecchia.setUtente(utente);
 				mappaUtente.get(inserzioneVecchia.getUtente().getMail()).getInserziones().remove(inserzioneVecchia);
 				mappaUtente.get(utente.getMail()).getInserziones().add(inserzioneVecchia);
-			}
+			}*/
+			
 			if(!supermercato.equals(inserzioneVecchia.getSupermercato())){				
 				inserzioneVecchia.setSupermercato(supermercato);
 				mappaSupermercati.get(inserzioneVecchia.getSupermercato().getIdSupermercato()).getInserziones().remove(inserzioneVecchia);
@@ -522,10 +527,13 @@ public class Dati {
 				mappaProdotti.get(inserzioneVecchia.getProdotto().getCodiceBarre()).getInserziones().remove(inserzioneVecchia);
 				mappaProdotti.get(prodotto.getCodiceBarre()).getInserziones().add(inserzioneVecchia);		
 			}
-
+			
+			// added by bruno
+			mappaInserzioni.put(idInserzione,inserzione);
 
 			tx.commit();
 		}catch(Throwable ex){
+			ex.printStackTrace();
 			if(tx!=null)
 				tx.rollback();
 			if(eliminazioneArgomentiInserzione && !inserimentoArgomentiInserzione){
@@ -544,7 +552,7 @@ public class Dati {
 					mappaArgomenti.get(ai.getArgomenti().getArgomento()).getArgomentiInserziones().remove(ai);
 				}
 			}
-			throw new RuntimeException(ex);
+			//throw new RuntimeException(ex);
 		}finally{
 			if(session!=null && session.isOpen()){
 				session.close();
@@ -2371,7 +2379,7 @@ public class Dati {
 
 			SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar cal = new GregorianCalendar();
-
+			/*
 			Query q = session.createSQLQuery(
 					"select ins.ID_Inserzione "  +
 					"from inserzione ins, " +
@@ -2390,6 +2398,10 @@ public class Dati {
 			q.setParameter("currDate", formato.format(cal.getTime()));
 			q.setParameter("idUtente", mappaUtente.get(mailUtente).getIdUtente());
 			q.setParameter("raggioUtente", 50000);  // km
+			 */
+			Query q = session.createSQLQuery(
+					"select ID_Inserzione " +
+					"from inserzione ins");
 			inserzioniDaValutareList = q.list();
 
 			tx.commit();
@@ -2408,15 +2420,15 @@ public class Dati {
 		factory = buildSessionFactory();
 		Session session = factory.openSession();
 		Transaction tx = null;
-		List inserzioniInScadenzaList;
+		List inserzioniDaValutareList;
 
 		session = factory.openSession();
 		try{
 			tx=session.beginTransaction();
-			
+
 			SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar cal = new GregorianCalendar();
-			
+			/*
 			Query q = session.createSQLQuery(
 					"select ins.ID_Inserzione " +
 					"from inserzione ins, " +
@@ -2434,21 +2446,60 @@ public class Dati {
 			q.setParameter("raggioTerra", 6378.137);
 			q.setParameter("currDate", formato.format(cal.getTime()));
 			q.setParameter("idUtente", mappaUtente.get(mailUtente).getIdUtente());
-			q.setParameter("raggioUtente", 50);
-			inserzioniInScadenzaList = q.list();
-			
+			q.setParameter("raggioUtente", 50000);*/
+			Query q = session.createSQLQuery(
+					"select ID_Inserzione " +
+					"from inserzione ins");
+			inserzioniDaValutareList = q.list();
+
 			tx.commit();
-			} catch(RuntimeException e) {
-				if(tx!=null)
-					tx.rollback();
-				throw e;
-			} finally {
-				if(session!=null && session.isOpen())
-					session.close();
-			}
-		return inserzioniInScadenzaList;
+		} catch(RuntimeException e) {
+			if(tx!=null)
+				tx.rollback();
+			throw e;
+		} finally {
+			if(session!=null && session.isOpen())
+				session.close();
+		}
+		return inserzioniDaValutareList;
 	}
-	
+
+	public Integer[] getNumeroValutazioniByIdInserzione(Integer idInserzione, Integer idUtente) {
+		factory = buildSessionFactory();
+		Session session = factory.openSession();
+		Transaction tx = null;
+		List l = null;
+		Integer valutazioni[] = {0, 0};
+		try{
+			tx = session.beginTransaction();
+			Query q = session.createSQLQuery("SELECT " + 
+					"sum(case when valutazione=1 then 1 else 0 end) as 'valutazioni_positive', " + 
+					"sum(case when valutazione=-1 then 1 else 0 end) as 'valutazioni_negative'  " +
+					"FROM valutazione_inserzione WHERE valutazione_inserzione.ID_Inserzione = :idInserzione AND valutazione_inserzione.ID_UtenteInserzionista = :idUtente ");
+			q.setParameter("idInserzione", idInserzione);
+			q.setParameter("idUtente", idUtente);
+			l = q.list();
+			for (Object obj : l) {
+				Object[] fields = (Object[]) obj;
+				if(fields[0] != null) 
+					valutazioni[0] = ((Number) fields[0]).intValue();
+				if(fields[1] != null)
+					valutazioni[1] = ((Number) fields[1]).intValue();
+				System.out.println(valutazioni.toString());
+			}
+
+		} catch(RuntimeException e) {
+			if(tx!=null)
+				tx.rollback();
+			throw e;
+		} finally {
+			if(session!=null && session.isOpen())
+				session.close();
+		}
+		return valutazioni;
+	}
+
+
 	public ArrayList<Integer> getSuggerimentiProdotto(String mailUtente, String lat, String lng, String descrizione) {
 		factory = buildSessionFactory();
 		Session session = factory.openSession();

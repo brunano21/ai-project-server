@@ -46,7 +46,8 @@ public class AndroidValutazioneController {
 		JSONArray response = new JSONArray();
 		List idInserzioni = dati.getInserzioniDaValutare(principal.getName(), request.getParameter("lat"), request.getParameter("lng"));
 		response.addAll(idInserzioni);
-		System.out.println("JSONARRAY: " + response.size());
+		System.out.println("idInserzioniList.size(): " + idInserzioni.size());
+		System.out.println(response.toString());
 		return response;
 	}
 
@@ -57,22 +58,19 @@ public class AndroidValutazioneController {
 		System.out.println("Called: /android/valutazione/getInserzioneById - " + idInserzioneListString);
 		JSONArray response = new JSONArray();
 
+//		try {
+//			Thread.sleep(1500);
+//		} catch (InterruptedException e1) {
+//			e1.printStackTrace();
+//		}
+		
 		for (String id : idInserzioneListString.split(",")) {
 			JSONObject jsonObj = new JSONObject();
 			Inserzione inserzione = dati.getInserzioni().get(Integer.valueOf(id));
-			jsonObj.put("id", inserzione.getIdInserzione());
-			jsonObj.put("categoria", inserzione.getProdotto().getSottocategoria().getCategoria().getNome());
-			jsonObj.put("sottocategoria", inserzione.getProdotto().getSottocategoria().getNome());
-			jsonObj.put("data_inizio", inserzione.getDataInizio().toString());
-			jsonObj.put("data_fine", inserzione.getDataFine().toString());
-			jsonObj.put("descrizione", inserzione.getProdotto().getDescrizione());
-			jsonObj.put("prezzo", inserzione.getPrezzo());
-			jsonObj.put("codiceBarre", inserzione.getProdotto().getCodiceBarre());
-			jsonObj.put("supermercato", inserzione.getSupermercato().getNome());
-			jsonObj.put("supermercato_indirizzo", inserzione.getSupermercato().getNome());
 
 			String imageDataString = null; 
 			try {
+				
 				BufferedImage originalImage = ImageIO.read(new File(inserzione.getFoto()));
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				ImageIO.write( originalImage, "jpg", baos);
@@ -85,8 +83,20 @@ public class AndroidValutazioneController {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
+				System.out.println(inserzione.getIdInserzione()+ " -- " + inserzione.getFoto());
 				e.printStackTrace();
 			}
+
+			jsonObj.put("id", inserzione.getIdInserzione());
+			jsonObj.put("categoria", inserzione.getProdotto().getSottocategoria().getCategoria().getNome());
+			jsonObj.put("sottocategoria", inserzione.getProdotto().getSottocategoria().getNome());
+			jsonObj.put("data_inizio", inserzione.getDataInizio().toString());
+			jsonObj.put("data_fine", inserzione.getDataFine().toString());
+			jsonObj.put("descrizione", inserzione.getProdotto().getDescrizione());
+			jsonObj.put("prezzo", inserzione.getPrezzo());
+			jsonObj.put("codiceBarre", inserzione.getProdotto().getCodiceBarre());
+			jsonObj.put("supermercato", inserzione.getSupermercato().getNome());
+			jsonObj.put("supermercato_indirizzo", inserzione.getSupermercato().getIndirizzo() + ", " + inserzione.getSupermercato().getComune() + " (" + inserzione.getSupermercato().getProvincia() + ")");
 			jsonObj.put("foto", imageDataString);
 			response.add(jsonObj);
 		}
