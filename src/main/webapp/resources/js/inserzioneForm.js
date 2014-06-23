@@ -375,13 +375,11 @@ $('#inserzioneForm').submit(function(event){
 					data: form,
 					success:function(response){	
 						try{
-							var risposta = $.parseJSON(response);
+							var data = $.parseJSON(response);
 						}catch(err){
 							console.log("ERROR : "+err);
 						}
-						console.log(typeof( risposta ));
-						console.log(risposta.hasOwnProperty("errors"));
-						if(response.hasOwnProperty("exception")){
+						if(data.hasOwnProperty("exception")){
 							$("#dialog").html(response.exception+"\n riprova ad inserire un'altra inserzione");
 							$("#dialog").dialog({									
 								height: 300,
@@ -396,8 +394,10 @@ $('#inserzioneForm').submit(function(event){
 							}
 							);
 						}else{
-							if(response.hasOwnProperty("errors")){
-								$.each(response.errors,function(index,value){
+							if(data.hasOwnProperty("errors")){
+								$.each(data.errors,function(index,value){
+									console.log(index);
+									console.log(value);
 									var tooltipPosition = { my: 'center+20 bottom', at: 'center top-5' }; 
 									$.each(value,function(i,v){
 										$(i).parent().children().css("border", "1px solid #E00000");
@@ -407,7 +407,7 @@ $('#inserzioneForm').submit(function(event){
 									});
 								});
 							}else{
-								$("#inserzione").html(response);
+								$("#inserzione").html(data);
 							}
 						}
 						risposta = "No";
