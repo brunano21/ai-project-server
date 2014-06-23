@@ -197,19 +197,7 @@ public class AndroidInserzioneController {
 		System.out.println("Elemento trovato: " + jsonObj.get("trovato"));
 		return response;
 	}
-/*
-	@RequestMapping(value="/android/inserzione/getSottoCategorie/{categoria}", method = RequestMethod.GET)
-	@ResponseBody
-	public JSONArray getSottoCategorieAndroid(@PathVariable String categoria) {
-		System.out.println("Called: /android/inserzione/getSottoCategorie " + categoria);
-		JSONArray response = new JSONArray();
-		for(Map.Entry<Integer, Categoria> c : dati.getCategorie().entrySet())
-			if(c.getValue().getNome().equals(categoria))
-				for(Sottocategoria s : (Set<Sottocategoria>) c.getValue().getSottocategorias())
-					response.add(s.getNome());
-		return response;
-	}
-*/
+
 	@RequestMapping(value="/android/inserzione/getSupermercati", method = RequestMethod.GET)
 	@ResponseBody 
 	public JSONArray getSupermercatiAndroid(float lat, float lng){
