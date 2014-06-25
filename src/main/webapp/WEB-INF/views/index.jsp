@@ -73,7 +73,6 @@
 	            j_password: $("#password").val()
 	        }, 
             success: function(returnedData, textStatus, jqXHR) {         
-            	console.log(returnedData);
 				
 				if(jqXHR.getResponseHeader("loginFailed") != null) {
 					$("#executeJS").html(returnedData);

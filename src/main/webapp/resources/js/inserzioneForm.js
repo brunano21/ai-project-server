@@ -4,8 +4,9 @@
 
 var risposta = "No";
 var supermercati_markers = [];
-var fromDate = $("#dataInizioInput").datepicker($.datepicker.regional[ "it" ], {
-    defaultDate: "+1w",
+console.log(new Date());
+var fromDate = $("#dataInizioInput").datepicker({
+    defaultDate: new Date(),
     changeMonth: true,
     numberOfMonths: 1,
     minDate: new Date(),
@@ -17,7 +18,7 @@ var fromDate = $("#dataInizioInput").datepicker($.datepicker.regional[ "it" ], {
     }
 });
 
-var toDate = jQuery("#dataFineInput").datepicker($.datepicker.regional[ "it" ], {
+var toDate = jQuery("#dataFineInput").datepicker({
     defaultDate: "+1w",
     changeMonth: true,
     numberOfMonths: 1
@@ -25,8 +26,8 @@ var toDate = jQuery("#dataFineInput").datepicker($.datepicker.regional[ "it" ], 
 
 //Select.init({selector : "select#categoriaInput, #sottocategoriaInput, #descrizioneDettaglioInput"});
 //Select.init(); 
-var sottocategoriaInputSelect = new Select({el: $('#sottocategoriaInput')[0]});
 var categoriaInputSelect = new Select({el: $('#categoriaInput')[0]});
+
 
 $('#categoriaInput').change(function(){
 	path = window.location.pathname + "inserzione/sottocategorie/" + categoriaInputSelect.value;
@@ -50,6 +51,9 @@ $('#categoriaInput').change(function(){
 	    	sottocategoriaInputSelect = new Select({el: $('#sottocategoriaInput')[0]});
     });
 });
+
+$("#categoriaInput").trigger("change");
+var sottocategoriaInputSelect = new Select({el: $('#sottocategoriaInput')[0]});
 
 /* GESTIONE IMMAGINE QUANDO CARICATA DA LOCALE */
 $('.fileinputs > input[type=file]').change(function(ev){
@@ -396,14 +400,13 @@ $('#inserzioneForm').submit(function(event){
 						}else{
 							if(data.hasOwnProperty("errors")){
 								$.each(data.errors,function(index,value){
-									console.log(index);
-									console.log(value);
 									var tooltipPosition = { my: 'center+20 bottom', at: 'center top-5' }; 
 									$.each(value,function(i,v){
-										$(i).parent().children().css("border", "1px solid #E00000");
-										$(i).parent().children().first().css("border-right", "0");
-										$(i).prop("title",v);
-										$(i).tooltip({ position: tooltipPosition });
+										$("#"+i+"Input").parent().children().css("border", "1px solid #E00000");
+										$("#"+i+"Input").parent().children().first().css("border-right", "0");
+										$("#"+i+"Input").prop("title",v);
+										$("#"+i+"Input").tooltip({ position: tooltipPosition }).tooltip("open");
+										
 									});
 								});
 							}else{

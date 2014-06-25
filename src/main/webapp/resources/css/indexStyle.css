@@ -987,7 +987,7 @@ div.fakefile > input {
 
 /* START TOOLTIP CUSTOMIZATION */
 .ui-tooltip {
-    background: #fff;
+    background: #f00;
     color: #555555;
     border: none;
     padding: 0;
