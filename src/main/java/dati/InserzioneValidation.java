@@ -31,12 +31,17 @@ public class InserzioneValidation {
 			errors.rejectValue("descrizione", 
 					"lengthOfDescrizione.InserzioneForm.descrizione", 
 					"Descrizione troppo corta, deve essere almeno di 10 caratteri");
-		}
+		}	
 		
 		if(Long.toString(inserzione.getCodiceBarre()).length()!=13){
 			errors.rejectValue("codiceBarre", 
 					"lengthOfCodiceBarre.InserzioneForm.codiceBarre", 
 					"Il codice a barre deve avere 13 cifre");
+		}
+		
+		if(dati.getProdotti().containsKey(inserzione.getCodiceBarre())){
+			if(!dati.getProdotti().get(inserzione.getCodiceBarre()).getDescrizione().equals(inserzione.getDescrizione()))
+				errors.rejectValue("codiceBarre", "inconsistenzaCodiceBarre.InserzioneForm.codiceBarre","il codice a barre immesso corrisponde ad un altro prodotto");
 		}
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
