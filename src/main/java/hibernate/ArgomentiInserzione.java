@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated Jun 3, 2014 7:29:11 PM by Hibernate Tools 3.6.0
+// Generated 26-giu-2014 10.57.23 by Hibernate Tools 3.6.0
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -54,7 +54,7 @@ public class ArgomentiInserzione implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_Inserzione", nullable = false, insertable = false, updatable = false)
 	public Inserzione getInserzione() {
 		return this.inserzione;
@@ -64,7 +64,7 @@ public class ArgomentiInserzione implements java.io.Serializable {
 		this.inserzione = inserzione;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "Argomento", nullable = false, insertable = false, updatable = false)
 	public Argomenti getArgomenti() {
 		return this.argomenti;

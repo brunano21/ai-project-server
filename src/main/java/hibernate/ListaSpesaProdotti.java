@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated Jun 3, 2014 7:29:11 PM by Hibernate Tools 3.6.0
+// Generated 26-giu-2014 10.57.23 by Hibernate Tools 3.6.0
 
 import java.util.Date;
 import javax.persistence.AttributeOverride;
@@ -23,11 +23,11 @@ import javax.persistence.TemporalType;
 public class ListaSpesaProdotti implements java.io.Serializable {
 
 	private ListaSpesaProdottiId id;
-	private Inserzione inserzione;
 	private ListaSpesa listaSpesa;
 	private String descrizione;
 	private Date dataAcquisto;
 	private Integer quantità;
+	private Integer idInserzione;
 
 	public ListaSpesaProdotti() {
 	}
@@ -40,15 +40,15 @@ public class ListaSpesaProdotti implements java.io.Serializable {
 		this.dataAcquisto = dataAcquisto;
 	}
 
-	public ListaSpesaProdotti(ListaSpesaProdottiId id, Inserzione inserzione,
-			ListaSpesa listaSpesa, String descrizione, Date dataAcquisto,
-			Integer quantità) {
+	public ListaSpesaProdotti(ListaSpesaProdottiId id, ListaSpesa listaSpesa,
+			String descrizione, Date dataAcquisto, Integer quantità,
+			Integer idInserzione) {
 		this.id = id;
-		this.inserzione = inserzione;
 		this.listaSpesa = listaSpesa;
 		this.descrizione = descrizione;
 		this.dataAcquisto = dataAcquisto;
 		this.quantità = quantità;
+		this.idInserzione = idInserzione;
 	}
 
 	@EmbeddedId
@@ -63,17 +63,7 @@ public class ListaSpesaProdotti implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_Inserzione")
-	public Inserzione getInserzione() {
-		return this.inserzione;
-	}
-
-	public void setInserzione(Inserzione inserzione) {
-		this.inserzione = inserzione;
-	}
-
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_ListaSpesa", nullable = false, insertable = false, updatable = false)
 	public ListaSpesa getListaSpesa() {
 		return this.listaSpesa;
@@ -109,6 +99,15 @@ public class ListaSpesaProdotti implements java.io.Serializable {
 
 	public void setQuantità(Integer quantità) {
 		this.quantità = quantità;
+	}
+
+	@Column(name = "ID_Inserzione")
+	public Integer getIdInserzione() {
+		return this.idInserzione;
+	}
+
+	public void setIdInserzione(Integer idInserzione) {
+		this.idInserzione = idInserzione;
 	}
 
 }

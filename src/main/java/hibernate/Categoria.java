@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated Jun 3, 2014 7:29:11 PM by Hibernate Tools 3.6.0
+// Generated 26-giu-2014 10.57.23 by Hibernate Tools 3.6.0
 
 import java.util.HashSet;
 import java.util.Set;
@@ -53,7 +53,7 @@ public class Categoria implements java.io.Serializable {
 		this.nome = nome;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "categoria")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "categoria")
 	public Set getSottocategorias() {
 		return this.sottocategorias;
 	}

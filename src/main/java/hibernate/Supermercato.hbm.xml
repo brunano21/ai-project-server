@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated Jun 3, 2014 7:29:12 PM by Hibernate Tools 3.6.0 -->
+<!-- Generated 26-giu-2014 10.57.23 by Hibernate Tools 3.6.0 -->
 <hibernate-mapping>
     <class name="hibernate.Supermercato" table="supermercato" catalog="supermercati">
         <id name="idSupermercato" type="java.lang.Integer">
@@ -26,7 +26,7 @@
         <property name="longitudine" type="float">
             <column name="Longitudine" precision="12" scale="0" not-null="true" />
         </property>
-        <set name="inserziones" table="inserzione" inverse="true" lazy="false" fetch="select">
+        <set name="inserziones" table="inserzione" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="ID_Supermercato" />
             </key>

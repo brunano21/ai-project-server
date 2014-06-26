@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated Jun 3, 2014 7:29:11 PM by Hibernate Tools 3.6.0
+// Generated 26-giu-2014 10.57.23 by Hibernate Tools 3.6.0
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -20,10 +20,10 @@ import javax.persistence.Table;
 public class ListaDesideriProdotti implements java.io.Serializable {
 
 	private ListaDesideriProdottiId id;
-	private Inserzione inserzione;
 	private ListaDesideri listaDesideri;
 	private String descrizione;
 	private Integer quantità;
+	private Integer idInserzione;
 
 	public ListaDesideriProdotti() {
 	}
@@ -36,13 +36,13 @@ public class ListaDesideriProdotti implements java.io.Serializable {
 	}
 
 	public ListaDesideriProdotti(ListaDesideriProdottiId id,
-			Inserzione inserzione, ListaDesideri listaDesideri,
-			String descrizione, Integer quantità) {
+			ListaDesideri listaDesideri, String descrizione, Integer quantità,
+			Integer idInserzione) {
 		this.id = id;
-		this.inserzione = inserzione;
 		this.listaDesideri = listaDesideri;
 		this.descrizione = descrizione;
 		this.quantità = quantità;
+		this.idInserzione = idInserzione;
 	}
 
 	@EmbeddedId
@@ -57,17 +57,7 @@ public class ListaDesideriProdotti implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_Inserzione")
-	public Inserzione getInserzione() {
-		return this.inserzione;
-	}
-
-	public void setInserzione(Inserzione inserzione) {
-		this.inserzione = inserzione;
-	}
-
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_ListaDesideri", nullable = false, insertable = false, updatable = false)
 	public ListaDesideri getListaDesideri() {
 		return this.listaDesideri;
@@ -93,6 +83,15 @@ public class ListaDesideriProdotti implements java.io.Serializable {
 
 	public void setQuantità(Integer quantità) {
 		this.quantità = quantità;
+	}
+
+	@Column(name = "ID_Inserzione")
+	public Integer getIdInserzione() {
+		return this.idInserzione;
+	}
+
+	public void setIdInserzione(Integer idInserzione) {
+		this.idInserzione = idInserzione;
 	}
 
 }

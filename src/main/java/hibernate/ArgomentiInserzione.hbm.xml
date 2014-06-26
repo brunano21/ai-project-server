@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated Jun 3, 2014 7:29:12 PM by Hibernate Tools 3.6.0 -->
+<!-- Generated 26-giu-2014 10.57.23 by Hibernate Tools 3.6.0 -->
 <hibernate-mapping>
     <class name="hibernate.ArgomentiInserzione" table="argomenti_inserzione" catalog="supermercati">
         <composite-id name="id" class="hibernate.ArgomentiInserzioneId">

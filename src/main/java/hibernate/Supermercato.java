@@ -1,6 +1,6 @@
 package hibernate;
 
-// Generated Jun 3, 2014 7:29:11 PM by Hibernate Tools 3.6.0
+// Generated 26-giu-2014 10.57.23 by Hibernate Tools 3.6.0
 
 import java.util.HashSet;
 import java.util.Set;
@@ -119,7 +119,7 @@ public class Supermercato implements java.io.Serializable {
 		this.longitudine = longitudine;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "supermercato")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "supermercato")
 	public Set getInserziones() {
 		return this.inserziones;
 	}

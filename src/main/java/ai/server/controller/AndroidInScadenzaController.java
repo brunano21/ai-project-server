@@ -113,8 +113,8 @@ public class AndroidInScadenzaController {
 					System.out.println("Searching in lista desideri con nome = " + ld.getNomeListaDesideri() );
 					for(Iterator<ListaDesideriProdotti> iter1 = ld.getListaDesideriProdottis().iterator(); iter1.hasNext(); ) {
 						ListaDesideriProdotti ldp = iter1.next();
-						if(ldp.getInserzione() != null && ldp.getInserzione().getIdInserzione() == inserzione.getIdInserzione()) {
-							System.out.println("trovato " + ldp.getId().getIdElemento() + " in riferimento all'idInserzione = " + ldp.getInserzione().getIdInserzione());
+						if(ldp.getIdInserzione() != null && ldp.getIdInserzione() == inserzione.getIdInserzione()) {
+							System.out.println("trovato " + ldp.getId().getIdElemento() + " in riferimento all'idInserzione = " + ldp.getIdInserzione());
 							jsonObj.put("nome_todolist", ld.getNomeListaDesideri());
 							break outerloop;
 						}
