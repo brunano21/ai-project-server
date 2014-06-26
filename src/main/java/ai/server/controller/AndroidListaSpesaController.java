@@ -99,8 +99,7 @@ public class AndroidListaSpesaController {
 			//TODO aggiungere elemento nella struttura, controllare i parametri inviati
 			dati.inserisciElementoListaDesideri(Integer.parseInt(request.getParameter("id_lista_desideri")), Integer.parseInt(request.getParameter("id_elemento")), request.getParameter("descrizione"), Integer.parseInt(request.getParameter("quantita")), Dati.getInstance().getUtenti().get(principal.getName()), request.getParameter("id_inserzione") != null ? Integer.parseInt(request.getParameter("idInserzione")) : -1);
 			
-			//inserzioniDaSuggerireList = dati.getSuggerimentiProdotto(principal.getName(), request.getParameter("latitudine"), request.getParameter("longitudine"), request.getParameter("descrizione"));
-			inserzioniDaSuggerireList = new ArrayList<>();
+			inserzioniDaSuggerireList = dati.getSuggerimentiProdotto(principal.getName(), request.getParameter("latitudine"), request.getParameter("longitudine"), request.getParameter("descrizione"));
 			if(!inserzioniDaSuggerireList.isEmpty()) {
 				inserzioniMapTmp = dati.getInserzioni();
 				for(Integer idInserzione : inserzioniDaSuggerireList) {
@@ -116,6 +115,20 @@ public class AndroidListaSpesaController {
 				}
 			}
 			System.out.println("JSONARRAY " + response.size());
+			break;
+			
+		case "modificaDescrizioneElemento":
+			System.out.println(request.getParameter("id_lista_desideri"));
+			System.out.println(request.getParameter("id_elemento"));
+			System.out.println(request.getParameter("descrizione"));
+			dati.modificaDescrizioneElementoListaDesideri(Integer.parseInt(request.getParameter("idListaDesideri")), Integer.parseInt(request.getParameter("idElemento")), request.getParameter("descrizione"), Dati.getInstance().getUtenti().get(principal.getName()));
+			break;
+			
+		case "modificaFlagAcquistatoElemento":
+			System.out.println(request.getParameter("id_lista_desideri"));
+			System.out.println(request.getParameter("id_elemento"));
+			System.out.println(request.getParameter("acquistato"));
+			dati.modificaAcquistatoElementoListaDesideri(Integer.parseInt(request.getParameter("id_lista_desideri")), Integer.parseInt(request.getParameter("id_elemento")), Boolean.parseBoolean(request.getParameter("acquistato")), Dati.getInstance().getUtenti().get(principal.getName()));
 			break;
 			
 		case "nuovaListaDesideri":
@@ -148,6 +161,33 @@ public class AndroidListaSpesaController {
 			System.out.println(request.getParameter("id_elemento"));
 			System.out.println(request.getParameter("id_inserzione"));
 			dati.modificaIDInserzioneElementoListaDesideri(Integer.parseInt(request.getParameter("id_lista_desideri")), Integer.parseInt(request.getParameter("id_elemento")), Integer.parseInt(request.getParameter("id_inserzione")), Dati.getInstance().getUtenti().get(principal.getName()));
+			break;
+			
+		case "ottieni_suggerimenti":
+			System.out.println(request.getParameter("latitudine"));
+			System.out.println(request.getParameter("longitudine"));
+			System.out.println(request.getParameter("descrizione"));
+			response = new JSONArray();
+			JSONObject suggerimentoJsonObj1;
+			ArrayList<Integer> inserzioniDaSuggerireList1;
+			Map<Integer, Inserzione> inserzioniMapTmp1;
+
+			inserzioniDaSuggerireList1 = dati.getSuggerimentiProdotto(principal.getName(), request.getParameter("latitudine"), request.getParameter("longitudine"), request.getParameter("descrizione"));
+			if(!inserzioniDaSuggerireList1.isEmpty()) {
+				inserzioniMapTmp1 = dati.getInserzioni();
+				for(Integer idInserzione : inserzioniDaSuggerireList1) {
+					suggerimentoJsonObj1 = new JSONObject();
+					suggerimentoJsonObj1.put("id_inserzione", inserzioniMapTmp1.get(idInserzione).getIdInserzione());
+					suggerimentoJsonObj1.put("data_fine", inserzioniMapTmp1.get(idInserzione).getDataFine().toString());
+					suggerimentoJsonObj1.put("descrizione", inserzioniMapTmp1.get(idInserzione).getProdotto().getDescrizione());
+					suggerimentoJsonObj1.put("supermercato", inserzioniMapTmp1.get(idInserzione).getSupermercato().getNome() + ", " + inserzioniMapTmp1.get(idInserzione).getSupermercato().getIndirizzo() + ", " + inserzioniMapTmp1.get(idInserzione).getSupermercato().getComune());
+					suggerimentoJsonObj1.put("prezzo", inserzioniMapTmp1.get(idInserzione).getPrezzo());
+					suggerimentoJsonObj1.put("foto", inserzioniMapTmp1.get(idInserzione).getFoto());
+					
+					response.add(suggerimentoJsonObj1);
+				}
+			}
+			System.out.println("JSONARRAY " + response.size());
 			break;
 			
 		default:

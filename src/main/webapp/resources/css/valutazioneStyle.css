@@ -1,0 +1,113 @@
+.bx-wrapper {
+	max-width: 93%;
+}
+.bx-wrapper .bx-prev {
+	left: -41px;
+}
+.bx-wrapper .bx-next {
+	right: -41px;
+}
+
+.valutazioniProposte {
+	
+}
+
+.valutazioneBox h2 {
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.slider-item {
+	background: #FFFFFF;
+	margin: 8px;
+	margin-bottom: 12px;
+	border: 1px solid;
+	display: block;
+	border-color: #C0BEBE;
+	height: 350px;
+	width: 270px;
+}
+
+.slider-item h6 {
+	text-align: center;
+	padding: 5px;
+}
+
+.slider-item h6 a {
+	font-size: 13px;
+	color: #444444;
+}
+
+.slider-item h6 a:hover {
+	color: #2980b9;
+}
+
+.slider-item .featured-image {
+	margin-bottom: 5px;
+	padding: 4px;
+	height: 160px;
+	width: auto;
+}
+
+.slider-item .featured-image .featured-image-img {
+	max-width: 100%;
+	max-height: 100%;
+	margin: auto;
+	display: block;
+}
+
+.slider-item .data-periodo {
+	height: 25px;
+	padding: 5px;
+}
+.slider-item .data-periodo .data-inizio {
+	max-width: 50%;
+	float: left;
+}
+.slider-item .data-periodo .data-fine {
+	max-width: 50%;
+	float: right;
+}
+
+.slider-item .supermercato-box {
+	font-size: small;
+	padding: 5px;
+	padding-top: 0px;
+	text-align: center;
+}
+
+.slider-item .prezzo-box {
+	font-size: x-large;
+	text-align: center;
+	padding: 5px;
+}
+
+.slider-item .valutazione-box {
+	text-align: center;
+	height: 38px;
+	margin-top: 13px;
+}
+
+.slider-item .valutazione-box .valutazione-negativa {
+	width: 50%;
+	height: 100%;
+	float: left;
+	border-color: #FF2F2F;
+	background-color: #FF2F2F;
+	color: #FFFFFF;
+}
+.slider-item .valutazione-box .valutazione-negativa:hover {
+	background-color: #FF502F;
+}
+
+.slider-item .valutazione-box .valutazione-positiva {
+	width: 50%;
+	height: 100%;
+	float: right;
+	border-color: #2ecc71;
+	background-color: #2ecc71;
+	color: #FFFFFF;
+}
+.slider-item .valutazione-box .valutazione-positiva:hover {
+	background-color: #1ED886;
+}

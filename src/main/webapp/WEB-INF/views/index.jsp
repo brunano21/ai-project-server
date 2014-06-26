@@ -29,6 +29,7 @@
 <link rel="stylesheet" id="tooltipster-css" href="<c:url value="resources/css/tooltipster/tooltipster.css" />">
 <link rel="stylesheet" id="tooltipster-light-css" href="<c:url value="resources/css/tooltipster/themes/tooltipster-light.css" />">
 <link rel="stylesheet" id="bxslider-css" href="<c:url value="resources/css/bxslider/jquery.bxslider.css" />">
+<link rel="stylesheet" id="valutazioneStyle-css" href="<c:url value="resources/css/valutazioneStyle.css" />">
 
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-1.10.2.min.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-migrate.min.js" />" ></script>
@@ -39,6 +40,10 @@
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/hoverIntent.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/superfish.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/select.min.js" />" ></script>
+
+<script type="text/javascript" src="<c:url value="resources/js/valutazioneJS/bxslider/jquery.bxslider.min.js" />"></script>
+<script type="text/javascript" src="<c:url value="resources/js/valutazioneJS/valutazione.js" />"></script>
+
 
 <script src="https://www.google.com/jsapi" type="text/javascript"></script>
 <script type="text/javascript">
