@@ -58,12 +58,6 @@ public class AndroidValutazioneController {
 		System.out.println("Called: /android/valutazione/getInserzioneById - " + idInserzioneListString);
 		JSONArray response = new JSONArray();
 
-//		try {
-//			Thread.sleep(1500);
-//		} catch (InterruptedException e1) {
-//			e1.printStackTrace();
-//		}
-		
 		for (String id : idInserzioneListString.split(",")) {
 			JSONObject jsonObj = new JSONObject();
 			Inserzione inserzione = dati.getInserzioni().get(Integer.valueOf(id));
@@ -83,7 +77,6 @@ public class AndroidValutazioneController {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
-				System.out.println(inserzione.getIdInserzione()+ " -- " + inserzione.getFoto());
 				e.printStackTrace();
 			}
 
@@ -112,7 +105,6 @@ public class AndroidValutazioneController {
 		Integer idInserzione = Integer.valueOf(request.getParameter("idInserzione"));
 		String risultato = request.getParameter("risultato");
 
-
 		System.out.println("Called: /android/valutazione/aggiungiValutazione - ID_INSERZIONE: " + idInserzione + " - RISULTATO: " + risultato);
 		JSONArray response = new JSONArray();
 
@@ -125,6 +117,7 @@ public class AndroidValutazioneController {
 
 		response.add(idInserzione);
 		response.add(request.getParameter("posizione"));
+		response.add(request.getParameter("risultato"));
 		System.out.println(response.toString());
 		return response;
 	}
