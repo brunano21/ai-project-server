@@ -11,7 +11,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -137,6 +136,9 @@ public class AndroidListaSpesaController {
 			
 			//TODO aggiungere elemento nella struttura, controllare i parametri inviati
 			dati.inserisciListaDesideri(Integer.parseInt(request.getParameter("id_lista_desideri")), Dati.getInstance().getUtenti().get(principal.getName()), request.getParameter("nome"));
+			response = new JSONArray();
+			response.add(request.getParameter("id_lista_desideri"));
+			response.add(request.getParameter("nome"));
 			break;
 			
 		case "modificaNomeListaDesideri":

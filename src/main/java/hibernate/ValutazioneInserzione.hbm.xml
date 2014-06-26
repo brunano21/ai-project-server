@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 26-giu-2014 18.20.54 by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+    <class name="hibernate.ValutazioneInserzione" table="valutazione_inserzione" catalog="supermercati">
+        <id name="idValutazioneInserzione" type="java.lang.Integer">
+            <column name="ID_ValutazioneInserzione" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="inserzione" class="hibernate.Inserzione" fetch="select">
+            <column name="ID_Inserzione" />
+        </many-to-one>
+        <many-to-one name="utenteByIdUtenteValutatore" class="hibernate.Utente" fetch="select">
+            <column name="ID_UtenteValutatore" />
+        </many-to-one>
+        <many-to-one name="utenteByIdUtenteInserzionista" class="hibernate.Utente" fetch="select">
+            <column name="ID_UtenteInserzionista" />
+        </many-to-one>
+        <property name="valutazione" type="java.lang.Integer">
+            <column name="Valutazione" />
+        </property>
+        <property name="data" type="date">
+            <column name="Data" length="10" />
+        </property>
+    </class>
+</hibernate-mapping>

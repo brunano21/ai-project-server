@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 26-giu-2014 18.20.54 by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+    <class name="hibernate.Argomenti" table="argomenti" catalog="supermercati">
+        <id name="argomento" type="string">
+            <column name="Argomento" length="30" />
+            <generator class="assigned" />
+        </id>
+        <set name="argomentiInserziones" table="argomenti_inserzione" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Argomento" length="30" not-null="true" />
+            </key>
+            <one-to-many class="hibernate.ArgomentiInserzione" />
+        </set>
+    </class>
+</hibernate-mapping>
