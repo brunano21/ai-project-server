@@ -44,13 +44,13 @@
             </key>
             <one-to-many class="hibernate.ListaSpesa" />
         </set>
-        <set name="inserziones" table="inserzione" inverse="true" lazy="true" fetch="select">
+        <set name="inserziones" table="inserzione" inverse="true" lazy="false" fetch="select">
             <key>
                 <column name="ID_Utente" />
             </key>
             <one-to-many class="hibernate.Inserzione" />
         </set>
-        <set name="profilos" table="profilo" inverse="true" lazy="true" fetch="select">
+        <set name="profilos" table="profilo" inverse="true" lazy="false" fetch="select">
             <key>
                 <column name="ID_Utente" not-null="true" unique="true" />
             </key>
