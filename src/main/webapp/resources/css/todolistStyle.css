@@ -23,8 +23,13 @@
 #listContainer{
     display:none;
     margin-top:15px;
-
+	height: 841px;
+	overflow: auto;
+	
+	-ms-overflow-style: none;
+	overflow: -moz-scrollbars-none;
 }
+#listContainer::-webkit-scrollbar { width: 0 !important }
 /*
 #expList > li {
     list-style: none;
@@ -170,15 +175,17 @@ input[type="text"] {
 /*------------------------------*/
 #post_left {
     width: 50%;
-    height: 100%;
+    height: 903px;
     background-color: #fff;
+    overflow: hidden;
 }
 
 #post_right {
     width: 49%;
     float: right;
-    height: 100%;
+    height: 903px;
     background-color: #fff;
+    overflow: hidden;
 }
 #post_right h3 { text-align: center; }
 
@@ -190,6 +197,15 @@ input[type="text"] {
 	margin-top: 16%;
 	margin-left: -83px;
 }
+
+.carousel-list-mini {
+	height: 860px;
+	overflow: auto;
+	
+	-ms-overflow-style: none;
+	overflow: -moz-scrollbars-none;
+}
+.carousel-list-mini::-webkit-scrollbar { width: 0 !important }
 
 .carousel-item-mini {
 	background: #FFFFFF;

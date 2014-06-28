@@ -5,9 +5,29 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" %>
 
-<!-- PER IL MOMENTO VENGONO GENERATI I DUE CAROUSEL, MA NON RIESCO AD ACCEDERE ALLA REQUEST QUINDI NON RIESCO AD AVERE LONGITUDINE E LATITUDINE
-INFATTI ORA VENGONO RITORNATI VALORI A CAZZO TANTO PER CAPIRE SE FUNZIONAVA. LA RICHIESTA PER OTTENERE I CAROUSEL CMQ A MIO PARERE VA SPLITTATA PERCHè ALTRIMENTI 
-NE RISENTE TROPPO LA VELOCITà DI RISPOSTA. QUINDI LA SPOSTERò IN SEGUITO -->
+<script type="text/javascript">
+
+function getSuggerimentoSingolo(_this) {
+	console.log("ID: " + ($(_this).parent().parent().parent().attr("id")+"").split("_")[1]);
+	console.log("TIPO: " + ($(_this).parent().parent().parent().parent().attr("id")+"").split("-")[2]);
+	$.ajax({
+   		url:"./suggerimentoSingolo", 
+      	type: 'POST', 
+      	async: false, 
+      	data : {
+      		"idInserzione" : ($(_this).parent().parent().parent().attr("id")+"").split("_")[1],
+      		"tipoSuggerimento" : ($(_this).parent().parent().parent().parent().attr("id")+"").split("-")[2]
+      	}, 
+      	success: function(returnedData) {         
+		   	console.log("suggerimentosingolo ricevuto!");
+			
+		   	$("#overlayPanel").show();
+		   	$("#suggerimento-singolo-container").html(returnedData).show();
+       }
+	});
+}
+</script>
+
 <div id="carousel-user-container">
 	<div id="carousel-user-evaluation-container">
 		<h5>DA VALUTARE</h5>
@@ -29,10 +49,10 @@ NE RISENTE TROPPO LA VELOCITà DI RISPOSTA. QUINDI LA SPOSTERò IN SEGUITO -->
 				inserzioneDaValutare = Dati.getInstance().getInserzioni().get((Integer)index);
 			 	supermercato = inserzioneDaValutare.getSupermercato().getNome() + ", " + inserzioneDaValutare.getSupermercato().getIndirizzo() + ", " + inserzioneDaValutare.getSupermercato().getComune();
 			 %>
-				<div class="carousel-item">
+				<div id=<%= "suggerimento_" + inserzioneDaValutare.getIdInserzione() %> class="carousel-item">
 					<div class="post-margin">
 						<h6>
-							<a href="#"><%= inserzioneDaValutare.getProdotto().getDescrizione() %></a>
+							<a href="javascript:void(0);" onclick="getSuggerimentoSingolo(this);"><%= inserzioneDaValutare.getProdotto().getDescrizione() %></a>
 						</h6>
 						<span><i class="fa fa-clock-o"></i><%= inserzioneDaValutare.getDataFine() %></span>
 					</div>
@@ -63,10 +83,10 @@ NE RISENTE TROPPO LA VELOCITà DI RISPOSTA. QUINDI LA SPOSTERò IN SEGUITO -->
 				inserzioneDaSuggerire = Dati.getInstance().getInserzioni().get((Integer)index);
 			 	supermercato = inserzioneDaSuggerire.getSupermercato().getNome() + ", " + inserzioneDaSuggerire.getSupermercato().getIndirizzo() + ", " + inserzioneDaSuggerire.getSupermercato().getComune();
 			 %>
-				<div class="carousel-item">
+				<div id=<%= "suggerimento_" + inserzioneDaSuggerire.getIdInserzione() %> class="carousel-item">
 					<div class="post-margin">
 						<h6>
-							<a href="#"><%= inserzioneDaSuggerire.getProdotto().getDescrizione() %></a>
+							<a href="javascript:void(0);" onclick="getSuggerimentoSingolo(this);"><%= inserzioneDaSuggerire.getProdotto().getDescrizione() %></a>
 						</h6>
 						<span><i class="fa fa-clock-o"></i><%= inserzioneDaSuggerire.getDataFine() %></span>
 					</div>
@@ -86,35 +106,34 @@ NE RISENTE TROPPO LA VELOCITà DI RISPOSTA. QUINDI LA SPOSTERò IN SEGUITO -->
 </div>
 
 <script type="text/javascript">
-var startCarousels = function() {
-	
-	$('#carousel-list-evaluation').carouFredSel({
-        //auto                : true,
-        //circular: true,
-        items               : 1,
-        direction           : "up",
-        //height: 740,
-        scroll : {
-            items           : 1,
-            easing          : "elastic",
-            duration        : 1000,                         
-            pauseOnHover    : true
-        }                   
-    });
-	
-	$('#carousel-list-suggestion').carouFredSel({
-        //auto                : true,
-        //circular: true,
-        items               : 2,
-        direction           : "up",
-        //height: 740,
-        scroll : {
-            items           : 1,
-            easing          : "elastic",
-            duration        : 1000,                         
-            pauseOnHover    : true
-        }                   
-    });
-	
-};
+/*
+ *Indicates which easing function to use for the transition. jQuery defaults: "linear" and "swing", built in: "quadratic", "cubic" and "elastic". 
+ 
+ */
+	var startCarousels = function() {
+		
+		$('#carousel-list-evaluation').carouFredSel({
+	        items               : 1,
+	        direction           : "up",
+	        scroll : {
+	            items           : 1,
+	            easing          : "cubic",
+	            duration        : 1000,                         
+	            pauseOnHover    : true
+	        }                   
+	    });
+		
+		$('#carousel-list-suggestion').carouFredSel({
+	        items               : 2,
+	        direction           : "up",
+	        scroll : {
+	            items           : 1,
+	            easing          : "cubic",
+	            duration        : 1000,                         
+	            pauseOnHover    : true
+	        }                   
+	    });
+		
+		$("#carousel-user-suggestion-container >.caroufredsel_wrapper").css("height", "531px");
+	};
  </script>

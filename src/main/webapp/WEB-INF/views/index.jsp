@@ -24,22 +24,31 @@
 <link rel="stylesheet" id="mainstyle-css" href="<c:url value="resources/css/indexStyle.css" />" type="text/css" media="all">
 <link rel="stylesheet" id="select-css" href="<c:url value="resources/css/select-theme-default.css" />" >
 <link rel="stylesheet" id="color-scheme-css" href="<c:url value="resources/css/color/green.css" />" media="all">
+
 <link rel="stylesheet" id="jquery-ui-css" href="<c:url value="resources/css/ui-lightness/jquery-ui-1.10.4.custom.min.css" />" media="all">
+<link rel="stylesheet" id="jquery-ui-css-min" href="<c:url value="resources/css/jquery-ui-1.11.0/jquery-ui.min.css" />" media="all">
+
 <link rel="stylesheet" id="todolistStyle-css" href="<c:url value="resources/css/todolistStyle.css" />">
 <link rel="stylesheet" id="tooltipster-css" href="<c:url value="resources/css/tooltipster/tooltipster.css" />">
 <link rel="stylesheet" id="tooltipster-light-css" href="<c:url value="resources/css/tooltipster/themes/tooltipster-light.css" />">
 <link rel="stylesheet" id="bxslider-css" href="<c:url value="resources/css/bxslider/jquery.bxslider.css" />">
 <link rel="stylesheet" id="valutazioneStyle-css" href="<c:url value="resources/css/valutazioneStyle.css" />">
 
-<script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-1.10.2.min.js" />" ></script>
+<!-- <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-1.10.2.min.js" />" ></script> -->
+<script type="text/javascript" src="<c:url value="resources/js/jquery-1.11.1.min.js" />" ></script>
+
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-migrate.min.js" />" ></script>
-<script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-ui-1.10.4.custom.min.js" />" ></script>
+
+<!-- <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-ui-1.10.4.custom.min.js" />" ></script> -->
+<script type="text/javascript" src="<c:url value="resources/js/jquery-ui-1.11.0/jquery-ui.min.js" />" ></script>
+
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.ui.datepicker-it.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.color-2.1.2.min.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.carouFredSel-6.2.1-packed.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/hoverIntent.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/superfish.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/select.min.js" />" ></script>
+<script type="text/javascript" src="<c:url value="resources/js/valutazioneJS/bxslider/jquery.bxslider.min.js" />"></script>
 
 <script type="text/javascript" src="<c:url value="resources/js/valutazioneJS/bxslider/jquery.bxslider.min.js" />"></script>
 <script type="text/javascript" src="<c:url value="resources/js/valutazioneJS/valutazione.js" />"></script>
@@ -70,6 +79,22 @@
         $(this).children().hide();
         $(this).hide();
     };
+    
+    function getHomePage() {
+    	//TODO inserire redirezione alla home page
+    	
+    	/*
+    	$.ajax({
+        	url:"./", 
+            type: 'GET', 
+                async: true,
+                success: function(returnedData) {
+                	$(".post").children().hide();
+    				$(".post").html(returnedData);
+                }
+        });
+    	*/
+    }
 
     function sendLogin() {
         $.ajax({
@@ -83,16 +108,9 @@
                 'longitudine' : userPosition.coords.longitude
 	        }, 
             success: function(returnedData, textStatus, jqXHR) {         
-            	console.log(returnedData);
-				
 				if(jqXHR.getResponseHeader("loginFailed") != null) {
 					$("#executeJS").html(returnedData);
-						
-					//console.log($(returnedData).find("script").innerHTML);
-					//eval($(returnedData).find("script").innerHTML);
-				}
-										
-				else {
+				} else {
 					$("#loginForm").hide();
 					$("#logContainer").html(returnedData);
 					getUserCustomization_Index();
@@ -109,9 +127,7 @@
                 data: { }, 
                 success: function(returnedData) {         
                 	console.log("done!");
-                },
-                complete: function() { 
-                } 
+                }
         });
     };
     
@@ -129,13 +145,15 @@
 					$(".right-side-box").children().hide();
 					$(".right-side-box").html(returnedData);
 					
+					$(".homeContainer").css("height", "902px");
+					
 					startCarousels();
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log("Error msg " + xhr.status + " " + ajaxOptions);
 				}
         });
-    }
+    };
     	       
    	function getRegisterForm() {
 		if ($("#registerContainer").children().length != 0)
@@ -157,25 +175,33 @@
     };
 
     function getInserzionePage() {
+    	$("#header-nav-container").find(".current-menu-item").removeClass("current-menu-item");
+    	$("#prodotti-menu-item").addClass("current-menu-item");
+    	
 		// controllare se l'inserzioneContainer non è gia presente. Se fosse cosi, devo solo mostralo e non fare la GET.
     	$.ajax({
         	url:"./inserzione", 
             type: 'GET', 
             async: false, 
             success: function(returnedData, textStatus, jqXHR) {         
-            	//console.log(returnedData);
 				$(".post").children().hide();
 				$(".post").html(returnedData);
-            }      
+            }
         });
     };
 
-    function getCercaPage() {};
     function getValutaPage() {
+    	$("#header-nav-container").find(".current-menu-item").removeClass("current-menu-item");
+    	$("#prodotti-menu-item").addClass("current-menu-item");
+    	
     	$.ajax({
         	url:"./valutazione", 
             type: 'GET', 
-            async: false, 
+            async: false,
+            data: {
+            	'latitudine' : userPosition.coords.latitude,
+                'longitudine' : userPosition.coords.longitude
+            },
             success: function(returnedData, textStatus, jqXHR) {
 				$(".post").children().hide();
 				$(".post").html(returnedData);
@@ -184,6 +210,9 @@
     };
 
     function getLeTueListePage() {
+    	$("#header-nav-container").find(".current-menu-item").removeClass("current-menu-item");
+    	$("#liste-menu-item").addClass("current-menu-item");
+    	
     	$.ajax({
         	url:"./todolist", 
             type: 'GET', 
@@ -261,7 +290,7 @@
                 direction           : "up",
                 scroll : {
                     items           : 1,
-                    easing          : "elastic",
+                    easing          : "cubic",
                     duration        : 1500,                         
                     pauseOnHover    : true
                 },
@@ -272,6 +301,9 @@
             });
 
             $("#overlayPanel").on('click', hideOverlayPanel);
+            
+            // Fixa il problema della lista troppo lunga di circa 20 pixel 
+            $(".caroufredsel_wrapper").css("height", "798px");
         });
 			
 	});
@@ -297,6 +329,7 @@
                 </fieldset>
             </form>
         </div>
+        <div id="suggerimento-singolo-container"></div>
     </div>
 
 	<!-- Start Logo/Login Header -->
@@ -359,27 +392,26 @@
                     <!-- Navigation Menu -->
                     <ul class="sf-menu">
                         
-                        <li class="menu-item current-menu-item">
-                            <a href="#">Home</a>
+                        <li id="home-menu-item" class="menu-item current-menu-item">
+                        	<a href="javascript:void(0);" onclick="getHomePage();">Home</a>
                         </li>
                         
-                        <li class="menu-item">
+                        <li id="prodotti-menu-item" class="menu-item">
                             <a href="#">Prodotti</a>
                             <ul class="sub-menu">
                                 <li class="menu-item"><a href="javascript:void(0);" onclick="getInserzionePage();">Inserisci</a></li>
                                 <li class="menu-item"><a href="javascript:void(0);" onclick="getValutaPage();">Valuta</a></li>
-                                <li class="menu-item"><a href="#">Cerca</a></li>
                             </ul>
                         </li>
 
-                        <li class="menu-item"> <a href="javascript:void(0);" onclick="getLeTueListePage();">Le tue liste</a> </li>
-                        <li class="menu-item">
+                        <li id="liste-menu-item" class="menu-item"> <a href="javascript:void(0);" onclick="getLeTueListePage();">Le tue liste</a> </li>
+                        <li id="scadenza-menu-item" class="menu-item">
                             <a href="#">In scadenza</a>
                         </li>
-                        <li class="menu-item">
+                        <li id="affari-menu-item" class="menu-item">
                             <a href="#">I migliori affari</a>
                         </li>
-                        <li class="menu-item">
+                        <li id="account-menu-item" class="menu-item">
                             <a href="#">Account</a>
                             <ul class="sub-menu">
                                 <li class="menu-item"><a href="#">Modifica</a></li>
@@ -387,7 +419,7 @@
                                 <li class="menu-item"><a href="#">Premium</a></li>
                             </ul>
                         </li>
-						<li class="menu-item">
+						<li id="about-menu-item" class="menu-item">
                             <a href="#">About</a>
                         </li>
                     </ul>	

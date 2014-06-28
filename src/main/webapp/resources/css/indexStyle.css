@@ -11,6 +11,8 @@ body {
 	padding-bottom:30px;
 }
 
+* { font-family: 'Open Sans', sans-serif; }
+
 h1,h2,h3,h4,h5,h6{ font-family: 'Montserrat', sans-serif; text-transform:uppercase; font-weight:700; line-height:1.4em; color:#555555; }
 h1{ font-size:35px; }
 h2{ font-size:33px; }
@@ -59,6 +61,10 @@ a:hover{ color:#2980b9; }
 	background: #FFFFFF;
 	/*margin-bottom: 40px;*/
 	}
+	
+.homeContainer {
+	height: 798px;
+}
 
 /*
 .post .post-margin{ padding-left:8%; padding-right:8%; padding-top:5%; padding-bottom:5%; }
@@ -299,8 +305,9 @@ a:hover{ color:#2980b9; }
 .carousel-item .post-margin { padding-left:10%; padding-right:10%; padding-top:2%; padding-bottom:2%; font-size: smaller; }
 .carousel-item .featured-image { margin-bottom: 5px; padding: 4px; height: 125px; width: 200px; }
 .carousel-item .featured-image .featured-image-img { max-width: 100%; max-height: 100%; margin: auto; display: block; }
-.carousel-item h6 a { font-size:16px; color:#444444; }
-.carousel-item h6 a:hover { color:#2980b9; }
+.carousel-item h6 { height: 28px; overflow: hidden; }
+.carousel-item h6 a { font-size: 16px; color: #444444; }
+.carousel-item h6 a:hover { color: #2980b9; }
 
 
 /* Featured Carousel */
@@ -807,6 +814,39 @@ a:hover{ color:#2980b9; }
 
 #forgotpwd:-moz-focus-inner { border: none; }
 /* END FORGOT PASSWORD FORM */
+
+/* POPUP SUGGERIMENTO */
+
+#suggerimento-singolo-container {
+	position: relative;
+	display: none;
+	top: 50%;
+	left: 50%;
+	width: 347px;
+	height: 510px;
+	border: 1px solid;
+	text-align: center;
+	margin-top: -225px;
+	margin-left: -250px;
+	background-color: whitesmoke;
+	z-index: inherit;
+}
+
+#suggerimento-singolo-box .addNewItemBtn { margin-top: 4px; }
+#suggerimento-singolo-box .slider-item { margin-left: auto; margin-right: auto; }
+#suggerimento-singolo-box > h6:first-child { margin: 15px; }
+#suggerimento-singolo-box span { font-style: italic; }
+
+.custom-prova { border-color: red;}
+
+#lista-desideri-selettore {
+	float: left;
+	padding: 5px;
+	margin-top: 8px;
+	margin-left: 5px;
+}
+
+/* END POPUP SUGGERIMENTO */
 
 
 /* START LEFT HEADER */

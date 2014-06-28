@@ -18,7 +18,6 @@ import hibernate.Supermercato;
 import hibernate.Utente;
 import hibernate.ValutazioneInserzione;
 
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -415,6 +414,14 @@ public class Dati {
 			mappaUtente.get(utente.getMail()).getInserziones().add(inserzione);
 			mappaSupermercati.get(supermercato.getIdSupermercato()).getInserziones().add(inserzione);
 			mappaProdotti.get(prodotto.getCodiceBarre()).getInserziones().add(inserzione);
+			
+			// Aggiugo all'utente i crediti pendenti che gli spettano dall'inserimento dell'inserzione, ossia +10
+			Profilo profilo = (Profilo) utente.getProfilos().iterator().next();
+			profilo.setCreditiPendenti(profilo.getCreditiPendenti() + 10);
+			session.update(profilo);
+			mappaProfili.put(profilo.getIdProfilo(), profilo);
+			mappaUtente.get(utente.getMail()).getProfilos().add(profilo);
+			
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx!=null)
@@ -839,7 +846,6 @@ public class Dati {
 			ListaDesideriProdotti elemento = (ListaDesideriProdotti) mappaListaDesideriProdotti.get(new ListaDesideriProdottiId(idElemento, idListaDesideri));
 
 			elemento.setDescrizione(descrizione);
-
 			session.update(elemento);
 
 			// vedere inoltre se aggiornare il set ListaDesideri dell'utente
@@ -856,6 +862,9 @@ public class Dati {
 						continue;
 					
 					ldp.setDescrizione(descrizione);
+					//mappaListaDesideriProdotti.put(new ListaDesideriProdottiId(idElemento, idListaDesideri), ldp);
+					//mappaUtente.get(utente.getMail()).getListaDesideris().add(ldp);
+					
 					break doubleloop;
 				}
 			}
@@ -1066,8 +1075,6 @@ public class Dati {
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
-
-
 			if(!mappaListaDesideri.containsKey(idListaDesideri))
 				throw new RuntimeException("Id lista desideri non trovato: " + idListaDesideri);
 
@@ -1097,7 +1104,24 @@ public class Dati {
 
 				mappaListaSpesaProdotti.put(new ListaSpesaProdottiId(idElemento, idListaDesideri), prodottoSpesa);
 				session.save(prodottoSpesa);
-				mappaListaDesideriProdotti.remove(prodotto);
+				mappaListaDesideriProdotti.remove(prodottoId);
+				
+				doubleloop:
+					for(Iterator ldIterator = mappaUtente.get(utente.getMail()).getListaDesideris().iterator(); ldIterator.hasNext();) {
+						ListaDesideri ld = (ListaDesideri) ldIterator.next();
+						if(ld.getIdListaDesideri() != idListaDesideri)
+							continue;
+						
+						for(Iterator ldpIterator = ld.getListaDesideriProdottis().iterator(); ldpIterator.hasNext();) {
+							ListaDesideriProdotti ldp = (ListaDesideriProdotti) ldpIterator.next();
+							if(ldp.getId().getIdElemento() != idElemento)
+								continue;
+							
+							ldpIterator.remove();
+							break doubleloop;
+						}
+					}
+				
 				session.delete(prodotto);
 				tx.commit();
 			} else { 
@@ -2239,31 +2263,39 @@ public class Dati {
 	 * @param valutazione
 	 * @param data
 	 */
-	public void inserimentoValutazioneInserzione(Inserzione inserzione,Utente inserzionista, Utente valutatore, int valutazione, Date data){
+	public void inserimentoValutazioneInserzione(Inserzione inserzione, Utente inserzionista, Utente valutatore, int valutazione, Date data){
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 
 		if(inserzionista == null || valutatore == null || data == null)
 			throw new RuntimeException("parametri non corretti");
 
-		ValutazioneInserzione valutazioneInserzione = new ValutazioneInserzione(inserzione,inserzionista, valutatore, valutazione, data);
-		try{
-			tx=session.beginTransaction();
+		ValutazioneInserzione valutazioneInserzione = new ValutazioneInserzione(inserzione, inserzionista, valutatore, valutazione, data);
+		try {
+			tx = session.beginTransaction();
 			Integer idValutazioneInserzione = (Integer)session.save(valutazioneInserzione);
 			mappaValutazioneInserzione.put(idValutazioneInserzione,valutazioneInserzione);
 			mappaUtente.get(inserzionista.getMail()).getValutazioneInserzionesForIdUtenteInserzionista().add(valutazioneInserzione);
 			mappaUtente.get(valutatore.getMail()).getValutazioneInserzionesForIdUtenteValutatore().add(valutazioneInserzione);
 			mappaInserzioni.get(inserzione.getIdInserzione()).getValutazioneInserziones().add(valutazioneInserzione);
+			
+			// Aggiugo all'utente i crediti pendenti che gli spettano dall'inserimento dell'inserzione, ossia +2
+			Profilo profilo = ((Profilo) valutatore.getProfilos().iterator().next());
+			profilo.setCreditiPendenti(profilo.getCreditiPendenti() + 2);
+			session.update(profilo);
+			mappaProfili.put(profilo.getIdProfilo(), profilo);
+			mappaUtente.get(valutatore.getMail()).getProfilos().add(profilo);
+			
 			tx.commit();
-		}catch(Throwable ex){
-			if(tx!=null)
+		} catch(Throwable ex) {
+			if(tx != null)
 				tx.rollback();
 			throw new RuntimeException(ex);
-		}finally{
-			if(session!=null && session.isOpen()){
+		} finally {
+			if(session != null && session.isOpen()) {
 				session.close();
 			}
-			session=null;
+			session = null;
 		}
 	}
 
@@ -2403,6 +2435,10 @@ public class Dati {
 					"select ID_Inserzione " +
 					"from inserzione ins");
 			inserzioniDaValutareList = q.list();
+			
+			System.out.println("INSERZIONE DA VALUTARE: " + mailUtente);
+			System.out.println("INSERZIONE DA VALUTARE: " + lat);
+			System.out.println("INSERZIONE DA VALUTARE: " + lng);
 
 			tx.commit();
 		} catch(RuntimeException e) {

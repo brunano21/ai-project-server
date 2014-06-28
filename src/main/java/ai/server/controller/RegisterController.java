@@ -52,18 +52,18 @@ public class RegisterController {
 	}
 	
 	@RequestMapping(value="/register", method = RequestMethod.GET)
-	public String showForm(Model model,Device device){
+	public String showForm(Model model, Device device){
 		
 		String pagina = "register";
 		
-		if(device.isMobile()){
-			System.out.println("questo è uno smartphone");
-		}
+//		if(device.isMobile()){
+//			System.out.println("questo è uno smartphone");
+//		}
 		
-		if(device.isNormal()){
+//		if(device.isNormal()){
 			Registration registration = new Registration();
 			model.addAttribute("registration", registration);	
-		}
+//		}
 		return pagina;
 	}
 	
