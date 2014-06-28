@@ -4,7 +4,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
     
 <script type="text/javascript" src="<c:url value="resources/js/todolistJS/scripts.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/todolistJS/jquery.tooltipster.min.js" />" ></script>
@@ -40,7 +39,7 @@
  	supermercato = inserzione.getSupermercato().getNome() + ", " + inserzione.getSupermercato().getIndirizzo() + ", " + inserzione.getSupermercato().getComune();
  %>  <div class="carousel-item">
      <div class="post-margin">
-         <h6><a href="#"><% inserzione.getProdotto().getDescrizione(); %></a></h6>
+         <h6><a href="#"><%= inserzione.getProdotto().getDescrizione() %></a></h6>
          <span><i class="fa fa-clock-o"></i><% inserzione.getDataFine(); %></span>
      </div>
      <div class="featured-image">

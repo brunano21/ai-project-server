@@ -111,23 +111,24 @@ public class ListaSpesaController {
 			System.out.println(request.getParameter("longitudine"));
 
 			ArrayList<Integer> inserzioniDaSuggerireList;
-
-			dati.inserisciElementoListaDesideri(Integer.parseInt(request.getParameter("idListaDesideri")), Integer.parseInt(request.getParameter("idElemento")), request.getParameter("descrizione"), Integer.parseInt(request.getParameter("quantita")), Dati.getInstance().getUtenti().get(principal.getName()), request.getParameter("idInserzione") != null ? Integer.parseInt(request.getParameter("idInserzione")) : -1);
-			inserzioniDaSuggerireList = dati.getSuggerimentiProdotto(principal.getName(), request.getParameter("latitudine"), request.getParameter("longitudine"), request.getParameter("descrizione"));
-			Map<Integer, Inserzione> inserzioniMap = dati.getInserzioni();
-			Map<Integer, Supermercato> supermercatiMap = dati.getSupermercati();
-			Map<Long, Prodotto> prodottiMap = dati.getProdotti();			
-
+			ObjectNode objSuggerimenti;
 			factory = JsonNodeFactory.instance;
 			result = factory.objectNode();
-			ObjectNode objSuggerimenti;
+			ObjectNode objInfo = factory.objectNode();
 
+			dati.inserisciElementoListaDesideri(Integer.parseInt(request.getParameter("idListaDesideri")), Integer.parseInt(request.getParameter("idElemento")), request.getParameter("descrizione"), Integer.parseInt(request.getParameter("quantita")), Dati.getInstance().getUtenti().get(principal.getName()), request.getParameter("idInserzione") != null ? Integer.parseInt(request.getParameter("idInserzione")) : -1);
+			
 			result.put("cmd", request.getParameter("cmd")+"_Response");
 
-			ObjectNode objInfo = factory.objectNode();
 			objInfo.put("ID_ListaDesideri", request.getParameter("idListaDesideri"));
 			objInfo.put("ID_Elemento", request.getParameter("idElemento"));
 			result.put("infoElemento", objInfo);
+			
+			if(request.getParameter("latitudine") == "" || request.getParameter("longitudine") == "")
+				break;
+			
+			inserzioniDaSuggerireList = dati.getSuggerimentiProdotto(principal.getName(), request.getParameter("latitudine"), request.getParameter("longitudine"), request.getParameter("descrizione"));
+			Map<Integer, Inserzione> inserzioniMap = dati.getInserzioni();
 
 			if (!inserzioniDaSuggerireList.isEmpty()) {
 				objSuggerimenti = factory.objectNode();

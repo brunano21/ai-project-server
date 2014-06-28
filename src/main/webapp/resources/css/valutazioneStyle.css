@@ -31,6 +31,8 @@
 .slider-item h6 {
 	text-align: center;
 	padding: 5px;
+	height: 28px;
+	overflow: hidden;
 }
 
 .slider-item h6 a {
@@ -110,4 +112,22 @@
 }
 .slider-item .valutazione-box .valutazione-positiva:hover {
 	background-color: #1ED886;
+}
+
+.slider-item .etichetta-votato {
+	display : none;
+	position: absolute;
+	top: 16px;
+	left: -2px;
+	-webkit-transform: rotate(-41deg);
+	height: 23px;
+	width: 64px;
+	border: 1px;
+	border-style: solid;
+	border-radius: 4px;
+	background-color: #2ecc71;
+	line-height: 23px;
+	text-align: center;
+	font-size: smaller;
+	color: white;
 }

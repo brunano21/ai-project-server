@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.node.ArrayNode;
@@ -20,6 +21,8 @@ import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,25 +50,41 @@ public class ValutazioneController {
 	}
 	
 	@RequestMapping(value = "/valutazione", method = RequestMethod.GET)
-	public ModelAndView showValutazione() {
+	public ModelAndView showValutazione(HttpServletRequest request) {
 		return new ModelAndView("valutazione");
 	}
 	
-	@RequestMapping(value = "/valutazione/riceviValutazione",method = RequestMethod.POST)
-	public @ResponseBody String riceviValutazione(String valutazione, String idInserzione, Principal principal) {
+	@RequestMapping(value = "/valutazione/riceviValutazione", method = RequestMethod.POST)
+	public @ResponseBody String riceviValutazione(String idInserzione, String valutazione, Principal principal) {
+		System.out.println("VALUTAZIONE "+valutazione);
+		if(!dati.getInserzioni().containsKey(Integer.parseInt(idInserzione)))
+			throw new RuntimeException("ID Inserzione non valido: " + idInserzione);
 		
-		Inserzione inserzione = dati.getInserzioni().get(new Integer(idInserzione));
+		Inserzione inserzione = dati.getInserzioni().get(Integer.parseInt(idInserzione));
+		
+		for(ValutazioneInserzione vi : (Set<ValutazioneInserzione>) inserzione.getValutazioneInserziones())		
+			if(vi.getUtenteByIdUtenteValutatore().getMail().equals(principal.getName()))
+				return "Error-gia-valutato";
+		
+		if("+1".equals(valutazione))
+			dati.inserimentoValutazioneInserzione(inserzione, inserzione.getUtente(), dati.getUtenti().get(principal.getName()), 1, new Date());
+		else
+			dati.inserimentoValutazioneInserzione(inserzione, inserzione.getUtente(), dati.getUtenti().get(principal.getName()), -1, new Date());
+		
+		return idInserzione + "_@_" + valutazione;
+		
+		/*
 		boolean trovato = false;
 		if(inserzione != null) {			
-			for(ValutazioneInserzione vi : (Set<ValutazioneInserzione>)inserzione.getValutazioneInserziones()) {				
+			for(ValutazioneInserzione vi : (Set<ValutazioneInserzione>) inserzione.getValutazioneInserziones()) {				
 				if(vi.getUtenteByIdUtenteValutatore().getMail().equals(principal.getName())) {
 					trovato = true;
 					break;
 				}				
-			}			
+			}		
 			if(!trovato) {
 				if("corretta".equals(valutazione)) {
-					dati.inserimentoValutazioneInserzione(inserzione,inserzione.getUtente(), dati.getUtenti().get(principal.getName()),1, new Date());
+					dati.inserimentoValutazioneInserzione(inserzione, inserzione.getUtente(), dati.getUtenti().get(principal.getName()), 1, new Date());
 					return "ok";
 				}
 				if("errata".equals(valutazione)) {
@@ -75,8 +94,9 @@ public class ValutazioneController {
 			}
 		}
 		return "errore";
+		*/
 	}
-	
+	/*
 	
 	@RequestMapping(value="/valutazione/getInserzioni",method = RequestMethod.GET,consumes="application/json")
 	public @ResponseBody ArrayNode getInserzioni(String lat,String lng,Principal principal){
@@ -190,5 +210,5 @@ public class ValutazioneController {
 
 	    return new Float(dist).floatValue();
 	 }
-
+*/
 }
