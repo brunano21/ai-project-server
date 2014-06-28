@@ -49,8 +49,6 @@ public class AndroidLoginController {
 		jsonObj.put("numero_valutazioni_totali", profilo.getNumeroValutazioniTotali());
 		jsonObj.put("numero_valutazioni_positive", profilo.getNumeroValutazioniPositive());
 
-
-
 		int inserzioniPendentiCounter = 0;
 		// ricerca delle inserzioni ancora in corso
 		for(Iterator<Inserzione> iter =  utente.getInserziones().iterator(); iter.hasNext(); ) {
