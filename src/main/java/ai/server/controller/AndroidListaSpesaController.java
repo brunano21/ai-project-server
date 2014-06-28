@@ -150,6 +150,8 @@ public class AndroidListaSpesaController {
 		case "eliminaListaDesideri":
 			System.out.println(request.getParameter("id_lista_desideri"));
 			dati.eliminaListaDesideri(Integer.parseInt(request.getParameter("id_lista_desideri")), Dati.getInstance().getUtenti().get(principal.getName()));
+			response = new JSONArray();
+			response.add(request.getParameter("posizione_item"));
 			break;
 			
 		case "eliminaElemento":
