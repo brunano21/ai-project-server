@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import java.security.Principal;
@@ -32,6 +33,13 @@ public class ListaSpesaController {
 
 	public void setDati(Dati dati){
 		this.dati=dati;
+	}
+	
+	@Autowired
+	private ServletContext context;
+
+	public void setServletContext(ServletContext context){
+		this.context = context;
 	}
 
 	@RequestMapping(value="/todolist", method = RequestMethod.GET)

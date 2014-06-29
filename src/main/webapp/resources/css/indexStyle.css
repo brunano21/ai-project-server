@@ -1059,3 +1059,35 @@ div.fakefile > input {
 }
 
 /* END TOOLTIP CUSTOMIZATION */
+
+/* START ABOUT PAGE */
+.aboutContainer { 
+	padding: 15px;
+	text-align: center;
+}
+
+.aboutContainer div:first-child { 
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.aboutContainer div:last-child { 
+	margin-top: 20px;
+}
+
+.aboutContainer div:last-child li{ 
+	line-height: 1.5em;
+}
+
+#logoPolito {
+	height: 450px;
+	width: 450px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 20px;
+	margin-top: 20px;
+}
+/* END ABOUT PAGE */
+
+
+
+

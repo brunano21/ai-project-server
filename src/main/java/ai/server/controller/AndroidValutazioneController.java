@@ -5,7 +5,6 @@ import hibernate.Inserzione;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
@@ -13,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
@@ -29,6 +29,13 @@ import dati.Dati;
 @Controller
 public class AndroidValutazioneController {
 
+	@Autowired
+	private ServletContext context;
+
+	public void setServletContext(ServletContext context){
+		this.context = context;
+	}
+	
 	@Autowired
 	private Dati dati;
 
@@ -65,7 +72,7 @@ public class AndroidValutazioneController {
 			String imageDataString = null; 
 			try {
 				
-				BufferedImage originalImage = ImageIO.read(new File(inserzione.getFoto()));
+				BufferedImage originalImage = ImageIO.read(new File(context.getRealPath("/") + inserzione.getFoto()));
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				ImageIO.write( originalImage, "jpg", baos);
 				baos.flush();
@@ -93,6 +100,7 @@ public class AndroidValutazioneController {
 			jsonObj.put("foto", imageDataString);
 			response.add(jsonObj);
 		}
+		
 		System.out.println("JSONARRAY " + response.size());
 		return response;
 	}

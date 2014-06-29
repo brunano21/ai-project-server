@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
@@ -27,6 +28,13 @@ import dati.Dati;
 
 @Controller
 public class AndroidLeMieInserzioniController {
+	
+	@Autowired
+	private ServletContext context;
+
+	public void setServletContext(ServletContext context){
+		this.context = context;
+	}
 	
 	@Autowired
 	private Dati dati;
@@ -68,7 +76,7 @@ public class AndroidLeMieInserzioniController {
 			
 			String imageDataString = null; 
 			try {
-				BufferedImage originalImage = ImageIO.read(new File(inserzione.getFoto()));
+				BufferedImage originalImage = ImageIO.read(new File(context.getRealPath("/") + inserzione.getFoto()));
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				ImageIO.write(originalImage, "jpg", baos);
 				baos.flush();
@@ -81,7 +89,6 @@ public class AndroidLeMieInserzioniController {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
-				System.out.println(inserzione.getIdInserzione()+ " -- " + inserzione.getFoto());
 				e.printStackTrace();
 			}
 

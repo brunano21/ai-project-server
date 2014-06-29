@@ -76,7 +76,7 @@ public class AndroidInScadenzaController {
 			String imageDataString = null; 
 			try {
 
-				BufferedImage originalImage = ImageIO.read(new File(inserzione.getFoto()));
+				BufferedImage originalImage = ImageIO.read(new File(context.getRealPath("/") + inserzione.getFoto()));
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				ImageIO.write( originalImage, "jpg", baos);
 				baos.flush();
@@ -88,7 +88,6 @@ public class AndroidInScadenzaController {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
-				System.out.println(inserzione.getIdInserzione()+ " -- " + inserzione.getFoto());
 				e.printStackTrace();
 			}
 

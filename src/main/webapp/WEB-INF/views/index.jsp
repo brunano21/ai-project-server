@@ -236,7 +236,20 @@
     //function getStatistichePage() {};
     //function getPremiumPage() {};
 
-    function getAboutPage() {};
+    function getAboutPage() {
+    	$("#header-nav-container").find(".current-menu-item").removeClass("current-menu-item");
+    	$("#about-menu-item").addClass("current-menu-item");
+    	
+        $.ajax({
+	    	url:"./about", 
+	        type: 'GET', 
+	        async: true, 
+	        success: function(returnedData, textStatus, jqXHR) {
+	        	$(".post").children().hide();
+				$(".post").html(returnedData);
+	        }      
+    });
+        };
 </script>
 
 <script type="text/javascript">
@@ -420,7 +433,7 @@
                             </ul>
                         </li>
 						<li id="about-menu-item" class="menu-item">
-                            <a href="#">About</a>
+                            <a href="javascript:void(0);" onclick="getAboutPage();">About</a>
                         </li>
                     </ul>	
                     <!-- End Navigation Menu -->

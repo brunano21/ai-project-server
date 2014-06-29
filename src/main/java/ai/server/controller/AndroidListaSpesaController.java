@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
@@ -32,6 +33,14 @@ import dati.Dati;
 
 @Controller
 public class AndroidListaSpesaController {
+	
+	@Autowired
+	private ServletContext context;
+
+	public void setServletContext(ServletContext context){
+		this.context = context;
+	}
+	
 	@Autowired
 	private Dati dati;
 
@@ -96,7 +105,6 @@ public class AndroidListaSpesaController {
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
-						System.out.println(listaDesideriProdotto.getInserzione().getIdInserzione()+ " -- " + listaDesideriProdotto.getInserzione().getFoto());
 						e.printStackTrace();
 					}
 					
@@ -204,7 +212,7 @@ public class AndroidListaSpesaController {
 					imageDataString1 = null;
 					try {
 						
-						BufferedImage originalImage = ImageIO.read(new File(inserzioniMapTmp1.get(idInserzione).getFoto()));
+						BufferedImage originalImage = ImageIO.read(new File(context.getRealPath("/") + inserzioniMapTmp1.get(idInserzione).getFoto()));
 						ByteArrayOutputStream baos = new ByteArrayOutputStream();
 						ImageIO.write( originalImage, "jpg", baos);
 						baos.flush();
@@ -215,7 +223,6 @@ public class AndroidListaSpesaController {
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
-						System.out.println(inserzioniMapTmp1.get(idInserzione).getIdInserzione()+ " -- " + inserzioniMapTmp1.get(idInserzione).getFoto());
 						e.printStackTrace();
 					}
 					suggerimentoJsonObj1 = new JSONObject();

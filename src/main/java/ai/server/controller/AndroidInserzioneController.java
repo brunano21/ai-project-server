@@ -76,7 +76,7 @@ public class AndroidInserzioneController {
 		System.out.println("\n");
 		boolean modificaInserzione = false;
 		int hashcode = new Long(request.getParameter("codiceBarre")).hashCode()*principal.getName().hashCode()*request.getParameter("data_inizio").hashCode()*request.getParameter("data_fine").hashCode();
-		String percorsoFoto = context.getRealPath("/")+"resources\\images"+File.separator+Integer.toString(hashcode)+".png";
+		String percorsoFoto = "resources\\images"+File.separator+Integer.toString(hashcode)+".png";
 
 		if(request.getParameter("modificaInserzione") != null && Boolean.valueOf(request.getParameter("modificaInserzione")) == true)
 			modificaInserzione = true;
@@ -133,7 +133,7 @@ public class AndroidInserzioneController {
 		byte[] imageByteArray = Base64.decodeBase64(request.getParameter("foto").getBytes());
 		FileOutputStream imageOutFile;
 		try {
-			imageOutFile = new FileOutputStream(percorsoFoto);
+			imageOutFile = new FileOutputStream(context.getRealPath("/") + percorsoFoto);
 			imageOutFile.write(imageByteArray);
 			imageOutFile.close();
 		} catch (FileNotFoundException e) {
@@ -266,7 +266,7 @@ public class AndroidInserzioneController {
 		String imageDataString = null; 
 		try {
 
-			BufferedImage originalImage = ImageIO.read(new File(inserzione.getFoto()));
+			BufferedImage originalImage = ImageIO.read(new File(context.getRealPath("/") + inserzione.getFoto()));
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ImageIO.write( originalImage, "jpg", baos);
 			baos.flush();
@@ -278,7 +278,6 @@ public class AndroidInserzioneController {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println(inserzione.getIdInserzione()+ " -- " + inserzione.getFoto());
 			e.printStackTrace();
 		}
 

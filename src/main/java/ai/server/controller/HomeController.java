@@ -49,4 +49,9 @@ public class HomeController {
 		return new ModelAndView("suggerimentoSingolo");
 	}
 	
+	@RequestMapping(value="/about", method=RequestMethod.GET)
+	public ModelAndView getAboutPage(HttpServletRequest request, Principal principal) {
+		return new ModelAndView("about");
+	}
+	
 }

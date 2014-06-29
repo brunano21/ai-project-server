@@ -43,7 +43,7 @@
          <span><i class="fa fa-clock-o"></i><% inserzione.getDataFine(); %></span>
      </div>
      <div class="featured-image">
-         <img src="<% inserzione.getFoto(); %>"  />
+         <img src="<%= inserzione.getFoto() %>"  />
      </div>
      <div class="post-margin"><i class="fa fa-map-marker"></i><% System.out.print(supermercato); %></div>
 <div class="post-margin"><i class="fa fa-eur"></i><% inserzione.getPrezzo(); %></div>
