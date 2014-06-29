@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -68,12 +69,6 @@ public class AndroidInScadenzaController {
 		System.out.println("Called: /android/inscadenza/getInserzioneById - " + idInserzioneListString);
 		JSONArray response = new JSONArray();
 
-		//		try {
-		//			Thread.sleep(1500);
-		//		} catch (InterruptedException e1) {
-		//			e1.printStackTrace();
-		//		}
-
 		for (String id : idInserzioneListString.split(",")) {
 			JSONObject jsonObj = new JSONObject();
 			Inserzione inserzione = dati.getInserzioni().get(Integer.valueOf(id));
@@ -99,7 +94,7 @@ public class AndroidInScadenzaController {
 
 			jsonObj.put("id", inserzione.getIdInserzione());
 			jsonObj.put("prezzo", inserzione.getPrezzo());
-			jsonObj.put("data_fine", inserzione.getDataFine().toString());
+			jsonObj.put("data_fine", (new SimpleDateFormat("yyyy-MM-dd")).format(inserzione.getDataFine()));
 			jsonObj.put("descrizione", inserzione.getProdotto().getDescrizione());
 			jsonObj.put("supermercato", inserzione.getSupermercato().getNome());
 			jsonObj.put("supermercato_indirizzo", inserzione.getSupermercato().getIndirizzo() + ", " + inserzione.getSupermercato().getComune() + " (" + inserzione.getSupermercato().getProvincia() + ")");
@@ -113,7 +108,7 @@ public class AndroidInScadenzaController {
 					System.out.println("Searching in lista desideri con nome = " + ld.getNomeListaDesideri() );
 					for(Iterator<ListaDesideriProdotti> iter1 = ld.getListaDesideriProdottis().iterator(); iter1.hasNext(); ) {
 						ListaDesideriProdotti ldp = iter1.next();
-						if(ldp.getInserzione().getIdInserzione() != null && ldp.getInserzione().getIdInserzione() == inserzione.getIdInserzione()) {
+						if(ldp.getInserzione() != null && ldp.getInserzione().getIdInserzione() == inserzione.getIdInserzione()) {
 							System.out.println("trovato " + ldp.getId().getIdElemento() + " in riferimento all'idInserzione = " + ldp.getInserzione().getIdInserzione());
 							jsonObj.put("nome_todolist", ld.getNomeListaDesideri());
 							break outerloop;

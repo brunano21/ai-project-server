@@ -62,8 +62,8 @@ public class AndroidLeMieInserzioniController {
 			jsonObj.put("categoria", inserzione.getProdotto().getSottocategoria().getCategoria().getNome());
 			jsonObj.put("sottocategoria", inserzione.getProdotto().getSottocategoria().getNome());
 			jsonObj.put("prezzo", inserzione.getPrezzo().toString());
-			jsonObj.put("data_inizio", (new SimpleDateFormat("yyyy/MM/dd")).format(inserzione.getDataInizio()));
-			jsonObj.put("data_fine", (new SimpleDateFormat("yyyy/MM/dd")).format(inserzione.getDataFine()));
+			jsonObj.put("data_inizio", (new SimpleDateFormat("yyyy-MM-dd")).format(inserzione.getDataInizio()));
+			jsonObj.put("data_fine", (new SimpleDateFormat("yyyy-MM-dd")).format(inserzione.getDataFine()));
 			jsonObj.put("descrizione", inserzione.getDescrizione());
 			
 			String imageDataString = null; 

@@ -69,7 +69,7 @@ public class AndroidRegisterController {
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 			System.out.println(e.getStackTrace());
-			jsonObj.put("status", false);
+			jsonObj.put("registration_result", false);
 			errorsMap.put("database",  e.getMessage());
 			jsonObj.put("errors", errorsMap);
 			response.add(jsonObj);

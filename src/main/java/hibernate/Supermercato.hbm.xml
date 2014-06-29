@@ -26,7 +26,7 @@
         <property name="longitudine" type="float">
             <column name="Longitudine" precision="12" scale="0" not-null="true" />
         </property>
-        <set name="inserziones" table="inserzione" inverse="true" lazy="true" fetch="select">
+        <set name="inserziones" table="inserzione" inverse="true" lazy="false" fetch="select">
             <key>
                 <column name="ID_Supermercato" />
             </key>
