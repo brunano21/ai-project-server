@@ -1,0 +1,32 @@
+#converti-crediti-container {
+	max-width: 94%;
+	height: 943px;
+}
+
+.buono-spesa-post-titolo {
+	margin-bottom: 30px;
+}
+
+.buono-spesa-item {
+	width: 100%;
+	height: 200px;
+	padding: 20px;
+}
+
+.buono-spesa-img-box {
+	float: left;
+	height: 90%;
+	width: 40%;
+	border: 1px solid;
+	padding: 5px;
+}
+
+.buono-spesa-img-box img {
+	height: 100%;
+	width: 100%
+}
+
+.buono-spesa-post-box {
+	float: right;
+	width: 55%;
+}
