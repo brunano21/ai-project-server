@@ -35,17 +35,20 @@ var inviaValutazione_suggerimento = function() {
 				"valutazione" : $(this).text()
 				},
 			success : function(data) {
-				if(data != "Error-gia-valutato") {
-					$(".valutazione-box >.valutazione-negativa").unbind();
-					$(".valutazione-box >.valutazione-positiva").unbind();
+				console.log(data);
+				if(data.split("_@_")[0] != "Error-gia-valutato") {
+					$("#suggerimento_valutazione_" + data.split("_@_")[0] + " > .valutazione-box >.valutazione-negativa").unbind();
+					$("#suggerimento_valutazione_" + data.split("_@_")[0] + " > .valutazione-box >.valutazione-positiva").unbind();
 					
-					if((data+"").split("_@_")[1] == "-1")
+					if(data.split("_@_")[1] == "-1")
 						$(".etichetta-votato").css("background-color", "#FF2F2F");
 					
-					$(".etichetta-votato").fadeIn();
+					$("#suggerimento_valutazione_" + data.split("_@_")[0] + " > .etichetta-votato").fadeIn();
+					$("#suggerimento_valutazione_" + data.split("_@_")[0] + " > .valutazione-box >.valutazione-negativa").css("background-color", "#A59F9F");
+					$("#suggerimento_valutazione_" + data.split("_@_")[0] + " > .valutazione-box >.valutazione-positiva").css("background-color", "#A59F9F");
 				}
-				$(".valutazione-box >.valutazione-negativa").css("background-color", "#A59F9F");
-				$(".valutazione-box >.valutazione-positiva").css("background-color", "#A59F9F");
+				$("#suggerimento_valutazione_" + data.split("_@_")[1] + " > .valutazione-box >.valutazione-negativa").css("background-color", "#A59F9F");
+				$("#suggerimento_valutazione_" + data.split("_@_")[1] + " > .valutazione-box >.valutazione-positiva").css("background-color", "#A59F9F");
 				
 				setTimeout(function() {
 					$("#overlayPanel").children().hide();
@@ -77,6 +80,8 @@ var invia_nuovo_elemento = function() {
         data: jsonData,
         dataType: "html",
         success : function(data) {
+        	var parsedData = JSON.parse(data);
+        	
         	setTimeout(function() {
 				$("#overlayPanel").children().hide();
 				$("#overlayPanel").hide();
@@ -85,8 +90,8 @@ var invia_nuovo_elemento = function() {
         	jsonData = {};
         	jsonData = {
                     'cmd' : 'aggiungiIDInserzione',
-                    'idListaDesideri' : data['infoElemento']['ID_ListaDesideri'],
-                    'idElemento' : data['infoElemento']['ID_Elemento'],
+                    'idListaDesideri' : parsedData['infoElemento']['ID_ListaDesideri'],
+                    'idElemento' : parsedData['infoElemento']['ID_Elemento'],
                     'idInserzione' : ($("#suggerimento-singolo-box .slider-item").attr("id")+"").split("_")[2]
                 };
         	$.ajax({

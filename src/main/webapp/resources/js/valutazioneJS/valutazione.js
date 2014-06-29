@@ -7,7 +7,8 @@ var inviaValutazione = function() {
 				"valutazione" : $(this).text()
 				},
 			success : function(data) {
-				if(data != "Error-gia-valutato") {
+				console.log("Ricevuta valutazione risposta " + data);
+				if(data.split("_@_")[0] != "Error-gia-valutato") {
 					$("#valutazione_" + data.split("_@_")[0] + " >.valutazione-box >.valutazione-negativa").unbind();
 					$("#valutazione_" + data.split("_@_")[0] + " >.valutazione-box >.valutazione-positiva").unbind();
 					
@@ -15,9 +16,12 @@ var inviaValutazione = function() {
 						$("#valutazione_" + data.split("_@_")[0] + " >.etichetta-votato").css("background-color", "#FF2F2F");
 					
 					$("#valutazione_" + data.split("_@_")[0] + " >.etichetta-votato").fadeIn();
+					$("#valutazione_" + data.split("_@_")[0] + " >.valutazione-box >.valutazione-negativa").css("background-color", "#A59F9F");
+					$("#valutazione_" + data.split("_@_")[0] + " >.valutazione-box >.valutazione-positiva").css("background-color", "#A59F9F");
+					return;
 				}
-				$("#valutazione_" + data.split("_@_")[0] + " >.valutazione-box >.valutazione-negativa").css("background-color", "#A59F9F");
-				$("#valutazione_" + data.split("_@_")[0] + " >.valutazione-box >.valutazione-positiva").css("background-color", "#A59F9F");
+				$("#valutazione_" + data.split("_@_")[1] + " >.valutazione-box >.valutazione-negativa").css("background-color", "#A59F9F");
+				$("#valutazione_" + data.split("_@_")[1] + " >.valutazione-box >.valutazione-positiva").css("background-color", "#A59F9F");
 			}
 	});	
 };

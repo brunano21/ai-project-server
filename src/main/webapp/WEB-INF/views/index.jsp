@@ -24,24 +24,20 @@
 <link rel="stylesheet" id="mainstyle-css" href="<c:url value="resources/css/indexStyle.css" />" type="text/css" media="all">
 <link rel="stylesheet" id="select-css" href="<c:url value="resources/css/select-theme-default.css" />" >
 <link rel="stylesheet" id="color-scheme-css" href="<c:url value="resources/css/color/green.css" />" media="all">
-
 <link rel="stylesheet" id="jquery-ui-css" href="<c:url value="resources/css/ui-lightness/jquery-ui-1.10.4.custom.min.css" />" media="all">
 <link rel="stylesheet" id="jquery-ui-css-min" href="<c:url value="resources/css/jquery-ui-1.11.0/jquery-ui.min.css" />" media="all">
-
 <link rel="stylesheet" id="todolistStyle-css" href="<c:url value="resources/css/todolistStyle.css" />">
 <link rel="stylesheet" id="tooltipster-css" href="<c:url value="resources/css/tooltipster/tooltipster.css" />">
 <link rel="stylesheet" id="tooltipster-light-css" href="<c:url value="resources/css/tooltipster/themes/tooltipster-light.css" />">
 <link rel="stylesheet" id="bxslider-css" href="<c:url value="resources/css/bxslider/jquery.bxslider.css" />">
 <link rel="stylesheet" id="valutazioneStyle-css" href="<c:url value="resources/css/valutazioneStyle.css" />">
+<link rel="stylesheet" id="convertiCreditiStyle-css" href="<c:url value="resources/css/convertiCreditiStyle.css" />">
 
 <!-- <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-1.10.2.min.js" />" ></script> -->
 <script type="text/javascript" src="<c:url value="resources/js/jquery-1.11.1.min.js" />" ></script>
-
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-migrate.min.js" />" ></script>
-
 <!-- <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-ui-1.10.4.custom.min.js" />" ></script> -->
 <script type="text/javascript" src="<c:url value="resources/js/jquery-ui-1.11.0/jquery-ui.min.js" />" ></script>
-
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.ui.datepicker-it.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.color-2.1.2.min.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.carouFredSel-6.2.1-packed.js" />" ></script>
@@ -81,11 +77,11 @@
     };
     
     function getHomePage() {
-    	//TODO inserire redirezione alla home page
+    	$("#header-nav-container").find(".current-menu-item").removeClass("current-menu-item");
+    	$("#home-menu-item").addClass("current-menu-item");
     	
-    	/*
     	$.ajax({
-        	url:"./", 
+        	url:"./home", 
             type: 'GET', 
                 async: true,
                 success: function(returnedData) {
@@ -93,7 +89,6 @@
     				$(".post").html(returnedData);
                 }
         });
-    	*/
     }
 
     function sendLogin() {
@@ -182,7 +177,7 @@
     	$.ajax({
         	url:"./inserzione", 
             type: 'GET', 
-            async: false, 
+            async: true, 
             success: function(returnedData, textStatus, jqXHR) {         
 				$(".post").children().hide();
 				$(".post").html(returnedData);
@@ -197,7 +192,7 @@
     	$.ajax({
         	url:"./valutazione", 
             type: 'GET', 
-            async: false,
+            async: true,
             data: {
             	'latitudine' : userPosition.coords.latitude,
                 'longitudine' : userPosition.coords.longitude
@@ -216,22 +211,34 @@
     	$.ajax({
         	url:"./todolist", 
             type: 'GET', 
-            async: false, 
+            async: true, 
             success: function(returnedData, textStatus, jqXHR) {
-            	
             	$('#garbage').html(returnedData);
             	$(".post").children().hide();
             	$('#garbage >.todolistContainer').appendTo('.post');
-            	
-            	console.log(returnedData);
-				//$(".post").children().hide();
-				//$(".post").html(returnedData);
-            }      
+            }
         });
     };
-    //function getInScadenzaPage() {};
     
-    function getMiglioriAffariPage() {};
+    //function getInScadenzaPage() {};
+    //function getMiglioriAffariPage() {};
+    
+    function getRiscattaCreditiPage() {
+    	$("#header-nav-container").find(".current-menu-item").removeClass("current-menu-item");
+    	$("#account-menu-item").addClass("current-menu-item");
+    	
+    	$.ajax({
+        	url:"./convertiCrediti", 
+            type: 'GET', 
+            async: true, 
+            success: function(returnedData, textStatus, jqXHR) {
+            	console.log(returnedData);
+				$(".post").children().hide();
+				$(".post").html(returnedData);
+            }
+    	});
+    }
+    
     //function getModificaAccountPage() {};
     //function getStatistichePage() {};
     //function getPremiumPage() {};
@@ -427,9 +434,8 @@
                         <li id="account-menu-item" class="menu-item">
                             <a href="#">Account</a>
                             <ul class="sub-menu">
-                                <li class="menu-item"><a href="#">Modifica</a></li>
-                                <li class="menu-item"><a href="#">Statistiche</a></li>
                                 <li class="menu-item"><a href="#">Premium</a></li>
+                                <li class="menu-item"><a href="javascript:void(0);" onclick="getRiscattaCreditiPage();">Usa Crediti</a></li>
                             </ul>
                         </li>
 						<li id="about-menu-item" class="menu-item">
@@ -457,8 +463,23 @@
         	    <!-- Start Post Item -->
                 <div class="post">
 	                <div id="home" class="homeContainer" >
-		                <h1>BENVENUTO</h1>
-		                <h1>Sig. Malnati!!</h1>
+		                <h2>Benvenuto su CLEVER BUY!</h2>
+		                <div>
+			                Trova le offerte migliori e segnala i prodotti più convenienti.
+			                Potrai guadagnare tanti crediti e risparmiare ancora di più.
+			                <br><br>
+			                
+			                Clever Buy è pensata per gli amanti dello shopping e del risparmio.
+			                Potrai creare le tue liste dei desideri, durante la compilazione il sistema ti suggerirà i prodotti disponibili intorno a te al prezzo migliore.
+			                <br><br>
+			                
+			                Consulta le tue liste usando la nostra applicazione Android, è semplice, utile e GRATUITA.
+			                <br><br>
+			                
+			                Inserisci le tue inserzioni o valuta quelle che ti sono state utili, puoi guadagnare tanti crediti e ricevere buoni sconto o effettuare l'upgrade del tuo account.
+			                La versione PREMIUM offre funzionalità di ricerca avanzate, statistiche sui prodotti e tanto altro ancora...
+		                </div>
+		                <h2>ISCRIVITI SUBITO... è GRATIS!</h2>
 	                </div>
                 </div>
                 <div class="clear"></div>
