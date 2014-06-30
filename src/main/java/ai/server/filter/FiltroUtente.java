@@ -13,6 +13,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.ApplicationContext;
@@ -50,11 +51,19 @@ public class FiltroUtente implements Filter {
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		// TODO Auto-generated method stub
-		// place your code here
+		System.out.println("FILTRO UTENTE");
+		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		HttpServletResponse resp = (HttpServletResponse) response;
-		if(auth.getName() != "anonymousUser"){
+		HttpServletRequest req = (HttpServletRequest) request;
+		/*
+		if(req.getRequestedSessionId() != null && req.isRequestedSessionIdValid()) {
+			System.out.println(req.getRequestedSessionId());
+			System.out.println("Valida: " + req.isRequestedSessionIdValid());
+			request.getRequestDispatcher("/WEB-INF/views/userlogged.jsp");
+		}*/
+		
+		if(auth.getName() != "anonymousUser") {
 			if(dati != null){
 				Utente utente = dati.getUtenti().get(auth.getName());
 				Profilo profilo = null;
@@ -63,7 +72,8 @@ public class FiltroUtente implements Filter {
 					break;
 				}
 				
-				if(profilo.getReputazione() < 0){
+				if(profilo.getReputazione() <= 0) {
+					System.out.println("FILTRO UTENTE getReputazione() <= 0");
 					request.setAttribute("dati", dati);
 					request.setAttribute("error", "Non hai i requisiti per andare in quella pagina");
 					request.getRequestDispatcher("/WEB-INF/views/home.jsp").forward(request, response);
@@ -71,7 +81,6 @@ public class FiltroUtente implements Filter {
 			}
 		}
 		chain.doFilter(request, response);
-		// pass the request along the filter chain
 	}
 
 	/**

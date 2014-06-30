@@ -106,10 +106,6 @@ function getSuggerimentoSingolo(_this) {
 </div>
 
 <script type="text/javascript">
-/*
- *Indicates which easing function to use for the transition. jQuery defaults: "linear" and "swing", built in: "quadratic", "cubic" and "elastic". 
- 
- */
 	var startCarousels = function() {
 		
 		$('#carousel-list-evaluation').carouFredSel({

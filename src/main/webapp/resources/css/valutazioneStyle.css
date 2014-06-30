@@ -76,6 +76,9 @@
 	padding: 5px;
 	padding-top: 0px;
 	text-align: center;
+	overflow: hidden;
+	height: 22px;
+	max-width: 100%;
 }
 
 .slider-item .prezzo-box {
@@ -87,7 +90,7 @@
 .slider-item .valutazione-box {
 	text-align: center;
 	height: 38px;
-	margin-top: 13px;
+	margin-top: 5px;
 }
 
 .slider-item .valutazione-box .valutazione-negativa {

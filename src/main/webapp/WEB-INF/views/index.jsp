@@ -49,7 +49,6 @@
 <script type="text/javascript" src="<c:url value="resources/js/valutazioneJS/bxslider/jquery.bxslider.min.js" />"></script>
 <script type="text/javascript" src="<c:url value="resources/js/valutazioneJS/valutazione.js" />"></script>
 
-
 <script src="https://www.google.com/jsapi" type="text/javascript"></script>
 <script type="text/javascript">
     google.load('search', '1');
@@ -425,12 +424,14 @@
                         </li>
 
                         <li id="liste-menu-item" class="menu-item"> <a href="javascript:void(0);" onclick="getLeTueListePage();">Le tue liste</a> </li>
+                        <!-- 
                         <li id="scadenza-menu-item" class="menu-item">
                             <a href="#">In scadenza</a>
                         </li>
                         <li id="affari-menu-item" class="menu-item">
                             <a href="#">I migliori affari</a>
                         </li>
+                        -->
                         <li id="account-menu-item" class="menu-item">
                             <a href="#">Account</a>
                             <ul class="sub-menu">

@@ -18,6 +18,12 @@ var inviaValutazione = function() {
 					$("#valutazione_" + data.split("_@_")[0] + " >.etichetta-votato").fadeIn();
 					$("#valutazione_" + data.split("_@_")[0] + " >.valutazione-box >.valutazione-negativa").css("background-color", "#A59F9F");
 					$("#valutazione_" + data.split("_@_")[0] + " >.valutazione-box >.valutazione-positiva").css("background-color", "#A59F9F");
+					
+					$("#incrementoCrediti").text("+2").fadeIn();
+					setTimeout(function() {
+						$("#incrementoCrediti").text("").fadeOut();
+					}, 2000);
+					
 					return;
 				}
 				$("#valutazione_" + data.split("_@_")[1] + " >.valutazione-box >.valutazione-negativa").css("background-color", "#A59F9F");

@@ -5,7 +5,7 @@
 	<h4>Bentornato, ${username}!</h4>
 	<div>
 		<p>Reputazione: ${reputazione}</p>
-		<p>Crediti Pendenti: ${creditiPendenti}</p>
+		<p>Crediti Pendenti: ${creditiPendenti}</p><p id="incrementoCrediti" style="color: red; font-size: medium;"></p>
 		<p>Crediti Acquisiti: ${creditiAcquisiti}</p>
 	</div>
 	<input type="submit" id="logout" class="genericBtn" value="Logout">
