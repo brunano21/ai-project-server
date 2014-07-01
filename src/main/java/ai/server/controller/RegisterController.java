@@ -2,28 +2,21 @@ package ai.server.controller;
 
 import hibernate.Utente;
 
+import java.sql.SQLException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-
-
-
-
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.mobile.device.Device;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.mobile.device.Device;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,15 +48,9 @@ public class RegisterController {
 	public String showForm(Model model, Device device){
 		
 		String pagina = "register";
-		
-//		if(device.isMobile()){
-//			System.out.println("questo è uno smartphone");
-//		}
-		
-//		if(device.isNormal()){
+
 			Registration registration = new Registration();
-			model.addAttribute("registration", registration);	
-//		}
+			model.addAttribute("registration", registration);			
 		return pagina;
 	}
 	
@@ -82,11 +69,23 @@ public class RegisterController {
 		}
 		try{
 			dati.inserisciUtente(registration.getEmail(), registration.getUserName(), registration.getPassword(), new Date(), numerocasuale);
+			
+		}
+		catch(ConstraintViolationException e1) {
+			System.out.println(e1.getSQLException().getLocalizedMessage());
+			
+			return;
+			
 		}catch(Exception e){
 			System.out.println(e.getMessage());
-			System.out.println(e.getStackTrace());
+			String err = e.getMessage();
 			response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
-			response.setHeader("database", e.getMessage());
+			if(err.toLowerCase().contains("mail_unique"))
+				response.setHeader("email", "Indirizzo email gia' presente nel sistema");
+			
+			if(err.toLowerCase().contains("nickname_unique")) 
+				response.setHeader("userName", "Username gia' presente nel sistema");
+			
 			return;
 		}
 		

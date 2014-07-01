@@ -38,6 +38,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 import org.springframework.context.annotation.Scope;
@@ -389,7 +391,6 @@ public class Dati {
 			idInserzione=(Integer)session.save(inserzione);
 
 			if(argomenti != null && valori != null) {
-
 				Iterator<Argomenti> itArgomenti = argomenti.iterator();
 				Iterator<String> itValori = valori.iterator();
 				Argomenti a = null;
@@ -407,21 +408,21 @@ public class Dati {
 					if(!salvataggioArgomentiInserzione)
 						salvataggioArgomentiInserzione = true;
 				}
+				inserzione.setArgomentiInserziones(argomentiInserzioneSalvati);
 			}
-			inserzione.setArgomentiInserziones(argomentiInserzioneSalvati);
 			session.update(inserzione);
 			mappaInserzioni.put(idInserzione,inserzione);			
 			mappaUtente.get(utente.getMail()).getInserziones().add(inserzione);
 			mappaSupermercati.get(supermercato.getIdSupermercato()).getInserziones().add(inserzione);
 			mappaProdotti.get(prodotto.getCodiceBarre()).getInserziones().add(inserzione);
-			
+
 			// Aggiugo all'utente i crediti pendenti che gli spettano dall'inserimento dell'inserzione, ossia +10
 			Profilo profilo = (Profilo) utente.getProfilos().iterator().next();
 			profilo.setCreditiPendenti(profilo.getCreditiPendenti() + 10);
 			session.update(profilo);
 			mappaProfili.put(profilo.getIdProfilo(), profilo);
 			mappaUtente.get(utente.getMail()).getProfilos().add(profilo);
-			
+
 			tx.commit();
 		}catch(Throwable ex){
 			if(tx!=null)
@@ -523,7 +524,7 @@ public class Dati {
 				mappaUtente.get(inserzioneVecchia.getUtente().getMail()).getInserziones().remove(inserzioneVecchia);
 				mappaUtente.get(utente.getMail()).getInserziones().add(inserzioneVecchia);
 			}*/
-			
+
 			if(!supermercato.equals(inserzioneVecchia.getSupermercato())){				
 				inserzioneVecchia.setSupermercato(supermercato);
 				mappaSupermercati.get(inserzioneVecchia.getSupermercato().getIdSupermercato()).getInserziones().remove(inserzioneVecchia);
@@ -534,7 +535,7 @@ public class Dati {
 				mappaProdotti.get(inserzioneVecchia.getProdotto().getCodiceBarre()).getInserziones().remove(inserzioneVecchia);
 				mappaProdotti.get(prodotto.getCodiceBarre()).getInserziones().add(inserzioneVecchia);		
 			}
-			
+
 			// added by bruno
 			mappaInserzioni.put(idInserzione,inserzione);
 
@@ -645,7 +646,7 @@ public class Dati {
 	public void inserisciListaDesideri(int idListaDesideri, Utente utente, String nomeListaDesideri) {
 		if(idListaDesideri == 0 || utente == null || nomeListaDesideri == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -655,7 +656,7 @@ public class Dati {
 			session.save(listaDesideri);
 			mappaListaDesideri.put(idListaDesideri, listaDesideri);
 			mappaUtente.get(utente.getMail()).getListaDesideris().add(listaDesideri);
-			
+
 			tx.commit();
 		} catch(Throwable ex) {
 			if(tx != null) {
@@ -678,7 +679,7 @@ public class Dati {
 	public void modificaNomeListaDesideri(int idListaDesideri, Utente utente, String nuovoNomeListaDesideri) {
 		if(idListaDesideri == 0 || utente == null || nuovoNomeListaDesideri == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -704,7 +705,7 @@ public class Dati {
 				ld.setNomeListaDesideri(nuovoNomeListaDesideri);
 				break;
 			}
-			
+
 			tx.commit();
 		} catch(Throwable ex) {
 			if(tx != null) {
@@ -726,7 +727,7 @@ public class Dati {
 	public void eliminaListaDesideri(int idListaDesideri, Utente utente) {
 		if(idListaDesideri == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -753,7 +754,7 @@ public class Dati {
 
 			mappaUtente.get(utente.getMail()).getListaDesideris().remove(mappaListaDesideri.get(idListaDesideri));
 			mappaListaDesideri.remove(idListaDesideri);
-			
+
 			tx.commit();
 		} catch(Throwable ex) {
 			if(tx != null) {
@@ -779,7 +780,7 @@ public class Dati {
 	public void inserisciElementoListaDesideri(int idListaDesideri, int idElemento, String descrizione, int quantita, Utente utente, Integer idInserzione) {
 		if(idListaDesideri == 0 || idElemento == 0 || descrizione == null || quantita <=0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -800,7 +801,7 @@ public class Dati {
 				ListaDesideri ld = (ListaDesideri) ldIterator.next();
 				if(ld.getIdListaDesideri() != idListaDesideri)
 					continue;
-				
+
 				ld.getListaDesideriProdottis().add(elemento);
 				break;
 			}
@@ -828,7 +829,7 @@ public class Dati {
 	public void modificaDescrizioneElementoListaDesideri(int idListaDesideri, int idElemento, String descrizione, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || descrizione == null || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -851,24 +852,24 @@ public class Dati {
 			// vedere inoltre se aggiornare il set ListaDesideri dell'utente
 
 			doubleloop:
-			for(Iterator ldIterator = mappaUtente.get(utente.getMail()).getListaDesideris().iterator(); ldIterator.hasNext();) {
-				ListaDesideri ld = (ListaDesideri) ldIterator.next();
-				if(ld.getIdListaDesideri() != idListaDesideri)
-					continue;
-				
-				for(Iterator ldpIterator = ld.getListaDesideriProdottis().iterator(); ldpIterator.hasNext();) {
-					ListaDesideriProdotti ldp = (ListaDesideriProdotti) ldpIterator.next();
-					if(ldp.getId().getIdElemento() != idElemento)
+				for(Iterator ldIterator = mappaUtente.get(utente.getMail()).getListaDesideris().iterator(); ldIterator.hasNext();) {
+					ListaDesideri ld = (ListaDesideri) ldIterator.next();
+					if(ld.getIdListaDesideri() != idListaDesideri)
 						continue;
-					
-					ldp.setDescrizione(descrizione);
-					//mappaListaDesideriProdotti.put(new ListaDesideriProdottiId(idElemento, idListaDesideri), ldp);
-					//mappaUtente.get(utente.getMail()).getListaDesideris().add(ldp);
-					
-					break doubleloop;
+
+					for(Iterator ldpIterator = ld.getListaDesideriProdottis().iterator(); ldpIterator.hasNext();) {
+						ListaDesideriProdotti ldp = (ListaDesideriProdotti) ldpIterator.next();
+						if(ldp.getId().getIdElemento() != idElemento)
+							continue;
+
+						ldp.setDescrizione(descrizione);
+						//mappaListaDesideriProdotti.put(new ListaDesideriProdottiId(idElemento, idListaDesideri), ldp);
+						//mappaUtente.get(utente.getMail()).getListaDesideris().add(ldp);
+
+						break doubleloop;
+					}
 				}
-			}
-			
+
 			tx.commit();
 		} catch(Throwable ex) {
 			if(tx != null) {
@@ -892,7 +893,7 @@ public class Dati {
 	public void modificaQuantitaElementoListaDesideri(int idListaDesideri, int idElemento, int quantita, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || quantita == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -918,12 +919,12 @@ public class Dati {
 					ListaDesideri ld = (ListaDesideri) ldIterator.next();
 					if(ld.getIdListaDesideri() != idListaDesideri)
 						continue;
-					
+
 					for(Iterator ldpIterator = ld.getListaDesideriProdottis().iterator(); ldpIterator.hasNext();) {
 						ListaDesideriProdotti ldp = (ListaDesideriProdotti) ldpIterator.next();
 						if(ldp.getId().getIdElemento() != idElemento)
 							continue;
-						
+
 						ldp.setQuantità(quantita);
 						break doubleloop;
 					}
@@ -941,7 +942,7 @@ public class Dati {
 			session = null;
 		}
 	}
-	
+
 	/**
 	 * * Modifica la quantità di un elemento della lista dei desideri
 	 * @param idListaDesideri
@@ -952,44 +953,44 @@ public class Dati {
 	public void modificaIDInserzioneElementoListaDesideri(int idListaDesideri, int idElemento, int idInserzione, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || idInserzione == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
 			tx=session.beginTransaction();		
-			
+
 			if(!mappaListaDesideri.containsKey(idListaDesideri))
 				throw new RuntimeException("Id lista desideri non trovato: " + idListaDesideri);
-			
+
 			if(!mappaUtente.get(utente.getMail()).getListaDesideris().contains(mappaListaDesideri.get(idListaDesideri)))
 				throw new RuntimeException("Id lista desideri non appartiene all'utente: " + idListaDesideri);
-			
+
 			if(!mappaListaDesideriProdotti.containsKey(new ListaDesideriProdottiId(idElemento, idListaDesideri)))
 				throw new RuntimeException("Id elemento non trovato: " + idElemento);
-			
+
 			if(!mappaInserzioni.containsKey(idInserzione))
 				throw new RuntimeException("Id Inserzione non trovato: " + idInserzione);
-			
+
 			ListaDesideriProdotti elemento = (ListaDesideriProdotti) mappaListaDesideriProdotti.get(new ListaDesideriProdottiId(idElemento, idListaDesideri));
 			elemento.setInserzione(mappaInserzioni.get(idInserzione));
 			session.update(elemento);
-			
+
 			doubleloop:
 				for(Iterator ldIterator = mappaUtente.get(utente.getMail()).getListaDesideris().iterator(); ldIterator.hasNext();) {
 					ListaDesideri ld = (ListaDesideri) ldIterator.next();
 					if(ld.getIdListaDesideri() != idListaDesideri)
 						continue;
-					
+
 					for(Iterator ldpIterator = ld.getListaDesideriProdottis().iterator(); ldpIterator.hasNext();) {
 						ListaDesideriProdotti ldp = (ListaDesideriProdotti) ldpIterator.next();
 						if(ldp.getId().getIdElemento() != idElemento)
 							continue;
-						
+
 						ldp.setInserzione(mappaInserzioni.get(idInserzione));
 						break doubleloop;
 					}
 				}
-			
+
 			tx.commit();
 		} catch(Throwable ex) {
 			if(tx != null) {
@@ -1012,7 +1013,7 @@ public class Dati {
 	public void eliminaElementoListaDesideri(int idListaDesideri, int idElemento, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -1037,12 +1038,12 @@ public class Dati {
 					ListaDesideri ld = (ListaDesideri) ldIterator.next();
 					if(ld.getIdListaDesideri() != idListaDesideri)
 						continue;
-					
+
 					for(Iterator ldpIterator = ld.getListaDesideriProdottis().iterator(); ldpIterator.hasNext();) {
 						ListaDesideriProdotti ldp = (ListaDesideriProdotti) ldpIterator.next();
 						if(ldp.getId().getIdElemento() != idElemento)
 							continue;
-						
+
 						ldpIterator.remove();
 						break doubleloop;
 					}
@@ -1071,7 +1072,7 @@ public class Dati {
 	public void modificaAcquistatoElementoListaDesideri(int idListaDesideri, int idElemento, boolean acquistato, Utente utente) {
 		if(idListaDesideri == 0 || idElemento == 0 || utente == null)
 			throw new RuntimeException("tutti gli argomenti devono essere non nulli");
-		
+
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;
 		try {
@@ -1105,23 +1106,23 @@ public class Dati {
 				mappaListaSpesaProdotti.put(new ListaSpesaProdottiId(idElemento, idListaDesideri), prodottoSpesa);
 				session.save(prodottoSpesa);
 				mappaListaDesideriProdotti.remove(prodottoId);
-				
+
 				doubleloop:
 					for(Iterator ldIterator = mappaUtente.get(utente.getMail()).getListaDesideris().iterator(); ldIterator.hasNext();) {
 						ListaDesideri ld = (ListaDesideri) ldIterator.next();
 						if(ld.getIdListaDesideri() != idListaDesideri)
 							continue;
-						
+
 						for(Iterator ldpIterator = ld.getListaDesideriProdottis().iterator(); ldpIterator.hasNext();) {
 							ListaDesideriProdotti ldp = (ListaDesideriProdotti) ldpIterator.next();
 							if(ldp.getId().getIdElemento() != idElemento)
 								continue;
-							
+
 							ldpIterator.remove();
 							break doubleloop;
 						}
 					}
-				
+
 				session.delete(prodotto);
 				tx.commit();
 			} else { 
@@ -2113,22 +2114,30 @@ public class Dati {
 		return supermercati;
 	}
 
-	public int inserisciUtente(String email,String nickname,String password,Date dataRegistrazione,String numeroCasuale){
+	public int inserisciUtente(String email,String nickname,String password,Date dataRegistrazione,String numeroCasuale) {
 		if(email == null || nickname == null || password == null || dataRegistrazione == null || numeroCasuale == null)
 			throw new RuntimeException("i parametri devono essere non nulli");
 
 		Session session = factory.getCurrentSession();
 		Transaction tx = null;	
 		Utente utente = new Utente(email, nickname, password, dataRegistrazione,false,numeroCasuale,new HashSet<ValutazioneInserzione>(), new HashSet<ValutazioneInserzione>(), new HashSet<ListaSpesa>(), new HashSet<Inserzione>(), new HashSet<Profilo>(), new HashSet<ListaDesideri>());		
-		int idUtente, idProfilo;
+		int idUtente = 0, idProfilo;
 		try{
 			tx = session.beginTransaction();
 			idUtente = (Integer)session.save(utente);
 			mappaUtente.put(email,utente);
 			tx.commit();
 
-			inserisciProfilo(utente, 0, 0, 0, false, 0);
-		}catch(Throwable ex){
+			inserisciProfilo(utente, 10, 0, 100, false, 0); 
+		}
+		catch(ConstraintViolationException e) {
+			System.out.println(e.getSQLException().getLocalizedMessage());
+			System.out.println("error" + e.getMessage() + " - " + e.getStackTrace());
+			if(tx!=null)
+				tx.rollback();
+			throw new RuntimeException(e.getSQLException().getLocalizedMessage());
+		}
+		catch(Throwable ex){
 			System.out.println("error" + ex.getMessage() + " - " + ex.getStackTrace());
 			if(tx!=null)
 				tx.rollback();
@@ -2278,14 +2287,14 @@ public class Dati {
 			mappaUtente.get(inserzionista.getMail()).getValutazioneInserzionesForIdUtenteInserzionista().add(valutazioneInserzione);
 			mappaUtente.get(valutatore.getMail()).getValutazioneInserzionesForIdUtenteValutatore().add(valutazioneInserzione);
 			mappaInserzioni.get(inserzione.getIdInserzione()).getValutazioneInserziones().add(valutazioneInserzione);
-			
+
 			// Aggiugo all'utente i crediti pendenti che gli spettano dall'inserimento dell'inserzione, ossia +2
 			Profilo profilo = ((Profilo) valutatore.getProfilos().iterator().next());
 			profilo.setCreditiPendenti(profilo.getCreditiPendenti() + 2);
 			session.update(profilo);
 			mappaProfili.put(profilo.getIdProfilo(), profilo);
 			mappaUtente.get(valutatore.getMail()).getProfilos().add(profilo);
-			
+
 			tx.commit();
 		} catch(Throwable ex) {
 			if(tx != null)
@@ -2435,7 +2444,7 @@ public class Dati {
 					"select ID_Inserzione " +
 					"from inserzione ins");
 			inserzioniDaValutareList = q.list();
-			
+
 			System.out.println("INSERZIONE DA VALUTARE: " + mailUtente);
 			System.out.println("INSERZIONE DA VALUTARE: " + lat);
 			System.out.println("INSERZIONE DA VALUTARE: " + lng);
@@ -2451,7 +2460,7 @@ public class Dati {
 		}
 		return inserzioniDaValutareList;
 	}
-	
+
 	public List getInserzioniInScadenza(String mailUtente, String lat, String lng) {
 		factory = buildSessionFactory();
 		Session session = factory.openSession();
@@ -2551,26 +2560,26 @@ public class Dati {
 
 			System.out.println("Data Richiesta: " + formato.format(cal.getTime()) + " Stringa da ricercare: " + '%'+descrizione.replace(' ', '%')+'%');
 
-//			QUANDO SI DECOMMENTA QUESTA QUERY, DECOMMENTARE ANCHE LA RIGA 2311 PER SETTARE IL PARAMETRO ID_UTENTE
-//			Query q = session.createSQLQuery(
-//											"select ins.ID_Inserzione " +
-//											"from inserzione ins, " +
-//											"prodotto p, " +
-//											"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
-//												"from supermercato " +
-//												"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
-//												") as supTmp " +
-//											"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.ID_Prodotto = p.ID_Prodotto and ins.DataInizio < :currDate and ins.DataFine > :currDate and ins.ID_Utente != :idUtente and p.Descrizione like :stringToMatch " +
-//											"order by supTmp.distanza ");
+			//			QUANDO SI DECOMMENTA QUESTA QUERY, DECOMMENTARE ANCHE LA RIGA 2311 PER SETTARE IL PARAMETRO ID_UTENTE
+			//			Query q = session.createSQLQuery(
+			//											"select ins.ID_Inserzione " +
+			//											"from inserzione ins, " +
+			//											"prodotto p, " +
+			//											"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
+			//												"from supermercato " +
+			//												"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
+			//												") as supTmp " +
+			//											"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.ID_Prodotto = p.ID_Prodotto and ins.DataInizio < :currDate and ins.DataFine > :currDate and ins.ID_Utente != :idUtente and p.Descrizione like :stringToMatch " +
+			//											"order by supTmp.distanza ");
 			Query q = session.createSQLQuery(
 					"select ins.ID_Inserzione " +
-					"from inserzione ins, " +
-					"prodotto p, " +
-					"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
-						"from supermercato " +
-						"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
-						") as supTmp " +
-					"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.ID_Prodotto = p.ID_Prodotto and ins.DataInizio <= :currDate and ins.DataFine > :currDate and p.Descrizione like :stringToMatch " +
+							"from inserzione ins, " +
+							"prodotto p, " +
+							"(select *, (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) as distanza " +
+							"from supermercato " +
+							"where (acos( sin(:latitudine*pi()/180)*sin(Latitudine*pi()/180) + cos(:latitudine*pi()/180)*cos(Latitudine*pi()/180)*cos( (:longitudine*pi()/180) - (Longitudine*pi()/180) ) ) * :raggioTerra) <= :raggioUtente " +
+							") as supTmp " +
+							"where ins.ID_Supermercato = supTmp.ID_Supermercato and ins.ID_Prodotto = p.ID_Prodotto and ins.DataInizio <= :currDate and ins.DataFine > :currDate and p.Descrizione like :stringToMatch " +
 					"order by supTmp.distanza ");
 			q.setParameter("latitudine", Float.valueOf(lat));
 			q.setParameter("longitudine", Float.valueOf(lng));
@@ -2582,20 +2591,20 @@ public class Dati {
 			inserzioniDaSuggerireList = new ArrayList<Integer>(q.list());
 
 			tx.commit();
-			} catch(RuntimeException e) {
-				if(tx!=null)
-					tx.rollback();
-				throw e;
-			} finally {
-				if(session!=null && session.isOpen())
-					session.close();
-			}
+		} catch(RuntimeException e) {
+			if(tx!=null)
+				tx.rollback();
+			throw e;
+		} finally {
+			if(session!=null && session.isOpen())
+				session.close();
+		}
 		for (Integer integer : inserzioniDaSuggerireList)
 			System.out.println("Id_Inserzione: " + integer);
-		
+
 		return inserzioniDaSuggerireList;
 	}
-	
+
 	/**
 	 * Questa funzione ritorna le inserzioni valide.
 	 * E' generica, cioè non usa informazioni dell'utente, l'idea è avere delle inserizioni da mostrare agli utenti non ancora registrati.
@@ -2610,30 +2619,30 @@ public class Dati {
 		session = factory.openSession();
 		try{
 			tx=session.beginTransaction();
-			
+
 			SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar cal = new GregorianCalendar();
-			
+
 			Query q = session.createSQLQuery(
 					"select ID_Inserzione " +
-					"from inserzione ins " +
-					"where DataInizio <= :currDate and ins.DataFine > :currDate " +
+							"from inserzione ins " +
+							"where DataInizio <= :currDate and ins.DataFine > :currDate " +
 					"order by DATEDIFF(DataFine, :currDate) ");
 			q.setParameter("currDate", formato.format(cal.getTime()));
 			inserzioniDaSuggerireList = new ArrayList<Integer>(q.list());
-			
+
 			tx.commit();
-			} catch(RuntimeException e) {
-				if(tx!=null)
-					tx.rollback();
-				throw e;
-			} finally {
-				if(session!=null && session.isOpen())
-					session.close();
-			}
+		} catch(RuntimeException e) {
+			if(tx!=null)
+				tx.rollback();
+			throw e;
+		} finally {
+			if(session!=null && session.isOpen())
+				session.close();
+		}
 		for (Integer integer : inserzioniDaSuggerireList)
 			System.out.println("Id_Inserzione: " + integer);
-		
+
 		return inserzioniDaSuggerireList;
 	}
 }

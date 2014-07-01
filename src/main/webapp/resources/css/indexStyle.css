@@ -1001,16 +1001,19 @@ input#quantitaDettaglioInput {width: 40%}
 
 input#dataInizioInput, input#dataFineInput, input#prezzoInput {width: 80%;}
 
-input#supermercatoInput { width: 150%; }
+input#supermercatoInput { width: 190%; }
+input#indirizzoInput { width: 190%; }
 
 .suggerimentoImg { width:200px; height: 200px;}
 .suggerimentoImg img {position: absolute;}
 .suggerimentoImg div {position: absolute; margin-left: 70px; margin-top: 64px; display:none;}
 .suggerimentoImg i {color: #cccccc};
 
+
+
 .prossimaImg { font-size: 10pt; }
-.prossimaImg > a { float: right; margin-right: 40px; cursor: pointer; }
-.caricaImg { margin-top: 12px; }
+.prossimaImg > a { cursor: pointer; width: auto; margin-top: 3px; }
+.caricaImg { margin-top: 31px; }
 .caricaImg > label {font-size: 10pt; }
 
 
@@ -1057,7 +1060,7 @@ div.fakefile > input {
 
 /* START TOOLTIP CUSTOMIZATION */
 .ui-tooltip {
-    background: #fff;
+    background: #f00;
     color: #555555;
     border: none;
     padding: 0;
@@ -1103,4 +1106,28 @@ div.fakefile > input {
 
 
 
+/* START POPUT INVIO INSERZIONE */
+#popupConfermaInserzioneContainer {
+	position: relative;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	display: none;
+	top: 50%;
+	left: 50%;
+	width: 400px;
+	height: 120px;
+	border: 1px solid;
+	text-align: center;
+	margin-top: -60px;
+	margin-left: -200px;
+	background-color: whitesmoke;
+	z-index: inherit;
+}
 
+#caricamentoDatiInCorsoBox { display: none; }
+#caricamentoDatiConSuccesso { display: none; }
+#caricamentoDatiConErrori { display: none; }
+
+#confermaInserzioneBox div:last-child { margin-top: 30px; }
+#confermaInserzioneButtonsContainer input:first-child { float: left; margin-left: 50px; }
+#confermaInserzioneButtonsContainer input:last-child { float: right; margin-right: 50px; }

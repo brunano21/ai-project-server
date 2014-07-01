@@ -33,10 +33,8 @@
 <link rel="stylesheet" id="valutazioneStyle-css" href="<c:url value="resources/css/valutazioneStyle.css" />">
 <link rel="stylesheet" id="convertiCreditiStyle-css" href="<c:url value="resources/css/convertiCreditiStyle.css" />">
 
-<!-- <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-1.10.2.min.js" />" ></script> -->
 <script type="text/javascript" src="<c:url value="resources/js/jquery-1.11.1.min.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-migrate.min.js" />" ></script>
-<!-- <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery-ui-1.10.4.custom.min.js" />" ></script> -->
 <script type="text/javascript" src="<c:url value="resources/js/jquery-ui-1.11.0/jquery-ui.min.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.ui.datepicker-it.js" />" ></script>
 <script type="text/javascript" src="<c:url value="resources/js/indexJS/jquery.color-2.1.2.min.js" />" ></script>
@@ -54,8 +52,11 @@
     google.load('search', '1');
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places"></script>
-<script src="https://www.google.com/jsapi" type="text/javascript"></script>
+<!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places"></script> -->
+
+<!-- <link rel='stylesheet' id='orbit-css-css'  href='css/orbit.css' type='text/css' media='all' /> -->
+<!--<script type='text/javascript' src='js/orbit.min.js'></script>-->
+<!--<script src="js/css3-mediaqueries.js"></script>-->
 
 <script type="text/javascript">
 
@@ -104,10 +105,14 @@
             success: function(returnedData, textStatus, jqXHR) {         
 				if(jqXHR.getResponseHeader("loginFailed") != null) {
 					$("#executeJS").html(returnedData);
+					console.log("loginFailed");
 				} else {
 					$("#loginForm").hide();
 					$("#logContainer").html(returnedData);
+
 					getUserCustomization_Index();
+
+			        localStorage.removeItem("lat");					
 	            }
             }      
         });
@@ -349,7 +354,28 @@
             </form>
         </div>
         <div id="suggerimento-singolo-container"></div>
-    </div>
+        <div id="popupConfermaInserzioneContainer">
+        	<div id="caricamentoDatiInCorsoBox">
+				<div class="fa fa-spinner fa-spin fa-4x"></div>
+				<div><h5>Caricamento dati in corso...</h5></div>
+			</div>
+  			<div id="confermaInserzioneBox">
+	  			<div><h5>Inviare inserzione?</h5></div>
+	  			<div id="confermaInserzioneButtonsContainer">
+	  				<input type="button" id="annullaInserzioneBtn" class="genericBtn" value="Annulla" />
+	  				<input type="button" id="inviaInserzioneBtn" class="genericBtn" value="Conferma" />
+  				</div>
+			</div>
+			<div id="caricamentoDatiConErrori">
+				<div class="fa fa-exclamation-triangle fa-4x"></div>
+				<div><h5>Ops, ci sono stati<br>degli errori.</h5></div>	
+			</div>
+			<div id="caricamentoDatiConSuccesso">
+				<div class="fa fa-smile-o fa-4x"></div>
+				<div><h5>Inserzione aggiunta<br>con successo!</h5></div>	
+			</div>
+    	</div>
+   	</div>
 
 	<!-- Start Logo/Login Header -->
     <div class="container zerogrid">

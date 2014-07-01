@@ -9,6 +9,9 @@ import hibernate.Utente;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
@@ -27,9 +30,13 @@ import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -78,7 +85,7 @@ public class InserzioneController {
 		}
 		
 		model.put("categorie", categorie);
-		
+		*/
 		Set<String> argomenti = new HashSet<String>();
 		
 		for(Map.Entry<String, Argomenti> a : dati.getArgomenti().entrySet()){
@@ -87,7 +94,7 @@ public class InserzioneController {
 			
 		}
 		model.put("argomenti", argomenti);
-		return "inserzione";*/
+	//	return "inserzione";
 		
 		Set<String> categorie = new HashSet<String>();
 		
@@ -118,14 +125,22 @@ public class InserzioneController {
 	
 	@RequestMapping(value="/inserzione/getSupermercati",method=RequestMethod.GET)
 	public @ResponseBody ArrayNode getSupermercati(String lat,String lng){
+		System.out.println(lat);
+		System.out.println(lng);
+		
 		JsonNodeFactory factory = JsonNodeFactory.instance;
 		ArrayNode results = factory.arrayNode();
 		ObjectNode obj;
 		
 		for(Map.Entry<Integer, Supermercato> s : dati.getSupermercati().entrySet()){
-			if(distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(int) s.getValue().getLatitudine(),(int) s.getValue().getLongitudine()) < 3){
+			System.out.println(s.getValue().getNome()+" "+distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(float) s.getValue().getLatitudine(),(float) s.getValue().getLongitudine()));
+			if(distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(float) s.getValue().getLatitudine(),(float) s.getValue().getLongitudine()) < 50){
+				System.out.println(distFrom(Float.parseFloat(lat), Float.parseFloat(lng),(float) s.getValue().getLatitudine(),(float) s.getValue().getLongitudine()));
 				obj=factory.objectNode();
 				obj.put("nome", s.getValue().getNome());
+				obj.put("indirizzo", s.getValue().getIndirizzo());
+				obj.put("comune", s.getValue().getComune());
+				obj.put("provincia", s.getValue().getProvincia());
 				obj.put("lat", s.getValue().getLatitudine());
 				obj.put("lng", s.getValue().getLongitudine());
 				results.add(obj);
@@ -162,7 +177,8 @@ public class InserzioneController {
 	}
 	
 	@RequestMapping(value="/inserzione",method= RequestMethod.POST)
-	public ModelAndView processInserzione(InserzioneForm inserzioneForm, BindingResult result,Principal principal){
+	public @ResponseBody Object processInserzione(InserzioneForm inserzioneForm, BindingResult result,Principal principal){
+		System.out.println("called /inserzione POST");
 		boolean inserimentoSupermercato=false;
 		boolean inserimentoInserzione=false;
 		boolean inserimentoProdotto=false;
@@ -176,51 +192,88 @@ public class InserzioneController {
 				System.out.println(result.getAllErrors().get(0).toString());
 			inserzioneValidator.validate(inserzioneForm, result,principal);
 			if(result.hasErrors()){
-				Map<String, Object> model = new HashMap<String, Object>();		
-				if(inserzioneForm.getFile() != null)
-					inserzioneForm.setFile(null);
-				inserzioneForm.setSupermercato(inserzioneForm.getSupermercato().split(" - ")[0]);
-				model.put("inserzioneForm", inserzioneForm);				
-				Set<String> categorie = new HashSet<String>();
 				
-				for(Map.Entry<Integer,Categoria> c : dati.getCategorie().entrySet()){
-					categorie.add(c.getValue().getNome());
+				JsonNodeFactory factory = JsonNodeFactory.instance;				
+				ArrayNode errors = factory.arrayNode();
+				ObjectNode obj;
+				for(FieldError fieldError : result.getFieldErrors()){
+					obj=factory.objectNode();
+					obj.put(fieldError.getField(), fieldError.getDefaultMessage());
+					errors.add(obj);
 				}
-				
-				model.put("categorie", categorie);				
-				Set<String> argomenti = new HashSet<String>();
-				
-				for(Map.Entry<String,Argomenti> a : dati.getArgomenti().entrySet()){					
-					argomenti.add(a.getValue().getArgomento());					
-				}
-				model.put("argomenti", argomenti);
-				return new ModelAndView("inserzione",model);
+				obj=factory.objectNode();
+				obj.put("errors", errors);
+				return obj;
 			}
-			String path = "";
+			String imagePath = "";
 			int hashcode = 0;
 			utente = dati.getUtenti().get(principal.getName());
-			if(!inserzioneForm.getFoto().equals("")){
+			if(inserzioneForm.getFoto() != null && !inserzioneForm.getFoto().equals("")){
 				hashcode = new Long(inserzioneForm.getCodiceBarre()).hashCode()*utente.getMail().hashCode()*inserzioneForm.getDataInizio().hashCode()*inserzioneForm.getDataFine().hashCode();
 				URL url = new URL(inserzioneForm.getFoto());
 				BufferedImage image = ImageIO.read(url);
-				path = context.getRealPath("/")+"resources\\images"+File.separator+Integer.toString(hashcode)+".png";
-				File file = new File(path);
-			    ImageIO.write(image, "png", file);			    
-			}
-			if(inserzioneForm.getFile()!=null){
-				hashcode = new Long(inserzioneForm.getCodiceBarre()).hashCode()*utente.getMail().hashCode()*inserzioneForm.getDataInizio().hashCode()*inserzioneForm.getDataFine().hashCode();
-				path = context.getRealPath("/")+"resources\\images"+File.separator+Integer.toString(hashcode)+".png";
-				File file = new File(path);
-				FileUtils.writeByteArrayToFile(file, inserzioneForm.getFile().getBytes());
-				System.out.println("file salvato in : "+path);
-			}
+				imagePath = "resources\\images"+File.separator+Integer.toString(hashcode)+".png";
+				File file = new File(context.getRealPath("/") + imagePath);
+			    ImageIO.write(image, "png", file);	
+				/*
+				URL url = new URL(inserzioneForm.getFoto());
+				String destName =  "resources\\images"+File.separator+Integer.toString(hashcode)+".png";
+				System.out.println(destName);
+				InputStream is = url.openStream();
+				OutputStream os = new FileOutputStream(context.getRealPath("/") + destName);
+				byte[] b = new byte[2048];
+				int length;
+				while ((length = is.read(b)) != -1) {
+					os.write(b, 0, length);
+				}
+				is.close();
+				os.close();
+				*/
+			
+			} else
+				if(inserzioneForm.getFile()!=null){
+					hashcode = new Long(inserzioneForm.getCodiceBarre()).hashCode()*utente.getMail().hashCode()*inserzioneForm.getDataInizio().hashCode()*inserzioneForm.getDataFine().hashCode();
+					imagePath = "resources\\images"+File.separator+Integer.toString(hashcode)+".png";
+					File file = new File(context.getRealPath("/") + imagePath);
+					FileUtils.writeByteArrayToFile(file, inserzioneForm.getFile().getBytes());
+					System.out.println("file salvato in : "+imagePath);
+				}
 			//TODO bisogna modificare il criterio di uguaglianza, ed effettuare una query
-			supermercato = dati.getSupermercati().get(inserzioneForm.getSupermercato());
+			Session session = null;
+			Transaction tx = null;
+			session = Dati.factory.openSession();
+			Integer id = -1;
+			List idS = new LinkedList();
+			try {
+				tx=session.beginTransaction();			
+				Query q = session.createSQLQuery("select s.ID_Supermercato "+
+				"from supermercato s "+
+						"where s.Nome = :nome and s.Indirizzo = :indirizzo and s.Comune = :comune and s.Provincia = :provincia");
+				q.setParameter("nome", inserzioneForm.getSupermercato());
+				q.setParameter("indirizzo", inserzioneForm.getIndirizzo());
+				q.setParameter("comune", inserzioneForm.getComune());
+				q.setParameter("provincia", inserzioneForm.getProvincia());
+				idS = q.list();				
+				tx.commit();
+			} catch(RuntimeException e) {
+				if(tx!=null)
+					tx.rollback();
+				throw e;
+			} finally {
+				if(session!=null && session.isOpen())
+					session.close();
+			}
+			if(idS.size() > 0){
+				Object ident = idS.get(0);
+				System.out.println("id = "+ident);
+				id = (Integer)ident;
+				supermercato = dati.getSupermercati().get(id);
+			}
 			
 			if(supermercato == null){
-				idSupermercato=dati.inserisciSupermercato(inserzioneForm.getSupermercato(), inserzioneForm.getIndirizzo(), inserzioneForm.getComune(), inserzioneForm.getProvincia(), inserzioneForm.getLat(), inserzioneForm.getLng());
+				idSupermercato = dati.inserisciSupermercato(inserzioneForm.getSupermercato(), inserzioneForm.getIndirizzo(), inserzioneForm.getComune(), inserzioneForm.getProvincia(), inserzioneForm.getLat(), inserzioneForm.getLng());
 				inserimentoSupermercato = true;
-				supermercato = dati.getSupermercati().get(inserzioneForm.getSupermercato());				
+				supermercato = dati.getSupermercati().get(idSupermercato);				
 			}
 			
 			
@@ -237,18 +290,20 @@ public class InserzioneController {
 			List<String> valori = new LinkedList<String>();
 			if(inserzioneForm.getArg_corpo() != null)
 				valori.addAll(inserzioneForm.getArg_corpo());
+			if(valori.size() == 1 && "".equals(valori.get(0)))
+				valori = null;
 			
 			if(prodotto != null){
 				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 				trovato = true;
 				if(inserzioneForm.getDataFine()!=null&&!(inserzioneForm.getDataFine().equals(""))){				
-					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), sdf.parse(inserzioneForm.getDataFine()), inserzioneForm.getDescrizione(),Integer.toString(hashcode)+".png",argomenti,valori);
+					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), sdf.parse(inserzioneForm.getDataFine()), inserzioneForm.getDescrizione(),hashcode == 0 ? "" : Integer.toString(hashcode)+".png",argomenti,valori);
 					inserimentoInserzione=true;
 				}else{
 					Calendar c = Calendar.getInstance();
 					c.setTime(sdf.parse(inserzioneForm.getDataInizio()));
 					c.add(Calendar.DATE, 14);
-					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()),c.getTime() , inserzioneForm.getDescrizione(), Integer.toString(hashcode)+".png",argomenti,valori);
+					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()),c.getTime() , inserzioneForm.getDescrizione(), hashcode == 0 ? "" : Integer.toString(hashcode)+".png",argomenti,valori);
 					inserimentoInserzione=true;
 				}
 			}
@@ -264,10 +319,13 @@ public class InserzioneController {
 				if(p.getIdProdotto().equals(idProdotto)){
 					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 					if(inserzioneForm.getDataFine()!=null&&!(inserzioneForm.getDataFine().equals(""))){						
-						idInsererzione=dati.inserisciInserzione(utente, supermercato, p, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), sdf.parse(inserzioneForm.getDataFine()), inserzioneForm.getDescrizione(),Integer.toString(hashcode)+".png",argomenti,valori);
+						idInsererzione=dati.inserisciInserzione(utente, supermercato, p, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), sdf.parse(inserzioneForm.getDataFine()), inserzioneForm.getDescrizione(),imagePath,argomenti,valori);
 						inserimentoInserzione=true;
 					}else{
-						idInsererzione=dati.inserisciInserzione(utente, supermercato, p, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), null, inserzioneForm.getDescrizione(), Integer.toString(hashcode)+".png",argomenti,valori);
+						Calendar c = Calendar.getInstance();
+						c.setTime(sdf.parse(inserzioneForm.getDataInizio()));
+						c.add(Calendar.DATE, 14);
+						idInsererzione=dati.inserisciInserzione(utente, supermercato, p, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), c.getTime(), inserzioneForm.getDescrizione(), imagePath,argomenti,valori);
 						inserimentoInserzione=true;
 					}
 				}
@@ -285,31 +343,15 @@ public class InserzioneController {
 				//dati.eliminaSupermercato(inserzioneForm.getSupermercato());
 			}
 			e.printStackTrace();
-			
-			Map<String, Object> model = new HashMap<String, Object>();		
-			inserzioneForm.setSupermercato(inserzioneForm.getSupermercato().split(" - ")[0]);
-			model.put("inserzioneForm", inserzioneForm);				
-			Set<String> categorie = new HashSet<String>();
-			
-			for(Map.Entry<Integer,Categoria> c : dati.getCategorie().entrySet()){
-				categorie.add(c.getValue().getNome());
-			}
-			
-			model.put("categorie", categorie);				
-			Set<String> argomenti = new HashSet<String>();
-			
-			for(Map.Entry<String,Argomenti> a : dati.getArgomenti().entrySet()){					
-				argomenti.add(a.getValue().getArgomento());					
-			}
-			model.put("argomenti", argomenti);
-			model.put("error","errore nell'immissione del form");
-			return new ModelAndView("inserzione",model);
+			JsonNodeFactory factory = JsonNodeFactory.instance;				
+			ArrayNode errors = factory.arrayNode();
+			ObjectNode obj;
+			obj=factory.objectNode();				
+			obj.put("exception", "errore nell'immissione del form");
+			errors.add(obj);
+			return errors;
 		}
-		Map<String,Object> model = new HashMap<String, Object>();
-		model.put("inserzione", inserzioneForm);
-		model.put("idInserzione", new Integer(idInsererzione));
-		model.put("dati",dati);
-		return new ModelAndView("inserzionesuccess",model);
+		return  "SUCCESS";
 	}
 	
 	

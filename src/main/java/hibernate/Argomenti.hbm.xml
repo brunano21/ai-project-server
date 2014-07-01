@@ -8,7 +8,7 @@
             <column name="Argomento" length="30" />
             <generator class="assigned" />
         </id>
-        <set name="argomentiInserziones" table="argomenti_inserzione" inverse="true" lazy="true" fetch="select">
+        <set name="argomentiInserziones" table="argomenti_inserzione" inverse="true" lazy="false" fetch="select">
             <key>
                 <column name="Argomento" length="30" not-null="true" />
             </key>
