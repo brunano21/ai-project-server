@@ -70,13 +70,7 @@ public class RegisterController {
 		try{
 			dati.inserisciUtente(registration.getEmail(), registration.getUserName(), registration.getPassword(), new Date(), numerocasuale);
 			
-		}
-		catch(ConstraintViolationException e1) {
-			System.out.println(e1.getSQLException().getLocalizedMessage());
-			
-			return;
-			
-		}catch(Exception e){
+		} catch(Exception e) {
 			System.out.println(e.getMessage());
 			String err = e.getMessage();
 			response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);

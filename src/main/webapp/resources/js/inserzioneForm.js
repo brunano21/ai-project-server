@@ -489,7 +489,7 @@ $("#inviaInserzioneBtn").click(function(event) {
 							$('#caricamentoDatiInCorsoBox').hide();
 							$("#caricamentoDatiConSuccesso").show();
 							$("#inserzione").html(response);
-
+							
 							setTimeout(function() {
 								$("#caricamentoDatiConSuccesso").hide();
 								$('#overlayPanel').children().hide();
@@ -509,20 +509,16 @@ $("#inviaInserzioneBtn").click(function(event) {
 
 								getInserzionePage();
 							}, 2500);
+							
+							// Aggiorno visivamente i crediti pendenti
+							$("#incrementoCrediti").text("+10").fadeIn();
+							setTimeout(function() {
+								var crediti_pendenti = Number($($("#logContainer > form > div > p")[1]).text().split(": ").pop());
+								crediti_pendenti += 2;
+								$("#incrementoCrediti").text("").fadeOut();
+								$($("#logContainer > form > div > p")[1]).text("Crediti Pendenti: " + crediti_pendenti);
+							}, 2000);
 						}
-//						risposta = "No";
-//						i = 0;
-//						codici_prodotti= [];
-//						prodotto_selected="";
-//						infowindow = new google.maps.InfoWindow();
-//						geocoder = new google.maps.Geocoder();
-//						supermercati_markers = [];
-//						doneTypingInterval = 5000;
-//						descrizioneInterval= 5000;
-//						markers = [];
-						//TODO scrivere la funzione initialize e get sottocategorie
-//						initialize();
-//						getSottocategorie();
 					}
 				});
 			}else{

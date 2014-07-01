@@ -21,7 +21,10 @@ var inviaValutazione = function() {
 					
 					$("#incrementoCrediti").text("+2").fadeIn();
 					setTimeout(function() {
+						var crediti_pendenti = Number($($("#logContainer > form > div > p")[1]).text().split(": ").pop());
+						crediti_pendenti += 2;
 						$("#incrementoCrediti").text("").fadeOut();
+						$($("#logContainer > form > div > p")[1]).text("Crediti Pendenti: " + crediti_pendenti);
 					}, 2000);
 					
 					return;

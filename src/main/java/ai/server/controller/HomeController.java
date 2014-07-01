@@ -1,5 +1,7 @@
 package ai.server.controller;
 
+import hibernate.Profilo;
+
 import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
@@ -71,7 +73,9 @@ public class HomeController {
 		System.out.println("richiediBuono: " + request.getParameter("costo"));
 		
 		// TODO Se si riesce, inviare una mail al tizio con il buono
-		// TODO Aggiornare crediti utente
+
+		Profilo p = (Profilo) (dati.getUtenti().get(principal.getName()).getProfilos().iterator().next());
+		dati.modificaProfilo(p.getIdProfilo(), p.getCreditiAcquisiti() - Integer.parseInt(request.getParameter("costo")), p.getCreditiPendenti(), p.getReputazione(), p.getPremium(), p.getContatoreInfrazioni(), p.getNumeroInserzioniPositive(), p.getNumeroInserzioniTotali(), p.getNumeroValutazioniPositive(), p.getNumeroValutazioniTotali());
 	}
 	
 }

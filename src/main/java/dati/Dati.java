@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,6 +43,7 @@ import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
+import org.joda.time.DateTime;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 /**
@@ -198,10 +200,6 @@ public class Dati {
 		System.out.println("#3: " + TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
 
 		timer.schedule(timerSC, cal.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
-
-		// SOLO TEST, fa scattare il timer un minuto dopo essere stato inizializzato e poi ogni 100 secondi
-		//cal.add(Calendar.MINUTE, +1);
-		//timer.schedule(timerSC, cal.getTime(), 100*1000);
 	}
 
 	public static Dati getInstance()
@@ -1815,9 +1813,9 @@ public class Dati {
 		Transaction tx = null;
 		Profilo profiloVecchio = mappaProfili.get(idProfilo);
 
-		if(profiloVecchio != null){
+		if(profiloVecchio != null) {
 
-			Profilo profilo = new Profilo(profiloVecchio.getUtente(), creditiAcquisiti, creditiPendenti, reputazione, premium, contatoreInfrazioni, 0, 0, 0, 0);
+			Profilo profilo = new Profilo(profiloVecchio.getUtente(), creditiAcquisiti, creditiPendenti, reputazione, premium, contatoreInfrazioni, numInserzioniPositive, numInserzioniTotali, numValutazioniPositive, numValutazioniTotali);
 			profilo.setIdProfilo(idProfilo);
 
 			try{
@@ -2128,7 +2126,14 @@ public class Dati {
 			mappaUtente.put(email,utente);
 			tx.commit();
 
-			inserisciProfilo(utente, 10, 0, 100, false, 0); 
+			inserisciProfilo(utente, 10, 0, 100, false, 0);
+			
+			//Inseriamo la prima lista di default
+			DateTime time = DateTime.now();
+			String valore = time.toString() + String.valueOf(idUtente);
+			System.out.println("ID PRIMA LISTA DESIDERI: " + valore.hashCode());
+			
+			inserisciListaDesideri(valore.hashCode(), utente, "Lista Prova");
 		}
 		catch(ConstraintViolationException e) {
 			System.out.println(e.getSQLException().getLocalizedMessage());

@@ -1012,7 +1012,7 @@ input#indirizzoInput { width: 190%; }
 
 
 .prossimaImg { font-size: 10pt; }
-.prossimaImg > a { cursor: pointer; width: auto; margin-top: 3px; }
+.prossimaImg > a { cursor: pointer; width: 100%; margin-top: 3px; }
 .caricaImg { margin-top: 31px; }
 .caricaImg > label {font-size: 10pt; }
 
