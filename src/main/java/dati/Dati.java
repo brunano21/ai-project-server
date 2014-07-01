@@ -389,7 +389,6 @@ public class Dati {
 			idInserzione=(Integer)session.save(inserzione);
 
 			if(argomenti != null && valori != null) {
-
 				Iterator<Argomenti> itArgomenti = argomenti.iterator();
 				Iterator<String> itValori = valori.iterator();
 				Argomenti a = null;
@@ -407,8 +406,8 @@ public class Dati {
 					if(!salvataggioArgomentiInserzione)
 						salvataggioArgomentiInserzione = true;
 				}
+				inserzione.setArgomentiInserziones(argomentiInserzioneSalvati);
 			}
-			inserzione.setArgomentiInserziones(argomentiInserzioneSalvati);
 			session.update(inserzione);
 			mappaInserzioni.put(idInserzione,inserzione);			
 			mappaUtente.get(utente.getMail()).getInserziones().add(inserzione);

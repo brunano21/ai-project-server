@@ -9,7 +9,8 @@ var fromDate = $("#dataInizioInput").datepicker({
     defaultDate: new Date(),
     changeMonth: true,
     numberOfMonths: 1,
-    minDate: new Date(),
+    minDate: "-2w",
+    maxDate: new Date(),
     onSelect: function(selectedDate) {
         var instance = $(this).data("datepicker");
         var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
@@ -378,40 +379,45 @@ $('#inserzioneForm').submit(function(event){
 					processData:false,
 					data: form,
 					success:function(response){	
+						var isJson = true;
 						try{
 							var data = $.parseJSON(response);
 						}catch(err){
+							isJson = false;
 							console.log("ERROR : "+err);
 						}
-						if(data.hasOwnProperty("exception")){
-							$("#dialog").html(response.exception+"\n riprova ad inserire un'altra inserzione");
-							$("#dialog").dialog({									
-								height: 300,
-								width : 500,
-								modal:true,
-								buttons:{OK:function(){
-									$(this).dialog("close");
+						if(isJson){
+							if(data.hasOwnProperty("exception")){
+								$("#dialog").html(response.exception+"\n riprova ad inserire un'altra inserzione");
+								$("#dialog").dialog({									
+									height: 300,
+									width : 500,
+									modal:true,
+									buttons:{OK:function(){
+										$(this).dialog("close");
+									}
+									},
+									close:function(){									
+									}
 								}
-								},
-								close:function(){									
-								}
-							}
-							);
-						}else{
-							if(data.hasOwnProperty("errors")){
-								$.each(data.errors,function(index,value){
-									var tooltipPosition = { my: 'center+20 bottom', at: 'center top-5' }; 
-									$.each(value,function(i,v){
-										$("#"+i+"Input").parent().children().css("border", "1px solid #E00000");
-										$("#"+i+"Input").parent().children().first().css("border-right", "0");
-										$("#"+i+"Input").prop("title",v);
-										$("#"+i+"Input").tooltip({ position: tooltipPosition }).tooltip("open");
-										
-									});
-								});
+								);
 							}else{
-								$("#inserzione").html(data);
+								if(data.hasOwnProperty("errors")){
+									$.each(data.errors,function(index,value){
+										var tooltipPosition = { my: 'center+20 bottom', at: 'center top-5' }; 
+										$.each(value,function(i,v){
+											$("#"+i+"Input").parent().children().css("border", "1px solid #E00000");
+											$("#"+i+"Input").parent().children().first().css("border-right", "0");
+											$("#"+i+"Input").prop("title",v);
+											$("#"+i+"Input").tooltip({ position: tooltipPosition }).tooltip("open");
+											
+										});
+									});
+								}
 							}
+						}else{
+							$("#inserzione").html(response);
+							
 						}
 						risposta = "No";
 						i = 0;
@@ -423,8 +429,9 @@ $('#inserzioneForm').submit(function(event){
 						doneTypingInterval = 5000;
 						descrizioneInterval= 5000;
 						markers = [];
-						initialize();
-						getSottocategorie();
+						//TODO scrivere la funzione initialize e get sottocategorie
+//						initialize();
+//						getSottocategorie();
 					}
 				});
 			}else{

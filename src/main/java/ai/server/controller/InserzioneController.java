@@ -221,19 +221,17 @@ public class InserzioneController {
 			Transaction tx = null;
 			session = Dati.factory.openSession();
 			Integer id = -1;
+			List idS = new LinkedList();
 			try {
 				tx=session.beginTransaction();			
 				Query q = session.createSQLQuery("select s.ID_Supermercato "+
-				"from supermercato s"+
+				"from supermercato s "+
 						"where s.Nome = :nome and s.Indirizzo = :indirizzo and s.Comune = :comune and s.Provincia = :provincia");
 				q.setParameter("nome", inserzioneForm.getSupermercato());
 				q.setParameter("indirizzo", inserzioneForm.getIndirizzo());
 				q.setParameter("comune", inserzioneForm.getComune());
 				q.setParameter("provincia", inserzioneForm.getProvincia());
-				List idS = q.list();
-				Object ident = idS.get(0);
-				System.out.println("id = "+ident);
-				id = (Integer)ident;
+				idS = q.list();				
 				tx.commit();
 			} catch(RuntimeException e) {
 				if(tx!=null)
@@ -243,8 +241,12 @@ public class InserzioneController {
 				if(session!=null && session.isOpen())
 					session.close();
 			}
-			
-			supermercato = dati.getSupermercati().get(id);
+			if(idS.size() > 0){
+				Object ident = idS.get(0);
+				System.out.println("id = "+ident);
+				id = (Integer)ident;
+				supermercato = dati.getSupermercati().get(id);
+			}
 			
 			if(supermercato == null){
 				idSupermercato = dati.inserisciSupermercato(inserzioneForm.getSupermercato(), inserzioneForm.getIndirizzo(), inserzioneForm.getComune(), inserzioneForm.getProvincia(), inserzioneForm.getLat(), inserzioneForm.getLng());
@@ -266,18 +268,20 @@ public class InserzioneController {
 			List<String> valori = new LinkedList<String>();
 			if(inserzioneForm.getArg_corpo() != null)
 				valori.addAll(inserzioneForm.getArg_corpo());
+			if(valori.size() == 1 && "".equals(valori.get(0)))
+				valori = null;
 			
 			if(prodotto != null){
 				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 				trovato = true;
 				if(inserzioneForm.getDataFine()!=null&&!(inserzioneForm.getDataFine().equals(""))){				
-					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), sdf.parse(inserzioneForm.getDataFine()), inserzioneForm.getDescrizione(),Integer.toString(hashcode)+".png",argomenti,valori);
+					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), sdf.parse(inserzioneForm.getDataFine()), inserzioneForm.getDescrizione(),hashcode == 0 ? "" : Integer.toString(hashcode)+".png",argomenti,valori);
 					inserimentoInserzione=true;
 				}else{
 					Calendar c = Calendar.getInstance();
 					c.setTime(sdf.parse(inserzioneForm.getDataInizio()));
 					c.add(Calendar.DATE, 14);
-					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()),c.getTime() , inserzioneForm.getDescrizione(), Integer.toString(hashcode)+".png",argomenti,valori);
+					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()),c.getTime() , inserzioneForm.getDescrizione(), hashcode == 0 ? "" : Integer.toString(hashcode)+".png",argomenti,valori);
 					inserimentoInserzione=true;
 				}
 			}
@@ -293,10 +297,13 @@ public class InserzioneController {
 				if(p.getIdProdotto().equals(idProdotto)){
 					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 					if(inserzioneForm.getDataFine()!=null&&!(inserzioneForm.getDataFine().equals(""))){						
-						idInsererzione=dati.inserisciInserzione(utente, supermercato, p, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), sdf.parse(inserzioneForm.getDataFine()), inserzioneForm.getDescrizione(),Integer.toString(hashcode)+".png",argomenti,valori);
+						idInsererzione=dati.inserisciInserzione(utente, supermercato, p, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), sdf.parse(inserzioneForm.getDataFine()), inserzioneForm.getDescrizione(),hashcode == 0 ? "" : Integer.toString(hashcode)+".png",argomenti,valori);
 						inserimentoInserzione=true;
 					}else{
-						idInsererzione=dati.inserisciInserzione(utente, supermercato, p, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), null, inserzioneForm.getDescrizione(), Integer.toString(hashcode)+".png",argomenti,valori);
+						Calendar c = Calendar.getInstance();
+						c.setTime(sdf.parse(inserzioneForm.getDataInizio()));
+						c.add(Calendar.DATE, 14);
+						idInsererzione=dati.inserisciInserzione(utente, supermercato, p, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), c.getTime(), inserzioneForm.getDescrizione(), hashcode == 0 ? "" : Integer.toString(hashcode)+".png",argomenti,valori);
 						inserimentoInserzione=true;
 					}
 				}

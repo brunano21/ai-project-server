@@ -33,10 +33,10 @@ public class InserzioneValidation {
 					"Descrizione troppo corta, deve essere almeno di 10 caratteri");
 		}	
 		
-		if(Long.toString(inserzione.getCodiceBarre()).length()!=13){
+		if(Long.toString(inserzione.getCodiceBarre()).length() < 10 && Long.toString(inserzione.getCodiceBarre()).length() >13){
 			errors.rejectValue("codiceBarre", 
 					"lengthOfCodiceBarre.InserzioneForm.codiceBarre", 
-					"Il codice a barre deve avere 13 cifre");
+					"Il codice a barre deve avere dalle 10 alle 13 cifre");
 		}
 		
 		if(dati.getProdotti().containsKey(inserzione.getCodiceBarre())){
