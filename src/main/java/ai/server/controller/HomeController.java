@@ -29,11 +29,12 @@ public class HomeController {
 	}
 
 	@RequestMapping(value="/")
-	public ModelAndView home(HttpServletRequest request, @ModelAttribute("error")String error) throws IOException {
+	public ModelAndView home(HttpServletRequest request, @ModelAttribute("error")String error, Principal principal) throws IOException {
 		if(error != null) {
 			Map <String,Object> map = new HashMap<String, Object>();
 			map.put("dati",dati);
 			map.put("error", error);
+			map.put("principal", principal);
 			System.out.println("home");
 			return new ModelAndView("index",map);
 		} else {

@@ -48,7 +48,7 @@
 		<sec:form-login always-use-default-target="true"
 			login-page="/login" default-target-url="/welcome"
 			authentication-failure-url="/login?error=true" />
-
+		
 
 		<sec:logout delete-cookies="JSESSIONID" logout-success-url="/logout" />
 

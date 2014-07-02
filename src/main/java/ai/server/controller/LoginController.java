@@ -49,7 +49,6 @@ public class LoginController {
 	 public String login(@RequestParam(value = "error", required = false) String error,
 		 				Principal principal, 
 		 				RedirectAttributes attributes, HttpServletResponse response){
-		 
 		 if(principal != null){
 			 attributes.addFlashAttribute("error", "you're already logged");
 			 System.out.println("Redirect");
