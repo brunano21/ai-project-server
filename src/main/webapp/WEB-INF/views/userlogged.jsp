@@ -4,7 +4,7 @@
 	onsubmit="sendLogout();">
 	<h4>Bentornato, ${username}!</h4>
 	<div>
-		<p>Reputazione: ${reputazione}</p>
+		<p>Reputazione: ${reputazione}%</p>
 		<p>Crediti Pendenti: ${creditiPendenti}</p><p id="incrementoCrediti" style="color: red; font-size: medium;"></p>
 		<p>Crediti Acquisiti: ${creditiAcquisiti}</p>
 	</div>
@@ -18,7 +18,7 @@ $("#logout").click(function(){
         async: false, 
         data: { }, 
         success: function(returnedData) {         
-        	window.location.replace("http://localhost:8080/supermarket/");
+        	window.location.replace(document.URL);
         }    
     });
 });

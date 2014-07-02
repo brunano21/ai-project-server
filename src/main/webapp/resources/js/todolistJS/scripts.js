@@ -262,7 +262,7 @@ function prepareList() {
         );
 
         // se l'elemento va oltre lo spazio a disposizione, quando aggiungo un nuovo elemento, il div si sposta verso basso in modo da mostrarlo
-        //$("#expList").scrollTop($("#expList")[0].scrollHeight);
+        $("#expList").scrollTop($("#expList")[0].scrollHeight);
 
         // listeners per editare il testo dell'elemento
         $("#"+ itemId + "> .todoElemName").click(modificaNomeElemento);
@@ -428,6 +428,7 @@ function prepareList() {
                 break;
 
             case "nuovoElemento":
+            	console.log("nuovoElemento");
                 jsonData = {
                     'cmd' : 'nuovoElemento',
                     'idListaDesideri' : data[0],
@@ -507,7 +508,12 @@ function prepareList() {
         });
         
         request.done(function (response, textStatus, jqXHR) {
-        	var jsonData = JSON.parse(response);
+        	var jsonData;
+        	try{
+        		jsonData = $.parseJSON(response);
+			} catch(err) {
+				console.log("ERROR nel parsing del JSON: " + err);
+			}
         	switch (jsonData['cmd']) {
         	
 				case "nuovoElemento_Response":	    		

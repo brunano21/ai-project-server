@@ -17,7 +17,8 @@
 				<div class="bx-viewport">
 					<div class="slider1">
 						<%
-						List<Integer> valutazioniIDs = Dati.getInstance().getInserzioniDaValutare(request.getUserPrincipal().getName(), request.getParameter("latitudine"), request.getParameter("longitudine"));
+						//List<Integer> valutazioniIDs = Dati.getInstance().getInserzioniDaValutare(request.getUserPrincipal().getName(), request.getParameter("latitudine"), request.getParameter("longitudine"));
+						List<Integer> valutazioniIDs = Dati.getInstance().getInserzioniDaValutareProposte(request.getUserPrincipal().getName());
 						Inserzione valutazione = null;
 						String supermercato = null;
 						
@@ -69,6 +70,8 @@
 				<div class="bx-viewport">
 					<div class="slider2">
 					<%
+					valutazioniIDs = Dati.getInstance().getInserzioniDaValutareSuggerite(request.getUserPrincipal().getName(), request.getParameter("latitudine"), request.getParameter("longitudine"));
+					
 						for(Integer index : valutazioniIDs) {
 							valutazione = Dati.getInstance().getInserzioni().get(index);
 						 	supermercato = valutazione.getSupermercato().getNome() + ", " + valutazione.getSupermercato().getIndirizzo() + ", " + valutazione.getSupermercato().getComune();

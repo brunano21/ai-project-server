@@ -375,6 +375,7 @@ function cercaSupermercato(){
 $("#inserzioneForm").submit(function (event) {
 	event.preventDefault();
 	$('#overlayPanel').show();
+	$('#popupConfermaInserzioneContainer').children().hide();
 	$('#popupConfermaInserzioneContainer').show();
 	$('#confermaInserzioneBox').show();
 });
@@ -384,7 +385,7 @@ $("#annullaInserzioneBtn").click(function() {
 	$('#overlayPanel').hide();
 });
 
-$("#inviaInserzioneBtn").click(function(event) {
+$("#inviaInserzioneBtn").unbind().click(function(event) {
 	$('#confermaInserzioneBox').hide();
 	$('#caricamentoDatiInCorsoBox').show();
 
@@ -486,10 +487,9 @@ $("#inviaInserzioneBtn").click(function(event) {
 							
 						} else {
 							// inserzione aggiunta con successo
-							$('#caricamentoDatiInCorsoBox').hide();
+							$('#popupConfermaInserzioneContainer').children().hide();
 							$("#caricamentoDatiConSuccesso").show();
-							$("#inserzione").html(response);
-							
+
 							setTimeout(function() {
 								$("#caricamentoDatiConSuccesso").hide();
 								$('#overlayPanel').children().hide();
@@ -514,7 +514,7 @@ $("#inviaInserzioneBtn").click(function(event) {
 							$("#incrementoCrediti").text("+10").fadeIn();
 							setTimeout(function() {
 								var crediti_pendenti = Number($($("#logContainer > form > div > p")[1]).text().split(": ").pop());
-								crediti_pendenti += 2;
+								crediti_pendenti += 10;
 								$("#incrementoCrediti").text("").fadeOut();
 								$($("#logContainer > form > div > p")[1]).text("Crediti Pendenti: " + crediti_pendenti);
 							}, 2000);

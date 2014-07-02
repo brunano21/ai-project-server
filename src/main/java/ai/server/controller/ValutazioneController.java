@@ -5,6 +5,7 @@ import hibernate.ValutazioneInserzione;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,8 +53,18 @@ public class ValutazioneController {
 		Inserzione inserzione = dati.getInserzioni().get(Integer.parseInt(idInserzione));
 		
 		for(ValutazioneInserzione vi : (Set<ValutazioneInserzione>) inserzione.getValutazioneInserziones())		
-			if(vi.getUtenteByIdUtenteValutatore().getMail().equals(principal.getName()))
+			if(vi.getUtenteByIdUtenteValutatore().getMail().equals(principal.getName()) && vi.getValutazione().compareTo(0) != 0)
 				return "Error-gia-valutato" + "_@_" + idInserzione;
+		
+		for(ValutazioneInserzione vi : (Set<ValutazioneInserzione>) dati.getUtenti().get(principal.getName()).getValutazioneInserzionesForIdUtenteValutatore())
+			if(vi.getInserzione().getIdInserzione() == Integer.parseInt(idInserzione) && vi.getValutazione().compareTo(0) == 0) {
+				if("+1".equals(valutazione))
+					dati.modificaValutazioneInserzione(vi.getIdValutazioneInserzione(), inserzione, vi.getUtenteByIdUtenteInserzionista(), vi.getUtenteByIdUtenteValutatore(), new Date(), 1);
+				else
+					dati.modificaValutazioneInserzione(vi.getIdValutazioneInserzione(), inserzione, vi.getUtenteByIdUtenteInserzionista(), vi.getUtenteByIdUtenteValutatore(), new Date(), -1);
+			
+				return idInserzione + "_@_" + valutazione;
+			}
 		
 		if("+1".equals(valutazione))
 			dati.inserimentoValutazioneInserzione(inserzione, inserzione.getUtente(), dati.getUtenti().get(principal.getName()), 1, new Date());

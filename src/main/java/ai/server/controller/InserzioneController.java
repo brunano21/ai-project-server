@@ -9,14 +9,10 @@ import hibernate.Utente;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -214,7 +210,7 @@ public class InserzioneController {
 				BufferedImage image = ImageIO.read(url);
 				imagePath = "resources\\images"+File.separator+Integer.toString(hashcode)+".png";
 				File file = new File(context.getRealPath("/") + imagePath);
-			    ImageIO.write(image, "png", file);	
+			    ImageIO.write(image, "png", file);
 				/*
 				URL url = new URL(inserzioneForm.getFoto());
 				String destName =  "resources\\images"+File.separator+Integer.toString(hashcode)+".png";
@@ -246,8 +242,9 @@ public class InserzioneController {
 			List idS = new LinkedList();
 			try {
 				tx=session.beginTransaction();			
-				Query q = session.createSQLQuery("select s.ID_Supermercato "+
-				"from supermercato s "+
+				Query q = session.createSQLQuery(
+						"select s.ID_Supermercato "+
+						"from supermercato s "+
 						"where s.Nome = :nome and s.Indirizzo = :indirizzo and s.Comune = :comune and s.Provincia = :provincia");
 				q.setParameter("nome", inserzioneForm.getSupermercato());
 				q.setParameter("indirizzo", inserzioneForm.getIndirizzo());
@@ -276,8 +273,6 @@ public class InserzioneController {
 				supermercato = dati.getSupermercati().get(idSupermercato);				
 			}
 			
-			
-			
 			boolean trovato = false;
 			Prodotto prodotto = dati.getProdotti().get(inserzioneForm.getCodiceBarre());
 			List<Argomenti> argomenti = new LinkedList<Argomenti>();
@@ -296,20 +291,19 @@ public class InserzioneController {
 			if(prodotto != null){
 				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 				trovato = true;
-				if(inserzioneForm.getDataFine()!=null&&!(inserzioneForm.getDataFine().equals(""))){				
-					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), sdf.parse(inserzioneForm.getDataFine()), inserzioneForm.getDescrizione(),hashcode == 0 ? "" : Integer.toString(hashcode)+".png",argomenti,valori);
+				if(inserzioneForm.getDataFine() != null && !(inserzioneForm.getDataFine().equals(""))) {				
+					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), sdf.parse(inserzioneForm.getDataFine()), inserzioneForm.getDescrizione(), imagePath, argomenti, valori);
 					inserimentoInserzione=true;
 				}else{
 					Calendar c = Calendar.getInstance();
 					c.setTime(sdf.parse(inserzioneForm.getDataInizio()));
 					c.add(Calendar.DATE, 14);
-					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()),c.getTime() , inserzioneForm.getDescrizione(), hashcode == 0 ? "" : Integer.toString(hashcode)+".png",argomenti,valori);
+					idInsererzione=dati.inserisciInserzione(utente, supermercato, prodotto, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()),c.getTime(), inserzioneForm.getDescrizione(), imagePath, argomenti, valori);
 					inserimentoInserzione=true;
 				}
 			}
 			
-		
-			if(!trovato){
+			if(!trovato) {
 				Sottocategoria sottocategoria=null;
 				sottocategoria = dati.getSottocategorie().get(inserzioneForm.getSottoCategoria());
 				idProdotto=dati.inserisciProdotto(sottocategoria, inserzioneForm.getCodiceBarre(), inserzioneForm.getDescrizione());
@@ -318,10 +312,10 @@ public class InserzioneController {
 				//Si devono inserire gli argomenti usati
 				if(p.getIdProdotto().equals(idProdotto)){
 					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-					if(inserzioneForm.getDataFine()!=null&&!(inserzioneForm.getDataFine().equals(""))){						
+					if(inserzioneForm.getDataFine() != null && !(inserzioneForm.getDataFine().equals(""))) {						
 						idInsererzione=dati.inserisciInserzione(utente, supermercato, p, inserzioneForm.getPrezzo(), sdf.parse(inserzioneForm.getDataInizio()), sdf.parse(inserzioneForm.getDataFine()), inserzioneForm.getDescrizione(),imagePath,argomenti,valori);
 						inserimentoInserzione=true;
-					}else{
+					} else {
 						Calendar c = Calendar.getInstance();
 						c.setTime(sdf.parse(inserzioneForm.getDataInizio()));
 						c.add(Calendar.DATE, 14);
@@ -329,9 +323,8 @@ public class InserzioneController {
 						inserimentoInserzione=true;
 					}
 				}
-				
 			}
-		}catch(Exception e){
+		} catch(Exception e) {
 			System.out.println(inserimentoInserzione+" "+inserimentoProdotto+" "+inserimentoSupermercato);
 			if(inserimentoInserzione){
 				dati.eliminaInserzione(idInsererzione);
@@ -354,6 +347,7 @@ public class InserzioneController {
 		return  "SUCCESS";
 	}
 	
+
 	
 	public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
 	    double earthRadius = 6371;

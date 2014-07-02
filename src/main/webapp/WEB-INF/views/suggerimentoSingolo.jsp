@@ -135,7 +135,7 @@ $(document).ready( function() {
 		String supermercato = inserzione.getSupermercato().getNome() + ", " + inserzione.getSupermercato().getIndirizzo() + ", " + inserzione.getSupermercato().getComune();
 		String idContainer = ("evaluation".equals(request.getParameter("tipoSuggerimento")) == true) ? "suggerimento_valutazione_" + inserzione.getIdInserzione() : "suggerimento_scadenza_" + inserzione.getIdInserzione();
 		%>
-		<div id=<%= idContainer %> class="slider-item">
+		<div id=<%= idContainer %> class="slider-item" <%= ("evaluation".equals(request.getParameter("tipoSuggerimento")) == false) ?  "style=\"height: 365px;\"" : "" %>>
 			<h6>
 				<a href="#"></a><%= inserzione.getProdotto().getDescrizione() %>
 			</h6>

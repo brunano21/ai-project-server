@@ -41,7 +41,7 @@ function getSuggerimentoSingolo(_this) {
 			 
 			 //TODO Aggiungere else nel caso non ci siano le coordinate
 			 if (request.getParameter("latitudine") != null || request.getParameter("longitudine") != null)
-				inserzioniDaValutareIDsList = Dati.getInstance().getInserzioniDaValutare(request.getUserPrincipal().getName(), request.getParameter("latitudine"), request.getParameter("longitudine"));
+				inserzioniDaValutareIDsList = Dati.getInstance().getInserzioniDaValutareSuggerite(request.getUserPrincipal().getName(), request.getParameter("latitudine"), request.getParameter("longitudine"));
 			 
 			 inserzioniDaValutareIDsList = Dati.getInstance().getInserzioniValide();
 			 

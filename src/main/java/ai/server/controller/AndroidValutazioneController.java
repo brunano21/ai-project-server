@@ -2,6 +2,7 @@
 package ai.server.controller;
 
 import hibernate.Inserzione;
+import hibernate.ValutazioneInserzione;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -12,6 +13,7 @@ import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
@@ -53,7 +55,7 @@ public class AndroidValutazioneController {
 		System.out.println("Called: /android/valutazione/getIdInserzioni - LAT: " + request.getParameter("lat") + " LNG: " + request.getParameter("lng"));
 
 		JSONArray response = new JSONArray();
-		List idInserzioni = dati.getInserzioniDaValutare(principal.getName(), request.getParameter("lat"), request.getParameter("lng"));
+		List idInserzioni = dati.getInserzioniDaValutareSuggerite(principal.getName(), request.getParameter("lat"), request.getParameter("lng"));
 		response.addAll(idInserzioni);
 		System.out.println("idInserzioniList.size(): " + idInserzioni.size());
 		System.out.println(response.toString());
@@ -118,6 +120,7 @@ public class AndroidValutazioneController {
 		System.out.println("Called: /android/valutazione/aggiungiValutazione - ID_INSERZIONE: " + idInserzione + " - RISULTATO: " + risultato);
 		JSONArray response = new JSONArray();
 
+		/*
 		dati.inserimentoValutazioneInserzione(
 				dati.getInserzioni().get(idInserzione),
 				dati.getUtenti().get(principal.getName()),
@@ -125,6 +128,32 @@ public class AndroidValutazioneController {
 				Integer.valueOf(risultato),
 				new Date());
 
+		response.add(idInserzione);
+		response.add(request.getParameter("posizione"));
+		response.add(request.getParameter("risultato"));
+		System.out.println(response.toString());
+		return response;
+		*/
+		
+		// Non sono stato attento all'eleganza, era tardi! :)
+		for(ValutazioneInserzione vi : (Set<ValutazioneInserzione>) dati.getUtenti().get(principal.getName()).getValutazioneInserzionesForIdUtenteValutatore())
+			if(vi.getInserzione().getIdInserzione() == Integer.valueOf(request.getParameter("idInserzione")) && vi.getValutazione().compareTo(0) == 0) {
+					dati.modificaValutazioneInserzione(vi.getIdValutazioneInserzione(), dati.getInserzioni().get(idInserzione), vi.getUtenteByIdUtenteInserzionista(), vi.getUtenteByIdUtenteValutatore(), new Date(), Integer.valueOf(risultato));
+			
+				response.add(idInserzione);
+				response.add(request.getParameter("posizione"));
+				response.add(request.getParameter("risultato"));
+				System.out.println(response.toString());
+				return response;
+			}
+		
+		dati.inserimentoValutazioneInserzione(
+				dati.getInserzioni().get(idInserzione),
+				dati.getUtenti().get(principal.getName()),
+				dati.getInserzioni().get(idInserzione).getUtente(),
+				Integer.valueOf(risultato),
+				new Date());
+		
 		response.add(idInserzione);
 		response.add(request.getParameter("posizione"));
 		response.add(request.getParameter("risultato"));

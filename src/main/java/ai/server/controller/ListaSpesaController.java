@@ -3,8 +3,6 @@ package ai.server.controller;
 import hibernate.Inserzione;
 import hibernate.ListaDesideri;
 import hibernate.ListaDesideriProdotti;
-import hibernate.Prodotto;
-import hibernate.Supermercato;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -27,6 +25,12 @@ import dati.Dati;
 
 @Controller
 public class ListaSpesaController {
+	@Autowired
+	private ServletContext context;
+	
+	public void setServletContext(ServletContext context) {
+		this.context = context;
+	}
 
 	@Autowired
 	private Dati dati;
@@ -35,13 +39,6 @@ public class ListaSpesaController {
 		this.dati=dati;
 	}
 	
-	@Autowired
-	private ServletContext context;
-
-	public void setServletContext(ServletContext context){
-		this.context = context;
-	}
-
 	@RequestMapping(value="/todolist", method = RequestMethod.GET)
 	public String showForm(Map model) {
 		return "todolist";
@@ -77,15 +74,6 @@ public class ListaSpesaController {
 		return result;
 	}
 
-	/*
-	@RequestMapping(value="/todolist/userGeoloc",method=RequestMethod.POST)
-	public @ResponseBody ObjectNode getTodoListSuggestion(HttpServletRequest request, Principal principal) {
-		System.out.println(request.getParameter("latitudine"));
-		System.out.println(request.getParameter("longitudine"));
-		return null;
-	}
-	*/
-
 	@RequestMapping(value="/todolist", method = RequestMethod.POST)
 	public @ResponseBody ObjectNode processTodoList(HttpServletRequest request, Principal principal){
 		JsonNodeFactory factory;
@@ -110,6 +98,7 @@ public class ListaSpesaController {
 			break;
 
 		case "nuovoElemento":
+			System.out.println("nuovoElemento");
 			System.out.println(request.getParameter("idListaDesideri"));
 			System.out.println(request.getParameter("idElemento"));
 			System.out.println(request.getParameter("descrizione"));
