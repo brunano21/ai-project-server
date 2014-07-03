@@ -45,6 +45,12 @@ public class LoginController {
 		 return new ModelAndView("userlogged", userModel);
 	 }
 	 
+	 @RequestMapping(value="/loginForm",method = RequestMethod.GET)
+	 public ModelAndView loginForm(){		 
+		 
+		 return new ModelAndView("loginForm");
+	 }
+	 
 	 @RequestMapping(value="/login",method = RequestMethod.GET)
 	 public String login(@RequestParam(value = "error", required = false) String error,
 		 				Principal principal, 

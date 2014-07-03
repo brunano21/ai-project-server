@@ -134,12 +134,23 @@
 
     function sendLogout() {
 	   	// qui posso far apparire un scritta con contacting server
+	   	var output;
+	   	$.ajax({
+        	url:"./loginForm", 
+            type: 'GET', 
+            async: false, 
+            data: { }, 
+            success: function(data){
+            	output = data;
+            }
+       	});
         $.ajax({url:"./j_spring_security_logout", 
             type: 'POST', 
                 async: false, 
                 data: { }, 
-                success: function(returnedData) {         
-                	console.log("done!");
+                success: function(returnedData){         
+                	console.log("done!***********");
+                	$("#logContainer").html(output);
                 }
         });
     };

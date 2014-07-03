@@ -12,7 +12,7 @@
 </form>
 
 <script type="text/javascript">
-$("#logout").click(function(){
+/* $("#logout").click(function(){
 	$.ajax({url:"./j_spring_security_logout", 
         type: 'POST', 
         async: false, 
@@ -21,6 +21,6 @@ $("#logout").click(function(){
         	window.location.replace(document.URL);
         }    
     });
-});
+}); */
 </script>
 
