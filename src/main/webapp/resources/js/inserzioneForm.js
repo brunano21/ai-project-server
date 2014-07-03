@@ -407,7 +407,7 @@ $("#inviaInserzioneBtn").unbind().click(function(event) {
 //		$("input.argomenti").prop('disabled',false);
 //		$('#supermercato').val($('#supermercato').val()+" - "+$('#indirizzo').val());
 		var geocoder = new google.maps.Geocoder();
-		geocoder.geocode({'address':$("#indirizzoInput").val()+" "+$("#comuneInput").val()+" "+$("provinciaInput").val()},function(results,status){
+		geocoder.geocode({'address':$("#indirizzoInput").val()+" "+$("#comuneInput").val()+" "+$("#provinciaInput").val()},function(results,status){
 			console.log("FOTO1 : " + $('#suggerimentoImgInput').attr("src"));
 			if(status == google.maps.GeocoderStatus.OK) {
 				console.log("FOTO2 : " + $('#suggerimentoImgInput').attr("src"));
